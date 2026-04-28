@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management Study Hub</title>
+    <!-- Notion-style font & icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg: #fafafa;
+            --sidebar-bg: #fcfcfc;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b6b6b;
+            --text-tertiary: #9b9b9b;
+            --border: #f0f0f0;
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --radius-lg: 12px;
+            --radius-md: 8px;
+            --radius-sm: 6px;
+            --font: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.5;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ---------- SIDEBAR ---------- */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo {
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .sidebar-logo i {
+            color: var(--accent);
+            font-size: 1.25rem;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .active {
+
+            color: #50699f;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .sidebar-nav a i {
+            width: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            padding: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ---------- MAIN AREA ---------- */
+        .main {
+            flex: 1;
+            padding: 2rem 2.5rem;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        /* CHAPTER CARD */
+        .chapter-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.2s, transform 0.1s;
+        }
+
+        .chapter-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .chapter-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            background: var(--accent-light);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            margin-bottom: 0.75rem;
+            width: fit-content;
+        }
+
+        .chapter-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text-primary);
+        }
+
+        .chapter-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .chapter-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent-light);
+        }
+
+        .btn i {
+            font-size: 0.85rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 720px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 1rem;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                align-items: center;
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .sidebar-footer {
+                display: none;
+            }
+
+            .main {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <i class="fas fa-project-diagram"></i> PM Study Hub
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="active" style="margin-bottom: 20px ; border-bottom: 3px solid black;"><i class="fas fa-th-large"></i> Dashboard</a>
+
+            <h5 style="margin-bottom: 7px ; border-bottom: 1.5px solid #2563eb;"><strong>Contents</strong></h5>
+            <p class="active"><i class="fas fa-book-open"></i> Chapters</p>
+            <p class="active"><i class="fas fa-download"></i> Summaries</p>
+        </nav>
+        <div class="sidebar-footer">© 2026 · Final Exam chapters</div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <div class="page-header">
+            <h1>Project Management Chapters</h1>
+            <p>Select a chapter to study interactively or download a summary PDF.</p>
+        </div>
+
+        <!-- Chapters grid -->
+        <div class="chapters-grid">
+
+            <!-- Chapter 7 -->
+            <div class="chapter-card">
+                <span class="chapter-tag">Chapter 7</span>
+                <h3 class="chapter-title">Risk Management</h3>
+                <p class="chapter-desc">Master risk identification, analysis, mitigation strategies, and the PRAM
+                    methodology.</p>
+                <div class="chapter-actions">
+                    <a href="Chapter7.html" class="btn btn-primary"><i class="fas fa-play"></i> Study Now</a>
+                    <a href="summary-pdfs/ch7-summary.pdf" class="btn btn-outline" download><i
+                            class="fas fa-file-pdf"></i> PDF Summary</a>
+                </div>
+            </div>
+
+            <!-- Chapter 8 -->
+            <div class="chapter-card">
+                <span class="chapter-tag">Chapter 8</span>
+                <h3 class="chapter-title">Cost Estimation & Budgeting</h3>
+                <p class="chapter-desc">Learn cost types, ballpark to definitive estimates, and top‑down / bottom‑up
+                    budgeting.</p>
+                <div class="chapter-actions">
+                    <a href="Chapter8.html" class="btn btn-primary"><i class="fas fa-play"></i> Study Now</a>
+                    <a href="summary-pdfs/ch8-summary.pdf" class="btn btn-outline" download><i
+                            class="fas fa-file-pdf"></i> PDF Summary</a>
+                </div>
+            </div>
+
+            <!-- Chapter 9 -->
+            <div class="chapter-card">
+                <span class="chapter-tag">Chapter 9</span>
+                <h3 class="chapter-title">Project Scheduling</h3>
+                <p class="chapter-desc">Build AON networks, estimate durations with beta distribution, and find the
+                    critical path.</p>
+                <div class="chapter-actions">
+                    <a href="Chapter9.html" class="btn btn-primary"><i class="fas fa-play"></i> Study Now</a>
+                    <a href="summary-pdfs/ch9-summary.pdf" class="btn btn-outline" download><i
+                            class="fas fa-file-pdf"></i> PDF Summary</a>
+                </div>
+            </div>
+
+            <!-- Chapter 13 (placeholder) -->
+            <div class="chapter-card">
+                <span class="chapter-tag">Chapter 13</span>
+                <h3 class="chapter-title">Project Evaluation & Control</h3>
+                <p class="chapter-desc">Coming soon – tracking progress, earned value, and performance metrics.</p>
+                <div class="chapter-actions">
+                    <a href="Chapter13.html" class="btn btn-primary"><i class="fas fa-play"></i> Study Now</a>
+                    <a href="#" class="btn btn-outline"><i class="fas fa-file-pdf"></i> PDF Summary</a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 9 · Project Scheduling · BMGT 300</title>
+    <style>
+        :root {
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+            --accent-soft: #dbeafe;
+            --success: #0d9488;
+            --success-light: #f0fdfa;
+            --warn: #d97706;
+            --warn-light: #fffbeb;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --color-bg: #f8fafc;
+            --color-surface: #ffffff;
+            --color-border: var(--gray-200);
+            --color-border-light: #eef2f6;
+            --color-text-primary: var(--gray-800);
+            --color-text-secondary: var(--gray-600);
+            --color-text-tertiary: var(--gray-500);
+            --color-text-info: var(--accent);
+            --color-background-primary: var(--color-surface);
+            --color-background-secondary: var(--gray-50);
+            --color-background-info: var(--accent-light);
+            --color-background-accent: var(--accent-soft);
+            --color-border-secondary: var(--gray-200);
+            --color-border-tertiary: var(--gray-200);
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-sans);
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        .app {
+            max-width: 960px;
+            width: 100%;
+            background: var(--color-surface);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: 1.8rem 2rem 2.2rem;
+            margin: 1rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--color-border-light);
+            padding-bottom: 0.9rem;
+        }
+
+        .tab {
+            padding: 7px 18px;
+            border-radius: 100px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--gray-600);
+            transition: all 0.2s ease;
+            letter-spacing: 0.01em;
+        }
+
+        .tab.active { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
+        .tab:hover:not(.active) { background: var(--gray-100); color: var(--gray-800); }
+
+        .panel { display: none; animation: fade 0.2s ease; }
+        .panel.active { display: block; }
+
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; }
+
+        .section-title {
+            font-size: 15px; font-weight: 600; color: var(--gray-800);
+            margin-bottom: 1rem; letter-spacing: -0.01em;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px; margin-bottom: 1.8rem;
+        }
+
+        .concept-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-md);
+            padding: 16px 18px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+        .concept-card:hover { box-shadow: var(--shadow-md); border-color: var(--gray-200); }
+        .concept-card .label {
+            font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.04em; color: var(--gray-500); margin-bottom: 8px;
+        }
+        .concept-card .title {
+            font-size: 15px; font-weight: 600; color: var(--gray-800); margin-bottom: 8px;
+        }
+        .concept-card .body {
+            font-size: 13.5px; color: var(--gray-600); line-height: 1.65;
+        }
+
+        .highlight {
+            background: var(--accent-light); border-radius: 4px;
+            padding: 1px 6px; color: #1d4ed8; font-size: 12px; font-weight: 500;
+        }
+
+        .formula-box {
+            background: #f8fafc; border-radius: var(--border-radius-md);
+            padding: 14px 18px; font-size: 14px; margin-bottom: 14px;
+            border-left: 4px solid var(--accent); box-shadow: var(--shadow-sm);
+        }
+        .formula-box code {
+            font-family: var(--font-mono); font-size: 15px;
+            color: var(--gray-800); background: white;
+            padding: 4px 10px; border-radius: 6px;
+        }
+
+        .risk-table {
+            width: 100%; border-collapse: collapse; font-size: 13px;
+            margin-top: 10px; border-radius: var(--border-radius-md);
+            overflow: hidden; box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-border-light);
+        }
+        .risk-table th {
+            background: var(--gray-50); padding: 10px 14px;
+            text-align: left; font-weight: 600; color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .risk-table td {
+            padding: 10px 14px; border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-800); vertical-align: top; background: white;
+        }
+        .risk-table tr:last-child td { border-bottom: none; }
+
+        .badge {
+            display: inline-block; padding: 3px 12px; border-radius: 100px;
+            font-size: 12px; font-weight: 600; margin-right: 6px; letter-spacing: 0.01em;
+        }
+        .badge-low { background: #d1fae5; color: #065f46; }
+        .badge-med { background: #fef3c7; color: #92400e; }
+        .badge-high { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+
+        .fc-area { max-width: 600px; margin: 0 auto; }
+        .fc-progress { font-size: 13px; color: var(--gray-500); text-align: center; margin-bottom: 16px; }
+        .fc-card {
+            background: white; border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-lg); padding: 2.2rem 2rem;
+            min-height: 200px; display: flex; align-items: center;
+            justify-content: center; text-align: center; cursor: pointer;
+            transition: box-shadow 0.25s, border-color 0.2s;
+            position: relative; box-shadow: var(--shadow-md);
+        }
+        .fc-card:hover { border-color: var(--accent); box-shadow: 0 12px 28px rgba(0,0,0,0.06); }
+        .fc-side {
+            font-size: 11px; font-weight: 600; color: var(--gray-500);
+            text-transform: uppercase; letter-spacing: 0.05em;
+            position: absolute; top: 16px; left: 20px;
+            background: var(--gray-50); padding: 3px 10px; border-radius: 20px;
+        }
+        .fc-text { font-size: 16px; color: var(--gray-800); line-height: 1.6; font-weight: 500; }
+        .fc-hint { font-size: 12px; color: var(--gray-500); text-align: center; margin-top: 10px; }
+        .fc-nav { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .fc-nav button {
+            padding: 8px 22px; border-radius: 100px; border: 1px solid var(--gray-200);
+            background: white; cursor: pointer; font-size: 13px; font-weight: 500;
+            color: var(--gray-700); transition: all 0.2s;
+        }
+        .fc-nav button:hover { background: var(--gray-50); border-color: var(--gray-300); }
+        .fc-nav .primary { background: var(--accent); color: white; border-color: var(--accent); font-weight: 500; }
+        .fc-nav .primary:hover { background: #1d4ed8; }
+
+        .quiz-area { max-width: 680px; margin: 0 auto; }
+        .quiz-progress-bar { height: 5px; background: var(--gray-100); border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; }
+        .quiz-progress-fill { height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.4s ease; }
+        .quiz-q { font-size: 16px; font-weight: 600; color: var(--gray-800); margin-bottom: 1.2rem; line-height: 1.5; }
+        .quiz-opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.2rem; }
+        .quiz-opt {
+            padding: 12px 18px; border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-md); cursor: pointer;
+            font-size: 14px; color: var(--gray-700); text-align: left;
+            background: white; transition: all 0.15s; line-height: 1.5;
+            box-shadow: var(--shadow-sm);
+        }
+        .quiz-opt:hover:not(:disabled) { background: #f0f4ff; border-color: var(--accent); transform: translateY(-1px); }
+        .quiz-opt.correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
+        .quiz-opt.wrong { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+        .quiz-opt.reveal-correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
+        .quiz-feedback {
+            font-size: 13.5px; margin-bottom: 16px; padding: 12px 16px;
+            border-radius: var(--border-radius-md); line-height: 1.5; font-weight: 500;
+        }
+        .quiz-feedback.good { background: #ecfdf5; color: #065f46; border-left: 4px solid #10b981; }
+        .quiz-feedback.bad { background: #fef2f2; color: #991b1b; border-left: 4px solid #ef4444; }
+        .quiz-score { font-size: 13px; color: var(--gray-500); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .quiz-nav { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+        .quiz-nav button {
+            padding: 9px 24px; border-radius: 100px; border: 1px solid var(--gray-200);
+            background: white; cursor: pointer; font-size: 13px; font-weight: 500;
+            color: var(--gray-700); transition: all 0.2s;
+        }
+        .quiz-nav .primary { background: var(--accent); color: white; border-color: var(--accent); }
+        .quiz-nav .primary:hover { background: #1d4ed8; }
+        .final-score { text-align: center; padding: 2.5rem 2rem; background: #f9fafb; border-radius: var(--border-radius-lg); }
+        .score-big { font-size: 56px; font-weight: 700; color: var(--gray-800); letter-spacing: -0.02em; }
+        .score-label { font-size: 15px; color: var(--gray-600); margin-top: 8px; margin-bottom: 1.8rem; }
+        .final-score button {
+            padding: 10px 28px; border-radius: 100px; background: var(--accent);
+            color: white; border: none; font-weight: 600; font-size: 14px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .final-score button:hover { background: #1e40af; }
+
+        .pair-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px; margin-bottom: 1.2rem;
+        }
+        .pair-card {
+            background: #f8fafc; border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-md); padding: 14px 16px;
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+        .pair-icon { font-size: 18px; min-width: 28px; text-align: center; }
+        .pair-content .pair-title { font-weight: 600; font-size: 13px; color: var(--gray-800); margin-bottom: 3px; }
+        .pair-content .pair-desc { font-size: 12px; color: var(--gray-600); line-height: 1.5; }
+
+        @media (max-width: 640px) {
+            .app { padding: 1.2rem; }
+            .concept-grid { grid-template-columns: 1fr; }
+            .pair-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h2 class="sr-only">Chapter 9 Project Scheduling — Interactive Study Tool</h2>
+        <div style="margin-bottom:1.5rem;">
+            <div style="font-size:20px;font-weight:700;color:var(--gray-800);margin-bottom:6px;">Chapter 9 — Project Scheduling</div>
+            <div style="font-size:14px;color:var(--gray-500);">BMGT 300 · Networks, Duration Estimation, Critical Path</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('summary')">Summary</button>
+            <button class="tab" onclick="showTab('networks')">Networks</button>
+            <button class="tab" onclick="showTab('duration')">Duration</button>
+            <button class="tab" onclick="showTab('critical')">Critical Path</button>
+            <button class="tab" onclick="showTab('flashcards')">Flashcards</button>
+            <button class="tab" onclick="showTab('quiz')">Quiz</button>
+        </div>
+
+        <!-- SUMMARY -->
+        <div id="panel-summary" class="panel active">
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Definition</div>
+                    <div class="title">Project schedule</div>
+                    <div class="body">An output of a schedule model that presents linked activities with planned dates, durations, milestones, and resources (PMBoK).</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Definition</div>
+                    <div class="title">Project planning</div>
+                    <div class="body">Identification of project objectives and the ordered activities needed to complete the project, including resource types and quantities.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Key network types</div>
+                    <div class="title">AON vs AOA</div>
+                    <div class="body"><strong>AON (Activity-on-Node):</strong> Nodes = activities, arrows = dependencies.<br><strong>AOA (Activity-on-Arrow):</strong> Arrows = activities, nodes = events (start/finish).</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Critical concepts</div>
+                    <div class="title">Float & Critical Path</div>
+                    <div class="body"><strong>Float (slack):</strong> time an activity can be delayed without delaying the project.<br><strong>Critical path:</strong> longest path through the network; activities on it have zero total float.</div>
+                </div>
+            </div>
+
+            <div class="section-title">Key scheduling terminology</div>
+            <table class="risk-table">
+                <tr><th>Term</th><th>Definition</th></tr>
+                <tr><td>Path</td><td>Sequence of activities defined by the network logic</td></tr>
+                <tr><td>Event</td><td>A point when an activity is started or completed</td></tr>
+                <tr><td>Node</td><td>Junction point joined by dependency lines</td></tr>
+                <tr><td>Predecessors</td><td>Activities that must be completed before a later activity can start</td></tr>
+                <tr><td>Successors</td><td>Activities that cannot start until previous ones are completed</td></tr>
+                <tr><td>Merge activity</td><td>An activity with two or more immediate predecessors</td></tr>
+                <tr><td>Burst activity</td><td>An activity with two or more immediate successors</td></tr>
+                <tr><td>Float (slack)</td><td>Amount of time an activity can be delayed without delaying the project</td></tr>
+                <tr><td>Critical Path Method (CPM)</td><td>Network analysis technique to determine schedule flexibility and minimum project duration</td></tr>
+            </table>
+        </div>
+
+        <!-- NETWORKS -->
+        <div id="panel-networks" class="panel">
+            <div class="section-title">Activity-on-Node (AON) fundamentals</div>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Node label</div>
+                    <div class="title">Standard AON node</div>
+                    <div class="body">Each node shows: <strong>Early Start (ES), Early Finish (EF), Late Start (LS), Late Finish (LF), Activity ID, Duration.</strong> The forward pass fills ES/EF, backward pass fills LS/LF.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Logic</div>
+                    <div class="title">Serial vs Concurrent</div>
+                    <div class="body"><strong>Serial activities</strong> flow one after another. <strong>Concurrent activities</strong> can happen at the same time, creating parallel paths through the network.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Structure</div>
+                    <div class="title">Merge activity</div>
+                    <div class="body">An activity that cannot start until multiple predecessors finish. Example: Activity D depends on A, B, and C.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Structure</div>
+                    <div class="title">Burst activity</div>
+                    <div class="body">An activity that, once completed, allows multiple successors to begin. Example: Activity A releases B, C, and D simultaneously.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DURATION ESTIMATION -->
+        <div id="panel-duration" class="panel">
+            <div class="section-title">Duration estimation methods</div>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Method 1</div>
+                    <div class="title">Past experience</div>
+                    <div class="body">Use history from similar projects as a guide.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Method 2</div>
+                    <div class="title">Expert opinion</div>
+                    <div class="body">Consult a past project manager or expert for their judgment.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Method 3</div>
+                    <div class="title">Mathematical derivation (Beta distribution)</div>
+                    <div class="body">Use three time estimates: <strong>a</strong> = optimistic, <strong>m</strong> = most likely, <strong>b</strong> = pessimistic.</div>
+                </div>
+            </div>
+
+            <div class="section-title">Beta distribution formulas</div>
+            <div class="formula-box">
+                <div style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Expected time (TE)</div>
+                <code>TE = (a + 4m + b) / 6</code>
+            </div>
+            <div class="formula-box">
+                <div style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Activity variance (σ²)</div>
+                <code>σ² = ((b − a) / 6)²</code>
+            </div>
+            <div class="formula-box">
+                <div style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Project variance & standard deviation</div>
+                <code>Project σ² = Σ variances on critical path</code><br>
+                <code>Project σ = √(project variance)</code>
+            </div>
+
+            <div class="section-title" style="margin-top:1.5rem;">Example (Project Delta, critical path: A–C–D–F–H)</div>
+            <table class="risk-table">
+                <tr><th>Activity</th><th>a</th><th>m</th><th>b</th><th>TE</th><th>Variance</th></tr>
+                <tr><td>A</td><td>3</td><td>5</td><td>11</td><td>5.33</td><td>1.78</td></tr>
+                <tr><td>C</td><td>4</td><td>6</td><td>8</td><td>6</td><td>1.00</td></tr>
+                <tr><td>D</td><td>8</td><td>10</td><td>12</td><td>10</td><td>4.00</td></tr>
+                <tr><td>F</td><td>3</td><td>4</td><td>5</td><td>4</td><td>0.69</td></tr>
+                <tr><td>H</td><td>2</td><td>3</td><td>4</td><td>3</td><td>0.25</td></tr>
+            </table>
+            <div style="font-size:13px; color:var(--gray-600); margin-top:8px;">Project variance = 1.78 + 1 + 4 + 0.69 + 0.25 = <strong>7.72</strong> · Std dev = √7.72 = <strong>2.78</strong></div>
+        </div>
+
+        <!-- CRITICAL PATH -->
+        <div id="panel-critical" class="panel">
+            <div class="section-title">Constructing the critical path</div>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Step 1</div>
+                    <div class="title">Forward pass</div>
+                    <div class="body">Additive move from start to finish. Determines <strong>Earliest Start (ES)</strong> and <strong>Earliest Finish (EF)</strong>. The finish EF gives the overall project duration.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Step 2</div>
+                    <div class="title">Backward pass</div>
+                    <div class="body">Subtractive move from finish to start. Determines <strong>Latest Start (LS)</strong> and <strong>Latest Finish (LF)</strong>. Begins with the project end date as the LF of the last activity.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Step 3</div>
+                    <div class="title">Calculate float</div>
+                    <div class="body">Float = LS − ES (or LF − EF). Activities with zero total float are on the <strong>critical path</strong>.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Step 4</div>
+                    <div class="title">Identify critical path</div>
+                    <div class="body">The path with the longest total duration and zero float. Determines the <strong>minimum project duration</strong>.</div>
+                </div>
+            </div>
+
+            <div class="section-title">Probability of finishing on time</div>
+            <div class="formula-box">
+                <div style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Z‑score formula</div>
+                <code>Z = (Due date − Expected completion) / Project standard deviation</code>
+                <div style="font-size:13px;color:var(--gray-600);margin-top:8px;">Look up Z in the standard normal table to find the probability of finishing by the due date.</div>
+            </div>
+            <div class="concept-card">
+                <div class="body"><strong>Example:</strong> If expected completion = 30 weeks, due date = 32 weeks, σ = 2.78, then Z = (32−30)/2.78 = 0.72 → probability ≈ <strong>76.42%</strong>.</div>
+            </div>
+        </div>
+
+        <!-- FLASHCARDS -->
+        <div id="panel-flashcards" class="panel">
+            <div class="fc-area">
+                <div class="fc-progress" id="fc-progress">Card 1 of 16</div>
+                <div class="fc-card" id="fc-card" onclick="flipCard()">
+                    <div class="fc-side" id="fc-side">Term</div>
+                    <div class="fc-text" id="fc-text">Loading...</div>
+                </div>
+                <div class="fc-hint" id="fc-hint">Click card to reveal definition</div>
+                <div class="fc-nav">
+                    <button onclick="prevCard()">← Prev</button>
+                    <button class="primary" onclick="flipCard()" id="fc-flip-btn">Flip</button>
+                    <button onclick="nextCard()">Next →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ -->
+        <div id="panel-quiz" class="panel">
+            <div class="quiz-area"><div id="quiz-inner"></div></div>
+        </div>
+    </div>
+
+    <script>
+        const flashcards = [
+            { term: "Project network diagram", def: "A schematic display of the logical relationships of project activities." },
+            { term: "Path", def: "A sequence of activities defined by the project network logic." },
+            { term: "Event", def: "A point when an activity is either started or completed." },
+            { term: "Node", def: "A junction point joined to some or all of the other dependency lines (paths)." },
+            { term: "Predecessors", def: "Activities that must be completed prior to initiation of a later activity." },
+            { term: "Successors", def: "Activities that cannot be started until previous activities have been completed." },
+            { term: "Merge activity", def: "An activity with two or more immediate predecessors." },
+            { term: "Burst activity", def: "An activity with two or more immediate successors." },
+            { term: "Forward pass", def: "Network calculation to determine earliest start/finish by working forward through the network." },
+            { term: "Backward pass", def: "Network calculation to determine late start/finish by working backward through the network." },
+            { term: "Float (slack)", def: "Amount of time an activity can be delayed without delaying the project finish." },
+            { term: "Critical path", def: "The path through the project network with the longest duration; activities have zero total float." },
+            { term: "Beta distribution expected time", def: "TE = (a + 4m + b) / 6, where a=optimistic, m=most likely, b=pessimistic." },
+            { term: "Activity variance (beta)", def: "σ² = ((b − a) / 6)². Used to calculate overall project risk." },
+            { term: "Z-score for project completion", def: "Z = (Due date − Expected completion) / Project standard deviation. Look up in normal table for probability." },
+            { term: "AON vs AOA", def: "AON: nodes = activities, arrows = dependencies. AOA: arrows = activities, nodes = events." }
+        ];
+
+        const quizQuestions = [
+            { q: "In an Activity-on-Node (AON) diagram, what do the nodes represent?", opts: ["Events", "Activities", "Dependencies", "Milestones"], ans: 1, exp: "In AON, nodes represent activities; arrows represent the sequencing (dependencies)." },
+            { q: "Which formula gives the expected activity duration using the beta distribution?", opts: ["(a + m + b) / 3", "(a + 4m + b) / 6", "(a + b) / 2", "(m + b) / 2"], ans: 1, exp: "TE = (a + 4m + b) / 6, where a=optimistic, m=most likely, b=pessimistic." },
+            { q: "What is an activity called when it has two or more immediate predecessors?", opts: ["Burst activity", "Serial activity", "Merge activity", "Concurrent activity"], ans: 2, exp: "A merge activity cannot start until multiple predecessors are finished." },
+            { q: "The forward pass determines:", opts: ["Late start and late finish", "Earliest start and earliest finish", "Float and slack", "Project variance"], ans: 1, exp: "Forward pass gives ES and EF by moving from start to finish across the network." },
+            { q: "Total float for an activity is calculated as:", opts: ["EF − ES", "LS − ES (or LF − EF)", "LF − LS", "ES − LS"], ans: 1, exp: "Float = LS − ES (or LF − EF). It indicates schedule flexibility." },
+            { q: "If a project's expected duration is 30 weeks and std dev is 2.78, what is the Z-score for a 32-week due date?", opts: ["−0.72", "0.72", "1.44", "2.78"], ans: 1, exp: "Z = (32 − 30)/2.78 = 0.72. Positive Z means the due date is beyond the expected finish." },
+            { q: "Which statement about the critical path is TRUE?", opts: ["It has the shortest total duration", "It has zero total float", "It contains all activities", "It is never the longest path"], ans: 1, exp: "The critical path has zero total float and is the longest duration path through the network." },
+            { q: "Activity variance in the beta distribution is:", opts: ["((b − a) / 6)²", "(b − a) / 6", "(a + m + b) / 3", "((a + b) / 2)²"], ans: 0, exp: "Variance = ((b − a) / 6)². This captures uncertainty in the activity duration." },
+            { q: "In AOA (Activity-on-Arrow), what do the nodes represent?", opts: ["Activities", "Events (start/finish)", "Durations", "Dependencies"], ans: 1, exp: "In AOA, arrows are activities, and nodes are events (start or finish of activities)." },
+            { q: "If an activity's optimistic time = 2, pessimistic = 8, what is its variance?", opts: ["1.0", "2.0", "1.78", "4.0"], ans: 0, exp: "Variance = ((8−2)/6)² = (6/6)² = 1² = 1.0." },
+            { q: "Project variance is computed by:", opts: ["Averaging all activity variances", "Summing variances of all activities", "Summing variances only on the critical path", "Taking the square root of the sum"], ans: 2, exp: "Only variances of activities on the critical path are summed to get the project variance." },
+            { q: "What does a Z-score of 0.72 correspond to (from the normal table)?", opts: ["57.42%", "76.42%", "64.42%", "82.42%"], ans: 1, exp: "Z=0.72 corresponds to approximately 0.7642, or 76.42% probability of finishing by the due date." }
+        ];
+
+        let fcIdx = 0, fcFlipped = false;
+        let qIdx = 0, score = 0, answered = [];
+
+        function showTab(name) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('panel-' + name).classList.add('active');
+            if (name === 'flashcards') renderFC();
+            if (name === 'quiz') renderQuiz();
+        }
+
+        function renderFC() {
+            fcFlipped = false;
+            const c = flashcards[fcIdx];
+            document.getElementById('fc-side').textContent = 'Term';
+            document.getElementById('fc-text').textContent = c.term;
+            document.getElementById('fc-progress').textContent = 'Card ' + (fcIdx + 1) + ' of ' + flashcards.length;
+            document.getElementById('fc-hint').textContent = 'Click card to reveal definition';
+            document.getElementById('fc-flip-btn').textContent = 'Flip';
+        }
+
+        function flipCard() {
+            fcFlipped = !fcFlipped;
+            const c = flashcards[fcIdx];
+            document.getElementById('fc-side').textContent = fcFlipped ? 'Definition' : 'Term';
+            document.getElementById('fc-text').textContent = fcFlipped ? c.def : c.term;
+            document.getElementById('fc-hint').textContent = fcFlipped ? 'Click to see the term again' : 'Click card to reveal definition';
+            document.getElementById('fc-flip-btn').textContent = fcFlipped ? 'Flip back' : 'Flip';
+        }
+
+        function nextCard() { fcIdx = (fcIdx + 1) % flashcards.length; renderFC(); }
+        function prevCard() { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderFC(); }
+
+        function renderQuiz() {
+            const el = document.getElementById('quiz-inner');
+            if (qIdx >= quizQuestions.length) {
+                const pct = Math.round((score / quizQuestions.length) * 100);
+                const grade = pct >= 80 ? 'Great work! You\'re exam-ready.' : pct >= 60 ? 'Good progress — review the concepts you missed.' : 'Keep studying — try the flashcards and come back!';
+                el.innerHTML = '<div class="final-score"><div class="score-big">' + score + '/' + quizQuestions.length + '</div><div class="score-label">' + pct + '% · ' + grade + '</div><button onclick="resetQuiz()">Try again</button></div>';
+                return;
+            }
+            const q = quizQuestions[qIdx];
+            const progress = Math.round((qIdx / quizQuestions.length) * 100);
+            const wasAnswered = answered[qIdx];
+            let optsHTML = q.opts.map((o, i) => {
+                let cls = 'quiz-opt';
+                if (wasAnswered !== undefined) {
+                    if (i === q.ans) cls += ' reveal-correct';
+                    else if (i === wasAnswered && wasAnswered !== q.ans) cls += ' wrong';
+                }
+                return '<button class="' + cls + '"' + (wasAnswered !== undefined ? ' disabled' : '') + ' onclick="answerQ(' + i + ')">' + o + '</button>';
+            }).join('');
+            let feedbackHTML = '';
+            if (wasAnswered !== undefined) {
+                const correct = wasAnswered === q.ans;
+                feedbackHTML = '<div class="quiz-feedback ' + (correct ? 'good' : 'bad') + '">' + (correct ? '✓ Correct — ' : '✗ Incorrect — ') + q.exp + '</div>';
+            }
+            el.innerHTML = '<div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:' + progress + '%"></div></div>' +
+                '<div class="quiz-score">Question ' + (qIdx + 1) + ' of ' + quizQuestions.length + ' · Score: ' + score + '</div>' +
+                '<div class="quiz-q">' + q.q + '</div>' +
+                '<div class="quiz-opts">' + optsHTML + '</div>' +
+                feedbackHTML +
+                '<div class="quiz-nav">' + (wasAnswered !== undefined ? '<button class="primary" onclick="nextQ()">Next →</button>' : '') + '</div>';
+        }
+
+        function answerQ(i) {
+            const q = quizQuestions[qIdx];
+            answered[qIdx] = i;
+            if (i === q.ans) score++;
+            renderQuiz();
+        }
+        function nextQ() { qIdx++; renderQuiz(); }
+        function resetQuiz() { qIdx = 0; score = 0; answered = []; renderQuiz(); }
+
+        renderFC();
+        renderQuiz();
+    </script>
+</body>
+</html>

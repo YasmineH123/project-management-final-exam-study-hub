@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 13 · Project Evaluation and Control · BMGT 300</title>
+    <style>
+        :root {
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+            --accent-soft: #dbeafe;
+            --success: #0d9488;
+            --success-light: #f0fdfa;
+            --warn: #d97706;
+            --warn-light: #fffbeb;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --color-bg: #f8fafc;
+            --color-surface: #ffffff;
+            --color-border: var(--gray-200);
+            --color-border-light: #eef2f6;
+            --color-text-primary: var(--gray-800);
+            --color-text-secondary: var(--gray-600);
+            --color-text-tertiary: var(--gray-500);
+            --color-text-info: var(--accent);
+            --color-background-primary: var(--color-surface);
+            --color-background-secondary: var(--gray-50);
+            --color-background-info: var(--accent-light);
+            --color-background-accent: var(--accent-soft);
+            --color-border-secondary: var(--gray-200);
+            --color-border-tertiary: var(--gray-200);
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        .app {
+            max-width: 960px;
+            width: 100%;
+            background: var(--color-surface);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: 1.8rem 2rem 2.2rem;
+            margin: 1rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--color-border-light);
+            padding-bottom: 0.9rem;
+        }
+
+        .tab {
+            padding: 7px 18px;
+            border-radius: 100px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--gray-600);
+            transition: all 0.2s ease;
+            letter-spacing: 0.01em;
+        }
+
+        .tab.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .tab:hover:not(.active) {
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .panel {
+            display: none;
+            animation: fade 0.2s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-bottom: 1.8rem;
+        }
+
+        .concept-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-md);
+            padding: 16px 18px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .concept-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--gray-200);
+        }
+
+        .concept-card .label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--gray-500);
+            margin-bottom: 8px;
+        }
+
+        .concept-card .title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+        }
+
+        .concept-card .body {
+            font-size: 13.5px;
+            color: var(--gray-600);
+            line-height: 1.65;
+        }
+
+        .highlight {
+            background: var(--accent-light);
+            border-radius: 4px;
+            padding: 1px 6px;
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .stage-row {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            background: var(--gray-50);
+            padding: 14px 16px;
+            border-radius: var(--border-radius-md);
+            transition: background 0.2s;
+        }
+
+        .stage-row:hover {
+            background: #f0f4ff;
+        }
+
+        .stage-num {
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .stage-info .stage-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .stage-info .stage-desc {
+            font-size: 13px;
+            color: var(--gray-600);
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        .formula-box {
+            background: #f8fafc;
+            border-radius: var(--border-radius-md);
+            padding: 14px 18px;
+            font-size: 14px;
+            margin-bottom: 14px;
+            border-left: 4px solid var(--accent);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .formula-box code {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            color: var(--gray-800);
+            background: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 10px;
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-border-light);
+        }
+
+        .risk-table th {
+            background: var(--gray-50);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .risk-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-800);
+            vertical-align: top;
+            background: white;
+        }
+
+        .risk-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+            letter-spacing: 0.01em;
+        }
+
+        .badge-low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-med {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .fc-area {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .fc-progress {
+            font-size: 13px;
+            color: var(--gray-500);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .fc-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-lg);
+            padding: 2.2rem 2rem;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: box-shadow 0.25s, border-color 0.2s;
+            position: relative;
+            box-shadow: var(--shadow-md);
+        }
+
+        .fc-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+        }
+
+        .fc-side {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            background: var(--gray-50);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .fc-text {
+            font-size: 16px;
+            color: var(--gray-800);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .fc-hint {
+            font-size: 12px;
+            color: var(--gray-500);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .fc-nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .fc-nav button {
+            padding: 8px 22px;
+            border-radius: 100px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            transition: all 0.2s;
+        }
+
+        .fc-nav button:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+
+        .fc-nav .primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            font-weight: 500;
+        }
+
+        .fc-nav .primary:hover {
+            background: #1d4ed8;
+        }
+
+        .quiz-area {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .quiz-progress-bar {
+            height: 5px;
+            background: var(--gray-100);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .quiz-progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-q {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+        }
+
+        .quiz-opts {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 1.2rem;
+        }
+
+        .quiz-opt {
+            padding: 12px 18px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--gray-700);
+            text-align: left;
+            background: white;
+            transition: all 0.15s;
+            line-height: 1.5;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quiz-opt:hover:not(:disabled) {
+            background: #f0f4ff;
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .quiz-opt.correct {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .quiz-opt.wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .quiz-opt.reveal-correct {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .quiz-feedback {
+            font-size: 13.5px;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: var(--border-radius-md);
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .quiz-feedback.good {
+            background: #ecfdf5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .quiz-feedback.bad {
+            background: #fef2f2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .quiz-score {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quiz-nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .quiz-nav button {
+            padding: 9px 24px;
+            border-radius: 100px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            transition: all 0.2s;
+        }
+
+        .quiz-nav .primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .quiz-nav .primary:hover {
+            background: #1d4ed8;
+        }
+
+        .final-score {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: #f9fafb;
+            border-radius: var(--border-radius-lg);
+        }
+
+        .score-big {
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--gray-800);
+            letter-spacing: -0.02em;
+        }
+
+        .score-label {
+            font-size: 15px;
+            color: var(--gray-600);
+            margin-top: 8px;
+            margin-bottom: 1.8rem;
+        }
+
+        .final-score button {
+            padding: 10px 28px;
+            border-radius: 100px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .final-score button:hover {
+            background: #1e40af;
+        }
+
+        @media (max-width: 640px) {
+            .app {
+                padding: 1.2rem;
+            }
+
+            .concept-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <h2 class="sr-only">Chapter 13 Project Evaluation and Control — Interactive Study Tool</h2>
+        <div style="margin-bottom:1.5rem;">
+            <div style="font-size:20px;font-weight:700;color:var(--gray-800);margin-bottom:6px;">Chapter 13 — Project
+                Evaluation and Control</div>
+            <div style="font-size:14px;color:var(--gray-500);">BMGT 300 · Control Cycles, EVM, and Human Factors</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('summary')">Summary</button>
+            <button class="tab" onclick="showTab('control')">Control Cycle</button>
+            <button class="tab" onclick="showTab('milestones')">Milestones</button>
+            <button class="tab" onclick="showTab('evm')">EVM</button>
+            <button class="tab" onclick="showTab('human')">Human Factors</button>
+            <button class="tab" onclick="showTab('flashcards')">Flashcards</button>
+            <button class="tab" onclick="showTab('quiz')">Quiz</button>
+        </div>
+
+        <!-- SUMMARY PANEL -->
+        <div id="panel-summary" class="panel active">
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Why control?</div>
+                    <div class="title">Project constraints</div>
+                    <div class="body">Projects are defined by budget and schedule limitations. Monitoring and control
+                        keep the team on top of evolving status across all life cycle stages.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Core model</div>
+                    <div class="title">The control cycle</div>
+                    <div class="body">1. Set a goal (baseline). 2. Measure progress. 3. Compare actual vs. planned. 4.
+                        Take corrective action.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Key methods</div>
+                    <div class="title">Evaluation tools</div>
+                    <div class="body">Milestone analysis, S‑curves, and Earned Value Management (EVM) are the primary
+                        techniques for tracking schedule and cost performance.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Human side</div>
+                    <div class="title">Behavioral factors</div>
+                    <div class="body">Success depends on coordination, project structure, uniqueness, budget pressure,
+                        and avoiding initial over‑optimism.</div>
+                </div>
+            </div>
+
+            <div class="section-title">PMBOK processes (Chapter 13 links)</div>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">PMBOK 6.7</div>
+                    <div class="title">Control Schedule</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">PMBOK 7.4</div>
+                    <div class="title">Control Costs</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">PMBOK 7.4.2.1</div>
+                    <div class="title">Earned Value System</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">PMBOK 7.4.2.2</div>
+                    <div class="title">Forecasting</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">PMBOK 7.4.2.4</div>
+                    <div class="title">Performance Reviews</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTROL CYCLE PANEL -->
+        <div id="panel-control" class="panel">
+            <div class="section-title">The four‑step control cycle</div>
+            <div class="stage-row">
+                <div class="stage-num">1</div>
+                <div class="stage-info">
+                    <div class="stage-name">Set a goal</div>
+                    <div class="stage-desc">Go beyond scope; set the project baseline plan (WBS, schedule, budget).
+                    </div>
+                </div>
+            </div>
+            <div class="stage-row">
+                <div class="stage-num">2</div>
+                <div class="stage-info">
+                    <div class="stage-name">Measure progress</div>
+                    <div class="stage-desc">Use real‑time systems to collect ongoing status data (on‑time information).
+                    </div>
+                </div>
+            </div>
+            <div class="stage-row">
+                <div class="stage-num">3</div>
+                <div class="stage-info">
+                    <div class="stage-name">Compare actual vs. planned</div>
+                    <div class="stage-desc">Gap analysis – determine how much performance deviates from goals. S‑curves
+                        show cumulative budget vs. actual cost over time.</div>
+                </div>
+            </div>
+            <div class="stage-row">
+                <div class="stage-num">4</div>
+                <div class="stage-info">
+                    <div class="stage-name">Take action</div>
+                    <div class="stage-desc">If significant deviation is detected, apply corrective action to bring the
+                        project back on track.</div>
+                </div>
+            </div>
+
+            <div class="section-title">S‑Curve insight</div>
+            <div class="concept-card">
+                <div class="body">An S‑curve plots cumulative cost (budgeted vs. actual) against time. A negative
+                    variance occurs when the actual cost curve lies above the planned value curve, indicating
+                    overspending.</div>
+            </div>
+        </div>
+
+        <!-- MILESTONES PANEL -->
+        <div id="panel-milestones" class="panel">
+            <div class="section-title">Milestone analysis</div>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Benefit 1</div>
+                    <div class="title">Signal completion</div>
+                    <div class="body">Milestones serve as a common language to mark important accomplishments.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Benefit 2</div>
+                    <div class="title">Motivate the team</div>
+                    <div class="body">Recognising successes helps keep the project team engaged.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Benefit 3</div>
+                    <div class="title">Reevaluation points</div>
+                    <div class="body">“Stop points” to review progress, accept change requests, and realign with
+                        stakeholders.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Benefit 4</div>
+                    <div class="title">Coordinate schedules</div>
+                    <div class="body">Help vendors and suppliers avoid delays by synchronising deliveries.</div>
+                </div>
+            </div>
+
+            <div class="section-title">Additional uses</div>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Function</div>
+                    <div class="title">Key review gates</div>
+                    <div class="body">Mandatory mid‑term reviews in complex projects (e.g., US government projects).
+                    </div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Function</div>
+                    <div class="title">Signal team members</div>
+                    <div class="body">Alert non‑core members (quality assurance, inspectors) when their work is about to
+                        start.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Function</div>
+                    <div class="title">Delineate work packages</div>
+                    <div class="body">Refocus effort and resources on troubled deliverables rather than in a general
+                        way.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVM PANEL -->
+        <div id="panel-evm" class="panel">
+            <div class="section-title">Earned Value Management – key terms</div>
+            <table class="risk-table">
+                <tr>
+                    <th>Term</th>
+                    <th>Formula / Description</th>
+                </tr>
+                <tr>
+                    <td>Planned Value (PV)</td>
+                    <td>Budgeted cost of work scheduled – the baseline at a point in time.</td>
+                </tr>
+                <tr>
+                    <td>Earned Value (EV)</td>
+                    <td>Budgeted cost of work performed so far.</td>
+                </tr>
+                <tr>
+                    <td>Actual Cost (AC)</td>
+                    <td>Real cost of work performed to date.</td>
+                </tr>
+                <tr>
+                    <td>Schedule Variance (SV)</td>
+                    <td><code>SV = EV − PV</code> – positive means ahead of schedule.</td>
+                </tr>
+                <tr>
+                    <td>Schedule Performance Index (SPI)</td>
+                    <td><code>SPI = EV ÷ PV</code> – &gt;1 indicates ahead of schedule.</td>
+                </tr>
+                <tr>
+                    <td>Cost Variance (CV)</td>
+                    <td><code>CV = EV − AC</code> – negative means over budget.</td>
+                </tr>
+                <tr>
+                    <td>Cost Performance Index (CPI)</td>
+                    <td><code>CPI = EV ÷ AC</code> – &lt;1 indicates cost overrun.</td>
+                </tr>
+                <tr>
+                    <td>Budget at Completion (BAC)</td>
+                    <td>Total approved budget for the project.</td>
+                </tr>
+                <tr>
+                    <td>Estimate at Completion (EAC)</td>
+                    <td><code>EAC = BAC ÷ CPI</code> or <code>EAC = AC + (BAC − EV)</code></td>
+                </tr>
+                <tr>
+                    <td>Steps in EVM</td>
+                    <td>1. Define activities & budget. 2. Schedule resources. 3. Time‑phased budget (PV). 4. Total
+                        actual costs (AC). 5. Calculate SV & CV.</td>
+                </tr>
+            </table>
+
+            <div class="section-title" style="margin-top:1.5rem;">Earned Value example (7‑month project, BAC = $118 k)
+            </div>
+            <div class="concept-card">
+                <div class="body">At a certain point:<br>
+                    • <strong>PV = 103 k</strong><br>
+                    • <strong>EV = 44 k</strong><br>
+                    • <strong>AC = 78 k</strong><br><br>
+                    → SV = 44 − 103 = <strong>−59 k</strong> (behind schedule)<br>
+                    → CV = 44 − 78 = <strong>−34 k</strong> (over budget)<br>
+                    → SPI = 44/103 ≈ <strong>0.43</strong> (work progressing at 43 % of planned pace)<br>
+                    → CPI = 44/78 ≈ <strong>0.56</strong> (getting 56 ¢ of value for every dollar spent)
+                </div>
+            </div>
+        </div>
+
+        <!-- HUMAN FACTORS PANEL -->
+        <div id="panel-human" class="panel">
+            <div class="section-title">Human factors that influence control success</div>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Factor 1</div>
+                    <div class="title">Stakeholder coordination</div>
+                    <div class="body">Quality of relationships among team members, sponsors, and clients.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Factor 2</div>
+                    <div class="title">Project structure & control</div>
+                    <div class="body">Adequacy of monitoring systems and clear authority lines.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Factor 3</div>
+                    <div class="title">Uniqueness & public exposure</div>
+                    <div class="body">Novel or high‑visibility projects demand more rigorous evaluation.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Factor 4</div>
+                    <div class="title">Success criteria consensus</div>
+                    <div class="body">Stakeholders must agree on what “done” and “success” look like.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Factor 5</div>
+                    <div class="title">Budgetary pressure</div>
+                    <div class="body">Too little pressure may lead to lax control; too much can create dysfunctional
+                        behavior.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Factor 6</div>
+                    <div class="title">Initial over‑optimism</div>
+                    <div class="body">Avoid unrealistic early estimates – they set an unachievable baseline.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLASHCARDS PANEL -->
+        <div id="panel-flashcards" class="panel">
+            <div class="fc-area">
+                <div class="fc-progress" id="fc-progress">Card 1 of 16</div>
+                <div class="fc-card" id="fc-card" onclick="flipCard()">
+                    <div class="fc-side" id="fc-side">Term</div>
+                    <div class="fc-text" id="fc-text">Loading...</div>
+                </div>
+                <div class="fc-hint" id="fc-hint">Click card to reveal definition</div>
+                <div class="fc-nav">
+                    <button onclick="prevCard()">← Prev</button>
+                    <button class="primary" onclick="flipCard()" id="fc-flip-btn">Flip</button>
+                    <button onclick="nextCard()">Next →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ PANEL -->
+        <div id="panel-quiz" class="panel">
+            <div class="quiz-area">
+                <div id="quiz-inner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const flashcards = [
+            { term: "Project control cycle", def: "1. Set a goal (baseline). 2. Measure progress. 3. Compare actual vs. planned. 4. Take corrective action." },
+            { term: "Gap analysis", def: "Measurement process that determines goals and then the degree to which actual performance lives up to those goals." },
+            { term: "S‑curve", def: "A graph showing cumulative budgeted cost against time. A negative variance occurs when actual cost exceeds planned value." },
+            { term: "Milestones", def: "Events or stages representing significant accomplishments. Used for reviews, motivation, and coordination." },
+            { term: "Planned Value (PV)", def: "The authorized budget assigned to the work scheduled. (Budgeted Cost of Work Scheduled)." },
+            { term: "Earned Value (EV)", def: "The real budgeted cost of the work actually performed. (Budgeted Cost of Work Performed)." },
+            { term: "Actual Cost (AC)", def: "The actual expenses incurred for work performed to date." },
+            { term: "Schedule Variance (SV)", def: "SV = EV − PV. Positive = ahead of schedule." },
+            { term: "Schedule Performance Index (SPI)", def: "SPI = EV ÷ PV. Greater than 1 means ahead of schedule." },
+            { term: "Cost Variance (CV)", def: "CV = EV − AC. Negative = over budget." },
+            { term: "Cost Performance Index (CPI)", def: "CPI = EV ÷ AC. Less than 1 indicates a cost overrun." },
+            { term: "Budget at Completion (BAC)", def: "The total approved budget for the project." },
+            { term: "Estimate at Completion (EAC)", def: "Expected total cost when the project finishes. Can be BAC/CPI or AC + (BAC − EV)." },
+            { term: "Key review gates", def: "Mandatory mid‑term reviews required in complex projects (e.g., US government) to assess progress." },
+            { term: "Human factors in control", def: "Coordination, project structure, uniqueness, consensus on success, budget pressure, and avoiding over‑optimism." },
+            { term: "EVM steps", def: "1. Define activities & budgets. 2. Create schedules. 3. Time‑phased budget (PV). 4. Track AC. 5. Calculate SV & CV." }
+        ];
+
+        const quizQuestions = [
+            { q: "What is the correct sequence of the project control cycle?", opts: ["Measure → Set goal → Compare → Act", "Set goal → Measure → Compare → Act", "Act → Compare → Measure → Set goal", "Set goal → Act → Measure → Compare"], ans: 1, exp: "The model is: 1) Set a goal, 2) Measure progress, 3) Compare actual vs. planned, 4) Take action." },
+            { q: "Which formula gives the Schedule Variance (SV)?", opts: ["SV = EV − AC", "SV = PV − EV", "SV = EV − PV", "SV = AC − PV"], ans: 2, exp: "SV = EV − PV. A positive number means the project is ahead of schedule." },
+            { q: "If EV = 44, PV = 103, and AC = 78, what is the Schedule Performance Index (SPI)?", opts: ["0.43", "0.56", "1.77", "2.34"], ans: 0, exp: "SPI = EV / PV = 44 / 103 ≈ 0.43 (work progressing at 43% of planned pace)." },
+            { q: "A negative Cost Variance (CV) indicates:", opts: ["Under budget", "Ahead of schedule", "Over budget", "Behind schedule"], ans: 2, exp: "CV = EV − AC; if EV < AC, the project is over budget." },
+            { q: "Milestones are most useful for:", opts: ["Replacing the WBS", "Signaling completion of important steps", "Calculating CPI", "Eliminating the need for a baseline"], ans: 1, exp: "Milestones signal significant accomplishments, motivate teams, and provide reevaluation points." },
+            { q: "What does an SPI greater than 1.0 mean?", opts: ["Over budget", "Ahead of schedule", "Under budget", "Behind schedule"], ans: 1, exp: "SPI > 1 means Earned Value exceeds Planned Value, so the project is ahead of schedule." },
+            { q: "The Budget at Completion (BAC) is:", opts: ["The actual cost so far", "The planned value at the halfway point", "The total approved project budget", "The estimated cost at completion"], ans: 2, exp: "BAC is the total original budget for the entire project." },
+            { q: "Which of the following is NOT a step in Earned Value Management?", opts: ["Create usage schedules", "Total actual costs", "Develop a time‑phased budget", "Perform a risk impact matrix"], ans: 3, exp: "Risk impact matrix is a risk management tool, not a step in EVM." },
+            { q: "An S‑curve that shows actual costs above the planned value curve indicates:", opts: ["Positive schedule variance", "Negative cost variance", "Positive cost variance", "The project is ahead of schedule"], ans: 1, exp: "When actual cost exceeds planned value, there is a negative variance (overspending)." },
+            { q: "Which human factor can lead to project control failure?", opts: ["Detailed milestone planning", "Initial over‑optimism", "Regular gap analysis", "Earned Value tracking"], ans: 1, exp: "Unrealistic early estimates create an impossible baseline and undermine control efforts." },
+            { q: "What does the Estimate at Completion (EAC) represent?", opts: ["The cost of work performed so far", "The planned value at completion", "The expected total cost at project finish", "The budget for the next phase"], ans: 2, exp: "EAC forecasts the final cost based on current performance (e.g., BAC / CPI)." },
+            { q: "Milestones help coordinate schedules by:", opts: ["Eliminating the need for a project manager", "Signalling suppliers when activities will start", "Automatically updating the budget", "Replacing earned value calculations"], ans: 1, exp: "Milestones alert vendors and non‑core team members so they don't delay the project." }
+        ];
+
+        let fcIdx = 0, fcFlipped = false;
+        let qIdx = 0, score = 0, answered = [];
+
+        function showTab(name) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('panel-' + name).classList.add('active');
+            if (name === 'flashcards') renderFC();
+            if (name === 'quiz') renderQuiz();
+        }
+
+        function renderFC() {
+            fcFlipped = false;
+            const c = flashcards[fcIdx];
+            document.getElementById('fc-side').textContent = 'Term';
+            document.getElementById('fc-text').textContent = c.term;
+            document.getElementById('fc-progress').textContent = 'Card ' + (fcIdx + 1) + ' of ' + flashcards.length;
+            document.getElementById('fc-hint').textContent = 'Click card to reveal definition';
+            document.getElementById('fc-flip-btn').textContent = 'Flip';
+        }
+
+        function flipCard() {
+            fcFlipped = !fcFlipped;
+            const c = flashcards[fcIdx];
+            document.getElementById('fc-side').textContent = fcFlipped ? 'Definition' : 'Term';
+            document.getElementById('fc-text').textContent = fcFlipped ? c.def : c.term;
+            document.getElementById('fc-hint').textContent = fcFlipped ? 'Click to see the term again' : 'Click card to reveal definition';
+            document.getElementById('fc-flip-btn').textContent = fcFlipped ? 'Flip back' : 'Flip';
+        }
+
+        function nextCard() { fcIdx = (fcIdx + 1) % flashcards.length; renderFC(); }
+        function prevCard() { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderFC(); }
+
+        function renderQuiz() {
+            const el = document.getElementById('quiz-inner');
+            if (qIdx >= quizQuestions.length) {
+                const pct = Math.round((score / quizQuestions.length) * 100);
+                const grade = pct >= 80 ? 'Great work! You\'re exam-ready.' : pct >= 60 ? 'Good progress — review the concepts you missed.' : 'Keep studying — try the flashcards and come back!';
+                el.innerHTML = '<div class="final-score"><div class="score-big">' + score + '/' + quizQuestions.length + '</div><div class="score-label">' + pct + '% · ' + grade + '</div><button onclick="resetQuiz()">Try again</button></div>';
+                return;
+            }
+            const q = quizQuestions[qIdx];
+            const progress = Math.round((qIdx / quizQuestions.length) * 100);
+            const wasAnswered = answered[qIdx];
+            let optsHTML = q.opts.map((o, i) => {
+                let cls = 'quiz-opt';
+                if (wasAnswered !== undefined) {
+                    if (i === q.ans) cls += ' reveal-correct';
+                    else if (i === wasAnswered && wasAnswered !== q.ans) cls += ' wrong';
+                }
+                return '<button class="' + cls + '"' + (wasAnswered !== undefined ? ' disabled' : '') + ' onclick="answerQ(' + i + ')">' + o + '</button>';
+            }).join('');
+            let feedbackHTML = '';
+            if (wasAnswered !== undefined) {
+                const correct = wasAnswered === q.ans;
+                feedbackHTML = '<div class="quiz-feedback ' + (correct ? 'good' : 'bad') + '">' + (correct ? '✓ Correct — ' : '✗ Incorrect — ') + q.exp + '</div>';
+            }
+            el.innerHTML = '<div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:' + progress + '%"></div></div>' +
+                '<div class="quiz-score">Question ' + (qIdx + 1) + ' of ' + quizQuestions.length + ' · Score: ' + score + '</div>' +
+                '<div class="quiz-q">' + q.q + '</div>' +
+                '<div class="quiz-opts">' + optsHTML + '</div>' +
+                feedbackHTML +
+                '<div class="quiz-nav">' + (wasAnswered !== undefined ? '<button class="primary" onclick="nextQ()">Next →</button>' : '') + '</div>';
+        }
+
+        function answerQ(i) {
+            const q = quizQuestions[qIdx];
+            answered[qIdx] = i;
+            if (i === q.ans) score++;
+            renderQuiz();
+        }
+        function nextQ() { qIdx++; renderQuiz(); }
+        function resetQuiz() { qIdx = 0; score = 0; answered = []; renderQuiz(); }
+
+        renderFC();
+        renderQuiz();
+    </script>
+</body>
+
+</html>
