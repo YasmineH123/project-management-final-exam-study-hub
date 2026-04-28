@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8 · Cost Estimation and Budgeting · BMGT 300</title>
+    <style>
+        :root {
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+            --accent-soft: #dbeafe;
+            --success: #0d9488;
+            --success-light: #f0fdfa;
+            --warn: #d97706;
+            --warn-light: #fffbeb;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --color-bg: #f8fafc;
+            --color-surface: #ffffff;
+            --color-border: var(--gray-200);
+            --color-border-light: #eef2f6;
+            --color-text-primary: var(--gray-800);
+            --color-text-secondary: var(--gray-600);
+            --color-text-tertiary: var(--gray-500);
+            --color-text-info: var(--accent);
+            --color-background-primary: var(--color-surface);
+            --color-background-secondary: var(--gray-50);
+            --color-background-info: var(--accent-light);
+            --color-background-accent: var(--accent-soft);
+            --color-border-secondary: var(--gray-200);
+            --color-border-tertiary: var(--gray-200);
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            margin: 0;
+        }
+
+        .app {
+            max-width: 960px;
+            width: 100%;
+            background: var(--color-surface);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: 1.8rem 2rem 2.2rem;
+            margin: 1rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--color-border-light);
+            padding-bottom: 0.9rem;
+        }
+
+        .tab {
+            padding: 7px 18px;
+            border-radius: 100px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--gray-600);
+            transition: all 0.2s ease;
+            letter-spacing: 0.01em;
+        }
+
+        .tab.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .tab:hover:not(.active) {
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .panel {
+            display: none;
+            animation: fade 0.2s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-bottom: 1.8rem;
+        }
+
+        .concept-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-md);
+            padding: 16px 18px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .concept-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--gray-200);
+        }
+
+        .concept-card .label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--gray-500);
+            margin-bottom: 8px;
+        }
+
+        .concept-card .title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+        }
+
+        .concept-card .body {
+            font-size: 13.5px;
+            color: var(--gray-600);
+            line-height: 1.65;
+        }
+
+        .highlight {
+            background: var(--accent-light);
+            border-radius: 4px;
+            padding: 1px 6px;
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .stage-row {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            background: var(--gray-50);
+            padding: 14px 16px;
+            border-radius: var(--border-radius-md);
+            transition: background 0.2s;
+        }
+
+        .stage-row:hover {
+            background: #f0f4ff;
+        }
+
+        .stage-num {
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .stage-info .stage-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .stage-info .stage-desc {
+            font-size: 13px;
+            color: var(--gray-600);
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        .formula-box {
+            background: #f8fafc;
+            border-radius: var(--border-radius-md);
+            padding: 14px 18px;
+            font-size: 14px;
+            margin-bottom: 14px;
+            border-left: 4px solid var(--accent);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .formula-box code {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            color: var(--gray-800);
+            background: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 10px;
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-border-light);
+        }
+
+        .risk-table th {
+            background: var(--gray-50);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .risk-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-800);
+            vertical-align: top;
+            background: white;
+        }
+
+        .risk-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+            letter-spacing: 0.01em;
+        }
+
+        .badge-low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .badge-med {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .fc-area {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .fc-progress {
+            font-size: 13px;
+            color: var(--gray-500);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .fc-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-lg);
+            padding: 2.2rem 2rem;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: box-shadow 0.25s, border-color 0.2s;
+            position: relative;
+            box-shadow: var(--shadow-md);
+        }
+        .fc-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+        }
+        .fc-side {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            background: var(--gray-50);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        .fc-text {
+            font-size: 16px;
+            color: var(--gray-800);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        .fc-hint {
+            font-size: 12px;
+            color: var(--gray-500);
+            text-align: center;
+            margin-top: 10px;
+        }
+        .fc-nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .fc-nav button {
+            padding: 8px 22px;
+            border-radius: 100px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            transition: all 0.2s;
+        }
+        .fc-nav button:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+        .fc-nav .primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            font-weight: 500;
+        }
+        .fc-nav .primary:hover {
+            background: #1d4ed8;
+        }
+
+        .quiz-area {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .quiz-progress-bar {
+            height: 5px;
+            background: var(--gray-100);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .quiz-progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+        .quiz-q {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+        }
+        .quiz-opts {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 1.2rem;
+        }
+        .quiz-opt {
+            padding: 12px 18px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--gray-700);
+            text-align: left;
+            background: white;
+            transition: all 0.15s;
+            line-height: 1.5;
+            box-shadow: var(--shadow-sm);
+        }
+        .quiz-opt:hover:not(:disabled) {
+            background: #f0f4ff;
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        .quiz-opt.correct {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .quiz-opt.wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        .quiz-opt.reveal-correct {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .quiz-feedback {
+            font-size: 13.5px;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: var(--border-radius-md);
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        .quiz-feedback.good {
+            background: #ecfdf5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+        .quiz-feedback.bad {
+            background: #fef2f2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+        .quiz-score {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .quiz-nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .quiz-nav button {
+            padding: 9px 24px;
+            border-radius: 100px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            transition: all 0.2s;
+        }
+        .quiz-nav .primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .quiz-nav .primary:hover {
+            background: #1d4ed8;
+        }
+        .final-score {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: #f9fafb;
+            border-radius: var(--border-radius-lg);
+        }
+        .score-big {
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--gray-800);
+            letter-spacing: -0.02em;
+        }
+        .score-label {
+            font-size: 15px;
+            color: var(--gray-600);
+            margin-top: 8px;
+            margin-bottom: 1.8rem;
+        }
+        .final-score button {
+            padding: 10px 28px;
+            border-radius: 100px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .final-score button:hover {
+            background: #1e40af;
+        }
+
+        .pair-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            margin-bottom: 1.2rem;
+        }
+        .pair-card {
+            background: #f8fafc;
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-md);
+            padding: 14px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .pair-icon {
+            font-size: 18px;
+            min-width: 28px;
+            text-align: center;
+        }
+        .pair-content .pair-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--gray-800);
+            margin-bottom: 3px;
+        }
+        .pair-content .pair-desc {
+            font-size: 12px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 640px) {
+            .app {
+                padding: 1.2rem;
+            }
+            .concept-grid {
+                grid-template-columns: 1fr;
+            }
+            .pair-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h2 class="sr-only">Chapter 8 Cost Estimation and Budgeting — Interactive Study Tool</h2>
+        <div style="margin-bottom:1.5rem;">
+            <div style="font-size:20px;font-weight:700;color:var(--gray-800);margin-bottom:6px;">Chapter 8 — Cost Estimation and Budgeting</div>
+            <div style="font-size:14px;color:var(--gray-500);">BMGT 300 · Project Management: Achieving Competitive Advantage</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('summary')">Summary</button>
+            <button class="tab" onclick="showTab('costs')">Cost types</button>
+            <button class="tab" onclick="showTab('estimation')">Estimation</button>
+            <button class="tab" onclick="showTab('budgeting')">Budgeting</button>
+            <button class="tab" onclick="showTab('flashcards')">Flashcards</button>
+            <button class="tab" onclick="showTab('quiz')">Quiz</button>
+        </div>
+
+        <!-- SUMMARY -->
+        <div id="panel-summary" class="panel active">
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Core definition</div>
+                    <div class="title">Cost management</div>
+                    <div class="body">Encompasses <strong style="font-weight:600">data collection, cost accounting, and cost control</strong>. Cost accounting and cost control serve as the chief mechanisms for identifying and maintaining control over project costs.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Core definition</div>
+                    <div class="title">Project budget</div>
+                    <div class="body">A <strong style="font-weight:600">plan</strong> that identifies the resources, goals, and schedule that allows a firm to achieve those goals. Cost estimation creates a reasonable budget baseline.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Common sources of project cost</div>
+                    <div class="title">5 major sources</div>
+                    <div class="body" style="line-height:1.9;">1. <strong>Labor</strong> — personnel, salary, hourly rate<br>2. <strong>Materials</strong> — based on industry<br>3. <strong>Subcontractors</strong> — consultants, marketing, PR<br>4. <strong>Equipment & facilities</strong> — away from HQ<br>5. <strong>Travel</strong> — hotels, car rentals</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Key concept</div>
+                    <div class="title">Budget contingencies</div>
+                    <div class="body">Extra funds to cover uncertainties. Needed because: scope may change, Murphy's Law applies, interaction costs must be anticipated, and normal conditions are rarely encountered.</div>
+                </div>
+            </div>
+
+            <div class="section-title">PMBOK processes (Chapter 7)</div>
+            <div class="concept-grid">
+                <div class="concept-card"><div class="label">PMBOK 7.1</div><div class="title">Plan Cost Management</div></div>
+                <div class="concept-card"><div class="label">PMBOK 7.2</div><div class="title">Estimate Costs</div></div>
+                <div class="concept-card"><div class="label">PMBOK 7.3</div><div class="title">Determine Budget</div></div>
+                <div class="concept-card"><div class="label">PMBOK 7.4</div><div class="title">Control Costs</div></div>
+            </div>
+
+            <div class="section-title">Estimation methods at a glance</div>
+            <table class="risk-table">
+                <tr><th>Method</th><th>When used</th><th>Accuracy</th></tr>
+                <tr><td><strong>Ballpark</strong></td><td>Time or info is scarce; early phase</td><td>±30%</td></tr>
+                <tr><td><strong>Comparative</strong></td><td>Historical data available for similar projects</td><td>Moderate</td></tr>
+                <tr><td><strong>Feasibility</strong></td><td>After preliminary design work; real numbers</td><td>Good</td></tr>
+                <tr><td><strong>Definitive</strong></td><td>After most design work; scope well understood</td><td>Best (±5%)</td></tr>
+            </table>
+        </div>
+
+        <!-- COST TYPES -->
+        <div id="panel-costs" class="panel">
+            <div class="section-title">The 4 pairs of cost classifications</div>
+            <div class="pair-grid">
+                <div class="pair-card">
+                    <div class="pair-icon">↗</div>
+                    <div class="pair-content">
+                        <div class="pair-title">Direct Costs</div>
+                        <div class="pair-desc">Directly related to revenue generated — mainly labor and material. <em>E.g., personnel building an airport.</em></div>
+                    </div>
+                </div>
+                <div class="pair-card">
+                    <div class="pair-icon">↘</div>
+                    <div class="pair-content">
+                        <div class="pair-title">Indirect Costs</div>
+                        <div class="pair-desc">Not allocated directly. <em>E.g., support personnel (cost accountant).</em> Includes overhead (taxes, utilities, insurance) and SG&A (advertising, salaries, commissions).</div>
+                    </div>
+                </div>
+                <div class="pair-card">
+                    <div class="pair-icon">↻</div>
+                    <div class="pair-content">
+                        <div class="pair-title">Recurring Costs</div>
+                        <div class="pair-desc">Continue over the project's life cycle. <em>E.g., labor, material, logistics, sales costs.</em></div>
+                    </div>
+                </div>
+                <div class="pair-card">
+                    <div class="pair-icon">⚡</div>
+                    <div class="pair-content">
+                        <div class="pair-title">Nonrecurring Costs</div>
+                        <div class="pair-desc">Charged once at beginning or end. <em>E.g., personnel training, preliminary marketing analysis.</em></div>
+                    </div>
+                </div>
+                <div class="pair-card">
+                    <div class="pair-icon">📌</div>
+                    <div class="pair-content">
+                        <div class="pair-title">Fixed Costs</div>
+                        <div class="pair-desc">Don't change with usage. <em>E.g., leased equipment, project hardware, rental cost.</em></div>
+                    </div>
+                </div>
+                <div class="pair-card">
+                    <div class="pair-icon">📊</div>
+                    <div class="pair-content">
+                        <div class="pair-title">Variable Costs</div>
+                        <div class="pair-desc">Directly proportional to usage level. <em>E.g., hourly labor, sales commission, equipment leased per hour.</em></div>
+                    </div>
+                </div>
+                <div class="pair-card">
+                    <div class="pair-icon">✓</div>
+                    <div class="pair-content">
+                        <div class="pair-title">Normal Costs</div>
+                        <div class="pair-desc">Incurred to complete a project as per schedule — planned, expected costs.</div>
+                    </div>
+                </div>
+                <div class="pair-card">
+                    <div class="pair-icon">⚡</div>
+                    <div class="pair-content">
+                        <div class="pair-title">Expedited Costs</div>
+                        <div class="pair-desc">Unplanned costs to speed up completion. <em>E.g., crashing activities — overtime, hiring temporary workers.</em></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Project price breakdown (Figure 8.2)</div>
+            <div class="concept-card" style="margin-bottom:1rem;">
+                <div class="body">
+                    <strong style="font-weight:600;">Total Project Price =</strong> Direct Costs + Indirect Costs + Gross Margin<br>
+                    <span style="color:var(--gray-500);">Indirect costs include overhead and SG&A. Gross margin is the profit markup.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESTIMATION -->
+        <div id="panel-estimation" class="panel">
+            <div class="section-title">Cost estimation methods</div>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Method 1</div>
+                    <div class="title">Ballpark estimates (order of magnitude)</div>
+                    <div class="body">Used when time or info is scarce. <strong>Accuracy ±30%.</strong> Should not substitute for informed cost estimation. <em>E.g., client asks for a bid with a very short deadline.</em></div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Method 2</div>
+                    <div class="title">Comparative estimates</div>
+                    <div class="body">Historical data used as reference for similar projects. Boeing uses <strong>parametric estimation</strong> — detailed estimates with a multiplier for inflation, labor, material increases.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Method 3</div>
+                    <div class="title">Feasibility estimates</div>
+                    <div class="body">Based on <strong>real numbers</strong> after completing preliminary project design work. Includes requesting quotes from suppliers and subcontractors.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Method 4</div>
+                    <div class="title">Definitive estimates</div>
+                    <div class="body">Only after completing <strong>most design work</strong>. Scope is well understood. Purchase orders submitted, prices and availabilities well known. <strong>Best accuracy.</strong></div>
+                </div>
+            </div>
+
+            <div class="section-title">Software project estimation — Function Points</div>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Definition</div>
+                    <div class="title">Function Points (FP)</div>
+                    <div class="body">A standard unit of measure representing the <strong>functional size</strong> of a software application — the number of functions the software delivers to users.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Process</div>
+                    <div class="title">Function Point Analysis</div>
+                    <div class="body">A system for estimating the size of software projects based on <strong>what the software does</strong>. Uses a complexity weighting table to score inputs, outputs, inquiries, files, and interfaces.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BUDGETING -->
+        <div id="panel-budgeting" class="panel">
+            <div class="section-title">Budgeting procedures</div>
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="label">Approach 1</div>
+                    <div class="title">Top-Down Budgeting</div>
+                    <div class="body">Senior management sets the overall budget and allocates it downward. Quick but may miss ground-level details. Based on high-level project scope.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Approach 2</div>
+                    <div class="title">Bottom-Up Budgeting</div>
+                    <div class="body">Individual work packages are estimated first, then rolled up into the total project budget. More accurate but time-consuming. Uses the WBS as a foundation.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Approach 3</div>
+                    <div class="title">Activity-Based Costing (ABC)</div>
+                    <div class="body">Projects use activities → activities use resources. <strong>4 steps:</strong> (1) Assign costs to activities, (2) Identify cost drivers, (3) Compute cost rate per driver unit, (4) Multiply rate × volume.</div>
+                </div>
+                <div class="concept-card">
+                    <div class="label">Approach 4</div>
+                    <div class="title">Time-Phased Budgeting</div>
+                    <div class="body">Distributes the budget over the project timeline. Allows tracking planned vs. actual costs at any point. Creates a <strong>cumulative budgeted cost curve</strong> for progress monitoring.</div>
+                </div>
+            </div>
+
+            <div class="section-title">Activity-Based Costing — step by step</div>
+            <div class="formula-box">
+                <div style="font-weight:600;margin-bottom:6px;color:var(--gray-700);">ABC Formula</div>
+                <code style="font-size:14px;">Total Activity Cost = Cost Driver Rate × Volume of Cost Driver Units</code>
+                <div style="font-size:12px;color:var(--gray-500);margin-top:6px;">Example: If labor is the cost driver and the rate is $75/hour, and the project uses 200 hours → Labor Cost = $75 × 200 = $15,000</div>
+            </div>
+
+            <div class="section-title">Budget contingencies</div>
+            <div class="concept-card">
+                <div class="body">The allocation of <strong style="font-weight:600;">extra funds</strong> to cover uncertainties and improve the chance of finishing on time. Contingencies are needed because:<br><br>
+                • <strong>Project scope may change</strong><br>
+                • <strong>Murphy's Law</strong> — if something can go wrong, it often will<br>
+                • Cost estimation must <strong>anticipate interaction costs</strong><br>
+                • <strong>Normal conditions are rarely encountered</strong></div>
+            </div>
+
+            <div class="section-title" style="margin-top:1.2rem;">WBS → Scheduling → Budgeting relationship</div>
+            <div class="concept-card">
+                <div class="body">The <strong>WBS</strong> identifies project tasks → <strong>Scheduling</strong> assigns time to those tasks → <strong>Budgeting</strong> assigns costs. Together they form the project's baseline plan. Time-phased budgets combine schedule and cost data for earned value tracking.</div>
+            </div>
+        </div>
+
+        <!-- FLASHCARDS -->
+        <div id="panel-flashcards" class="panel">
+            <div class="fc-area">
+                <div class="fc-progress" id="fc-progress">Card 1 of 16</div>
+                <div class="fc-card" id="fc-card" onclick="flipCard()">
+                    <div class="fc-side" id="fc-side">Term</div>
+                    <div class="fc-text" id="fc-text">Loading...</div>
+                </div>
+                <div class="fc-hint" id="fc-hint">Click card to reveal definition</div>
+                <div class="fc-nav">
+                    <button onclick="prevCard()">← Prev</button>
+                    <button class="primary" onclick="flipCard()" id="fc-flip-btn">Flip</button>
+                    <button onclick="nextCard()">Next →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ -->
+        <div id="panel-quiz" class="panel">
+            <div class="quiz-area"><div id="quiz-inner"></div></div>
+        </div>
+    </div>
+
+    <script>
+        const flashcards = [
+            { term: "Cost management", def: "Encompasses data collection, cost accounting, and cost control — the chief mechanisms for identifying and maintaining control over project costs." },
+            { term: "Direct costs", def: "Costs directly related to revenue generated — mainly labor and material. Example: personnel building an airport." },
+            { term: "Indirect costs", def: "Costs not allocated directly. Includes overhead (taxes, utilities, insurance, depreciation) and SG&A (advertising, salaries, commissions)." },
+            { term: "Recurring costs", def: "Costs that continue to operate over the project's life cycle. Examples: labor, material, logistics, sales costs." },
+            { term: "Nonrecurring costs", def: "Costs charged once at the beginning or end of a project. Examples: personnel training, preliminary marketing analysis." },
+            { term: "Fixed costs", def: "Costs that don't change with respect to usage. Examples: leased equipment, project hardware, rental cost." },
+            { term: "Variable costs", def: "Costs directly proportional to usage level. Examples: hourly labor, sales commission, equipment leased per hour." },
+            { term: "Normal vs Expedited costs", def: "Normal: incurred to complete a project as per schedule. Expedited: unplanned costs to speed up completion (overtime, hiring temporary workers, crashing)." },
+            { term: "Ballpark estimate", def: "Order of magnitude estimate used when time/info is scarce. Accuracy ±30%. Should not substitute for informed cost estimation." },
+            { term: "Comparative estimate", def: "Uses historical data as a reference for similar projects. Boeing's parametric estimation inserts a multiplier for inflation, labor, and material increases." },
+            { term: "Feasibility estimate", def: "Based on real numbers after completing preliminary project design work. Includes requesting quotes from suppliers and subcontractors." },
+            { term: "Definitive estimate", def: "Created after completing most design work when scope is well understood. Purchase orders submitted, prices and availabilities well known — best accuracy." },
+            { term: "Function Points", def: "A standard unit of measure representing the functional size of a software application — the number of functions the software delivers to users." },
+            { term: "Activity-Based Costing (ABC)", def: "4 steps: (1) Assign costs to activities, (2) Identify cost drivers, (3) Compute cost rate per driver unit, (4) Multiply rate × volume of driver units." },
+            { term: "Top-Down Budgeting", def: "Senior management sets the overall budget and allocates it downward. Quick but may miss ground-level details." },
+            { term: "Budget contingencies", def: "Extra funds to cover uncertainties. Needed because: scope may change, Murphy's Law applies, interaction costs must be anticipated, and normal conditions are rare." },
+        ];
+
+        const quizQuestions = [
+            { q: "Which cost type remains constant regardless of usage level?", opts: ["Variable costs", "Fixed costs", "Direct costs", "Expedited costs"], ans: 1, exp: "Fixed costs don't change with respect to usage — e.g., leased equipment, rental costs." },
+            { q: "What accuracy range is typical for a ballpark (order of magnitude) estimate?", opts: ["±5%", "±10%", "±30%", "±50%"], ans: 2, exp: "Ballpark estimates have an accuracy of roughly ±30%. They are used when time or information is scarce." },
+            { q: "Which estimation method uses historical data as a reference for similar projects?", opts: ["Ballpark", "Comparative", "Feasibility", "Definitive"], ans: 1, exp: "Comparative estimates use historical data. Boeing's parametric estimation is an example — using multipliers for inflation and cost increases." },
+            { q: "Function Points measure:", opts: ["The cost of software", "The functional size of a software application", "The number of developers needed", "The time required to code"], ans: 1, exp: "Function Points are a standard unit measuring the functional size — the number of functions a software delivers to users." },
+            { q: "In Activity-Based Costing, what is the formula for total activity cost?", opts: ["Cost Driver Rate ÷ Volume", "Cost Driver Rate × Volume", "Cost Driver Rate + Volume", "Cost Driver Rate − Volume"], ans: 1, exp: "Total Activity Cost = Cost Driver Rate × Volume of Cost Driver Units. E.g., $75/hour × 200 hours = $15,000." },
+            { q: "Which budgeting approach starts with individual work packages and rolls them up?", opts: ["Top-down", "Bottom-up", "Parametric", "Analogous"], ans: 1, exp: "Bottom-up budgeting estimates individual work packages first, then rolls them up into the total project budget. More accurate but time-consuming." },
+            { q: "Expedited costs are incurred to:", opts: ["Complete a project as per schedule", "Speed up the project's completion", "Cover overhead expenses", "Train personnel"], ans: 1, exp: "Expedited costs are unplanned costs to speed up completion — e.g., crashing activities using overtime or hiring temporary workers." },
+            { q: "Which PMBOK process involves creating the project budget?", opts: ["7.1 — Plan Cost Management", "7.2 — Estimate Costs", "7.3 — Determine Budget", "7.4 — Control Costs"], ans: 2, exp: "PMBOK 7.3 (Determine Budget) aggregates estimated costs to establish the authorized cost baseline." },
+            { q: "Budget contingencies are necessary because:", opts: ["The project is always under budget", "Murphy's Law applies and normal conditions are rare", "All costs are known upfront", "Top-down budgeting is inaccurate"], ans: 1, exp: "Contingencies cover uncertainties: scope changes, Murphy's Law, interaction costs, and the rarity of normal conditions." },
+            { q: "A definitive estimate is created:", opts: ["At the very start of a project", "After completing most design work", "Using only historical data", "Without any design work"], ans: 1, exp: "Definitive estimates are done after most design work is complete, when scope is well understood and purchase orders are submitted." },
+            { q: "Which is NOT one of the 5 common sources of project cost?", opts: ["Labor", "Materials", "Marketing analysis", "Equipment and facilities"], ans: 2, exp: "The 5 sources are: Labor, Materials, Subcontractors, Equipment & facilities, and Travel. Marketing analysis may be a nonrecurring cost but not a primary source category." },
+            { q: "Time-phased budgeting allows:", opts: ["Eliminating all risks", "Tracking planned vs. actual costs over time", "Avoiding all contingencies", "Using only top-down estimates"], ans: 1, exp: "Time-phased budgets distribute costs over the project timeline, enabling tracking of planned vs. actual costs and creating a cumulative budgeted cost curve." },
+        ];
+
+        let fcIdx = 0, fcFlipped = false;
+        let qIdx = 0, score = 0, answered = [];
+
+        function showTab(name) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('panel-' + name).classList.add('active');
+            if (name === 'flashcards') renderFC();
+            if (name === 'quiz') renderQuiz();
+        }
+
+        function renderFC() {
+            fcFlipped = false;
+            const c = flashcards[fcIdx];
+            document.getElementById('fc-side').textContent = 'Term';
+            document.getElementById('fc-text').textContent = c.term;
+            document.getElementById('fc-progress').textContent = 'Card ' + (fcIdx + 1) + ' of ' + flashcards.length;
+            document.getElementById('fc-hint').textContent = 'Click card to reveal definition';
+            document.getElementById('fc-flip-btn').textContent = 'Flip';
+        }
+
+        function flipCard() {
+            fcFlipped = !fcFlipped;
+            const c = flashcards[fcIdx];
+            document.getElementById('fc-side').textContent = fcFlipped ? 'Definition' : 'Term';
+            document.getElementById('fc-text').textContent = fcFlipped ? c.def : c.term;
+            document.getElementById('fc-hint').textContent = fcFlipped ? 'Click to see the term again' : 'Click card to reveal definition';
+            document.getElementById('fc-flip-btn').textContent = fcFlipped ? 'Flip back' : 'Flip';
+        }
+
+        function nextCard() { fcIdx = (fcIdx + 1) % flashcards.length; renderFC(); }
+        function prevCard() { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderFC(); }
+
+        function renderQuiz() {
+            const el = document.getElementById('quiz-inner');
+            if (qIdx >= quizQuestions.length) {
+                const pct = Math.round((score / quizQuestions.length) * 100);
+                const grade = pct >= 80 ? 'Great work! You\'re exam-ready.' : pct >= 60 ? 'Good progress — review the concepts you missed.' : 'Keep studying — try the flashcards and come back!';
+                el.innerHTML = '<div class="final-score"><div class="score-big">' + score + '/' + quizQuestions.length + '</div><div class="score-label">' + pct + '% · ' + grade + '</div><button onclick="resetQuiz()">Try again</button></div>';
+                return;
+            }
+            const q = quizQuestions[qIdx];
+            const progress = Math.round((qIdx / quizQuestions.length) * 100);
+            const wasAnswered = answered[qIdx];
+            let optsHTML = q.opts.map((o, i) => {
+                let cls = 'quiz-opt';
+                if (wasAnswered !== undefined) {
+                    if (i === q.ans) cls += ' reveal-correct';
+                    else if (i === wasAnswered && wasAnswered !== q.ans) cls += ' wrong';
+                }
+                return '<button class="' + cls + '"' + (wasAnswered !== undefined ? ' disabled' : '') + ' onclick="answerQ(' + i + ')">' + o + '</button>';
+            }).join('');
+            let feedbackHTML = '';
+            if (wasAnswered !== undefined) {
+                const correct = wasAnswered === q.ans;
+                feedbackHTML = '<div class="quiz-feedback ' + (correct ? 'good' : 'bad') + '">' + (correct ? '✓ Correct — ' : '✗ Incorrect — ') + q.exp + '</div>';
+            }
+            el.innerHTML = '<div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:' + progress + '%"></div></div>' +
+                '<div class="quiz-score">Question ' + (qIdx + 1) + ' of ' + quizQuestions.length + ' · Score: ' + score + '</div>' +
+                '<div class="quiz-q">' + q.q + '</div>' +
+                '<div class="quiz-opts">' + optsHTML + '</div>' +
+                feedbackHTML +
+                '<div class="quiz-nav">' + (wasAnswered !== undefined ? '<button class="primary" onclick="nextQ()">Next →</button>' : '') + '</div>';
+        }
+
+        function answerQ(i) {
+            const q = quizQuestions[qIdx];
+            answered[qIdx] = i;
+            if (i === q.ans) score++;
+            renderQuiz();
+        }
+        function nextQ() { qIdx++; renderQuiz(); }
+        function resetQuiz() { qIdx = 0; score = 0; answered = []; renderQuiz(); }
+
+        renderFC();
+        renderQuiz();
+    </script>
+</body>
+</html>
