@@ -1,206 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
 
-<h2 class="sr-only">Study hub for Lecture 4 — ImageView, CheckBox, RadioButton, ToggleButton, and Spinner Android UI components</h2>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-.tab-bar{display:flex;gap:6px;padding:1rem 0 0.5rem;flex-wrap:wrap;}
-.tab{padding:6px 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;font-size:13px;color:var(--color-text-secondary);cursor:pointer;}
-.tab.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary);font-weight:500;}
-.sec{display:none;padding:1rem 0;}
-.sec.active{display:block;}
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:10px;}
-.card-q{font-size:15px;color:var(--color-text-primary);margin-bottom:6px;}
-.card-a{font-size:14px;color:var(--color-text-secondary);display:none;border-top:0.5px solid var(--color-border-tertiary);padding-top:8px;margin-top:8px;line-height:1.6;}
-.rbtn{font-size:12px;color:var(--color-text-info);cursor:pointer;background:none;border:none;padding:0;}
-.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--border-radius-md);font-weight:500;margin-right:4px;margin-bottom:6px;}
-.bp{background:#EEEDFE;color:#3C3489;}
-.bt{background:#E1F5EE;color:#085041;}
-.bc{background:#FAECE7;color:#712B13;}
-.bb{background:#E6F1FB;color:#0C447C;}
-.qopt{display:block;width:100%;text-align:left;padding:10px 14px;margin:6px 0;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;font-size:14px;color:var(--color-text-primary);cursor:pointer;}
-.qopt.correct{border-color:#0F6E56;background:#E1F5EE;color:#085041;}
-.qopt.wrong{border-color:#993C1D;background:#FAECE7;color:#712B13;}
-.qfb{font-size:13px;padding:8px 12px;border-radius:var(--border-radius-md);margin-top:8px;display:none;}
-.qfb.show{display:block;}
-.qfb.ok{background:#E1F5EE;color:#085041;}
-.qfb.bad{background:#FAECE7;color:#712B13;}
-.nbtn{margin-top:12px;padding:8px 18px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;font-size:13px;cursor:pointer;color:var(--color-text-primary);display:none;}
-.prog{font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;}
-.sbox{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1.5rem;text-align:center;display:none;}
-.snum{font-size:36px;font-weight:500;color:var(--color-text-primary);}
-.cg{margin-bottom:1.5rem;}
-.ct{font-size:12px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
-.cb{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;font-family:var(--font-mono);font-size:12px;color:var(--color-text-primary);margin-bottom:8px;white-space:pre-wrap;line-height:1.6;}
-.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;}
-.tcard{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:12px;cursor:pointer;text-align:left;}
-</style>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Android UI Components · Lecture 4 Study Hub | ImageView, CheckBox, RadioButton, ToggleButton, Spinner</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<div class="tab-bar">
-  <button class="tab active" onclick="showTab('fc')">Flashcards</button>
-  <button class="tab" onclick="showTab('qz')">Quiz</button>
-  <button class="tab" onclick="showTab('cs')">Cheat sheet</button>
-  <button class="tab" onclick="showTab('tp')">Topics</button>
-</div>
+    :root {
+      --color-sunshine: #FFE588;
+      --color-coral: #F79D65;
+      --color-ember: #F35252;
+      --color-mint: #5EF2D5;
+      --color-sky: #60B5FF;
+      --color-bg-page: #FFFBF2;
+      --color-bg-card: #FFFFFF;
+      --color-border-light: rgba(0, 0, 0, 0.06);
+      --color-text-primary: #1E2A32;
+      --color-text-secondary: #2F4858;
+      --color-text-tertiary: #5E6F7D;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.06);
+    }
 
-<div id="fc" class="sec active"></div>
-<div id="qz" class="sec">
-  <div class="prog" id="qprog">Question 1 of 12</div>
-  <div class="card" id="qcard">
-    <div class="card-q" id="qq"></div>
-    <div id="qopts"></div>
-    <div class="qfb" id="qfb"></div>
-    <button class="nbtn" id="nbtn" onclick="nextQ()">Next question →</button>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: var(--color-bg-page);
+      color: var(--color-text-primary);
+      padding: 1.8rem 1.2rem;
+      line-height: 1.5;
+    }
+
+    .main-wrapper {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* tabs */
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      padding: 0.5rem 0 1.2rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(96, 181, 255, 0.2);
+      margin-bottom: 0.25rem;
+    }
+
+    .tab {
+      padding: 8px 20px;
+      border: none;
+      background: transparent;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      border-radius: 40px;
+      transition: all 0.2s ease;
+    }
+
+    .tab:hover {
+      background: rgba(96, 181, 255, 0.12);
+    }
+
+    .tab.active {
+      background: var(--color-sunshine);
+      color: #2F2A1F;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(255, 229, 136, 0.4);
+    }
+
+    /* sections */
+    .section {
+      display: none;
+      padding: 1.2rem 0 1rem;
+      animation: fadeSlideUp 0.25s ease-out;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* cards */
+    .card {
+      background: var(--color-bg-card);
+      border: 1px solid rgba(255, 229, 136, 0.5);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(247, 157, 101, 0.3);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-q {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+      color: #1E2A32;
+    }
+
+    .card-a {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      display: none;
+      border-top: 1px solid rgba(94, 242, 213, 0.4);
+      padding-top: 0.9rem;
+      margin-top: 0.8rem;
+      line-height: 1.55;
+      background: #FEFCF5;
+      border-radius: 16px;
+      padding: 0.9rem 1rem;
+    }
+
+    .reveal-btn {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-sky);
+      background: rgba(96, 181, 255, 0.08);
+      border: none;
+      padding: 5px 14px;
+      border-radius: 30px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: 0.15s;
+    }
+
+    .reveal-btn:hover {
+      background: rgba(96, 181, 255, 0.2);
+    }
+
+    /* badges */
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 50px;
+      margin-right: 6px;
+      margin-bottom: 8px;
+    }
+
+    .badge-imageview {
+      background: #EAF5FF;
+      color: #1F6392;
+      border-left: 3px solid var(--color-sky);
+    }
+
+    .badge-checkbox {
+      background: #E0FCF5;
+      color: #116454;
+      border-left: 3px solid var(--color-mint);
+    }
+
+    .badge-radiobutton {
+      background: #FFF0E8;
+      color: #B15327;
+      border-left: 3px solid var(--color-coral);
+    }
+
+    .badge-toggle {
+      background: #FFF5DF;
+      color: #966C2C;
+      border-left: 3px solid var(--color-sunshine);
+    }
+
+    .badge-spinner {
+      background: #E8F0FE;
+      color: #1F6392;
+      border-left: 3px solid #60B5FF;
+    }
+
+    /* quiz */
+    .progress {
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: rgba(94, 242, 213, 0.2);
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 40px;
+      margin-bottom: 1rem;
+    }
+
+    .quiz-opt {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 12px 18px;
+      margin: 8px 0;
+      border: 1.5px solid rgba(0, 0, 0, 0.07);
+      border-radius: 60px;
+      background: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .quiz-opt:hover {
+      background: #FEFBF2;
+      border-color: var(--color-coral);
+      transform: translateX(4px);
+    }
+
+    .quiz-opt.correct {
+      border-color: var(--color-mint);
+      background: #E5F9F4;
+      color: #0F5A49;
+    }
+
+    .quiz-opt.wrong {
+      border-color: var(--color-ember);
+      background: #FDEFEC;
+      color: #A13B1D;
+    }
+
+    .quiz-feedback {
+      font-size: 0.85rem;
+      padding: 10px 18px;
+      border-radius: 40px;
+      margin-top: 12px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .quiz-feedback.ok {
+      background: #E0FBF5;
+      color: #0D6956;
+      border-left: 5px solid var(--color-mint);
+    }
+
+    .quiz-feedback.bad {
+      background: #FEF0EC;
+      color: #BC4A26;
+      border-left: 5px solid var(--color-ember);
+    }
+
+    .next-btn {
+      margin-top: 16px;
+      padding: 8px 24px;
+      border: none;
+      background: rgba(96, 181, 255, 0.12);
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .next-btn:hover {
+      background: var(--color-sky);
+      color: white;
+    }
+
+    .score-box {
+      background: linear-gradient(135deg, #FFFFFF, #FEF9EF);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      border: 1px solid rgba(255, 229, 136, 0.7);
+    }
+
+    .score-num {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #F79D65, #F35252);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    /* cheat sheet */
+    .cheatsheet-group {
+      margin-bottom: 2rem;
+    }
+
+    .cheatsheet-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--color-text-tertiary);
+      margin-bottom: 12px;
+      border-left: 4px solid var(--color-mint);
+      padding-left: 12px;
+    }
+
+    .code-block {
+      background: #FDF9F0;
+      border-radius: 20px;
+      padding: 14px 18px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+      white-space: pre-wrap;
+      border: 1px solid rgba(94, 242, 213, 0.3);
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+
+    /* topic map grid */
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .topic-card {
+      background: white;
+      border-radius: 20px;
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+      border: 1px solid #FFE9BD;
+      transition: 0.2s;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .topic-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--color-coral);
+      box-shadow: 0 12px 20px rgba(247, 157, 101, 0.12);
+    }
+
+    .topic-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #1E2A32;
+    }
+
+    .topic-hint {
+      font-size: 0.7rem;
+      color: var(--color-sky);
+      margin-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+
+      .card {
+        padding: 1rem;
+      }
+
+      .topic-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-wrapper">
+    <h2 class="sr-only">Lecture 4: ImageView, CheckBox, RadioButton, ToggleButton, Spinner — complete study hub</h2>
+
+    <div class="tab-bar">
+      <button class="tab active" onclick="showTab('flashcards')">📇 Flashcards</button>
+      <button class="tab" onclick="showTab('quiz')">⚡ Quiz</button>
+      <button class="tab" onclick="showTab('cheatsheet')">📘 Cheat sheet</button>
+      <button class="tab" onclick="showTab('topics')">🗺️ Topic map</button>
+    </div>
+
+    <div id="flashcards" class="section active">
+      <div
+        style="font-size:13px; background: rgba(96,181,255,0.1); display:inline-block; padding:6px 20px; border-radius:30px; margin-bottom:14px;">
+        🎴 Tap "Reveal answer" — master ImageView, CheckBox, RadioButton, Toggle, Spinner</div>
+    </div>
+
+    <div id="quiz" class="section">
+      <div class="progress" id="quiz-progress">Question 1 of 12</div>
+      <div class="card" id="quiz-card">
+        <div class="card-q" id="quiz-q"></div>
+        <div id="quiz-opts"></div>
+        <div class="quiz-feedback" id="quiz-fb"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQ()">Next →</button>
+      </div>
+      <div class="score-box" id="score-box" style="display: none;">
+        <div class="score-num" id="score-num"></div>
+        <div style="margin:8px 0 16px;">questions correct</div>
+        <button class="quiz-opt" style="width:auto;display:inline-block;" onclick="resetQuiz()">⟳ Retake quiz</button>
+        <button class="quiz-opt" style="width:auto;margin-left:8px;"
+          onclick="sendPrompt('Give me more exam questions on ImageView, CheckBox, RadioButton, ToggleButton and Spinner in Android')">✨
+          More questions</button>
+      </div>
+    </div>
+
+    <div id="cheatsheet" class="section"></div>
+
+    <div id="topics" class="section">
+      <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:14px;">📌 Click any topic → get a
+        deep, exam-ready explanation (AI prompt ready)</div>
+      <div class="topic-grid" id="topic-grid"></div>
+    </div>
   </div>
-  <div class="sbox" id="sbox">
-    <div class="snum" id="snum"></div>
-    <div style="font-size:14px;color:var(--color-text-secondary);margin:8px 0 16px;">questions correct</div>
-    <button class="qopt" style="width:auto;display:inline-block;" onclick="resetQuiz()">Retake quiz</button>
-    <button class="qopt" style="width:auto;display:inline-block;margin-left:8px;" onclick="sendPrompt('Give me more exam questions on ImageView, CheckBox, RadioButton, ToggleButton and Spinner in Android')">More questions ↗</button>
-  </div>
-</div>
-<div id="cs" class="sec"></div>
-<div id="tp" class="sec">
-  <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:14px;">Click any topic for a deep explanation.</div>
-  <div class="tgrid" id="tgrid"></div>
-</div>
 
-<script>
-const fcs=[
-  {q:"What is ImageView used for and what package is it from?",a:"Displays images (PNG, JPEG, vector drawables, bitmaps) in an Android app. Part of android.widget package. Images are placed in res/drawable/ folder and referenced with @drawable/image_name.",tags:["ImageView"]},
-  {q:"What are the 4 main scaleType values for ImageView?",a:"centerCrop: fills ImageView, crops if needed. fitCenter: fits inside while keeping aspect ratio. center: centers without scaling. fitXY: fills ImageView ignoring aspect ratio (can distort).",tags:["ImageView"]},
-  {q:"How do you change an ImageView's image from Kotlin code?",a:"Use setImageResource(R.drawable.new_image_name) on the ImageView reference.",tags:["ImageView"]},
-  {q:"What is android:contentDescription on an ImageView?",a:"Provides an accessibility description for screen readers. Good practice to always include it referencing a string resource: android:contentDescription='@string/image_description'",tags:["ImageView"]},
-  {q:"What is a CheckBox and what class is it a subclass of?",a:"A UI component for selecting one or more options. Subclass of CompoundButton. Key attributes: android:text (label text), android:checked (initial state: true/false).",tags:["CheckBox"]},
-  {q:"How do you detect CheckBox state changes in Kotlin?",a:"Use setOnCheckedChangeListener { _, isChecked -> ... }. The isChecked boolean tells you if it's now checked or unchecked.",tags:["CheckBox"]},
-  {q:"What is the difference between RadioButton and CheckBox?",a:"CheckBox: multiple selections allowed. RadioButton: only ONE can be selected at a time within a RadioGroup. RadioButtons must be wrapped in a RadioGroup to enforce single selection.",tags:["RadioButton"]},
-  {q:"How do you detect which RadioButton is selected?",a:"Use radioGroup.setOnCheckedChangeListener { _, checkedId -> when(checkedId) { R.id.rb1 -> ... } }. Or use radioGroup.checkedRadioButtonId to get the selected ID.",tags:["RadioButton"]},
-  {q:"What is a ToggleButton and its key XML attributes?",a:"Switches between two states (On/Off). Key attributes: android:textOn (text when ON), android:textOff (text when OFF), android:checked (initial state). Similar to Switch but different appearance.",tags:["ToggleButton"]},
-  {q:"How do you handle ToggleButton state changes in Kotlin?",a:"Use setOnCheckedChangeListener { _, isChecked -> if(isChecked) { /* ON */ } else { /* OFF */ } }. Same pattern as CheckBox.",tags:["ToggleButton"]},
-  {q:"What is a Spinner and what is it equivalent to in web development?",a:"A dropdown list UI component that lets users pick one item from a predefined set. Equivalent to a <select> dropdown in HTML/web development.",tags:["Spinner"]},
-  {q:"What are the steps to set up a Spinner with an ArrayAdapter?",a:"1. Add <Spinner> in XML. 2. Define string-array in strings.xml. 3. Get array: resources.getStringArray(R.array.name). 4. Create adapter: ArrayAdapter.createFromResource(). 5. Set dropdown layout: setDropDownViewResource(). 6. Set adapter: spinner.adapter = adapter.",tags:["Spinner"]},
-  {q:"What interface must you implement to handle Spinner selections?",a:"AdapterView.OnItemSelectedListener. Must implement two methods: onItemSelected(parent, view, position, id) and onNothingSelected(parent). Set it with spinner.onItemSelectedListener = this.",tags:["Spinner"]},
-  {q:"What is the difference between simple_spinner_item and simple_spinner_dropdown_item?",a:"simple_spinner_item: the layout used to display the currently selected item in the Spinner. simple_spinner_dropdown_item: the layout used to display each item in the dropdown list.",tags:["Spinner"]},
-];
+  <script>
+    // ---------------------- DATA (exactly as original, unchanged) -------------------------
+    const flashcards = [
+      { q: "What is ImageView used for and what package is it from?", a: "Displays images (PNG, JPEG, vector drawables, bitmaps) in an Android app. Part of android.widget package. Images are placed in res/drawable/ folder and referenced with @drawable/image_name.", tags: ["ImageView"] },
+      { q: "What are the 4 main scaleType values for ImageView?", a: "centerCrop: fills ImageView, crops if needed. fitCenter: fits inside while keeping aspect ratio. center: centers without scaling. fitXY: fills ImageView ignoring aspect ratio (can distort).", tags: ["ImageView"] },
+      { q: "How do you change an ImageView's image from Kotlin code?", a: "Use setImageResource(R.drawable.new_image_name) on the ImageView reference.", tags: ["ImageView"] },
+      { q: "What is android:contentDescription on an ImageView?", a: "Provides an accessibility description for screen readers. Good practice to always include it referencing a string resource: android:contentDescription='@string/image_description'", tags: ["ImageView"] },
+      { q: "What is a CheckBox and what class is it a subclass of?", a: "A UI component for selecting one or more options. Subclass of CompoundButton. Key attributes: android:text (label text), android:checked (initial state: true/false).", tags: ["CheckBox"] },
+      { q: "How do you detect CheckBox state changes in Kotlin?", a: "Use setOnCheckedChangeListener { _, isChecked -> ... }. The isChecked boolean tells you if it's now checked or unchecked.", tags: ["CheckBox"] },
+      { q: "What is the difference between RadioButton and CheckBox?", a: "CheckBox: multiple selections allowed. RadioButton: only ONE can be selected at a time within a RadioGroup. RadioButtons must be wrapped in a RadioGroup to enforce single selection.", tags: ["RadioButton"] },
+      { q: "How do you detect which RadioButton is selected?", a: "Use radioGroup.setOnCheckedChangeListener { _, checkedId -> when(checkedId) { R.id.rb1 -> ... } }. Or use radioGroup.checkedRadioButtonId to get the selected ID.", tags: ["RadioButton"] },
+      { q: "What is a ToggleButton and its key XML attributes?", a: "Switches between two states (On/Off). Key attributes: android:textOn (text when ON), android:textOff (text when OFF), android:checked (initial state). Similar to Switch but different appearance.", tags: ["ToggleButton"] },
+      { q: "How do you handle ToggleButton state changes in Kotlin?", a: "Use setOnCheckedChangeListener { _, isChecked -> if(isChecked) { /* ON */ } else { /* OFF */ } }. Same pattern as CheckBox.", tags: ["ToggleButton"] },
+      { q: "What is a Spinner and what is it equivalent to in web development?", a: "A dropdown list UI component that lets users pick one item from a predefined set. Equivalent to a <select> dropdown in HTML/web development.", tags: ["Spinner"] },
+      { q: "What are the steps to set up a Spinner with an ArrayAdapter?", a: "1. Add <Spinner> in XML. 2. Define string-array in strings.xml. 3. Get array: resources.getStringArray(R.array.name). 4. Create adapter: ArrayAdapter.createFromResource(). 5. Set dropdown layout: setDropDownViewResource(). 6. Set adapter: spinner.adapter = adapter.", tags: ["Spinner"] },
+      { q: "What interface must you implement to handle Spinner selections?", a: "AdapterView.OnItemSelectedListener. Must implement two methods: onItemSelected(parent, view, position, id) and onNothingSelected(parent). Set it with spinner.onItemSelectedListener = this.", tags: ["Spinner"] },
+      { q: "What is the difference between simple_spinner_item and simple_spinner_dropdown_item?", a: "simple_spinner_item: the layout used to display the currently selected item in the Spinner. simple_spinner_dropdown_item: the layout used to display each item in the dropdown list.", tags: ["Spinner"] },
+    ];
 
-const qs=[
-  {q:"Which scaleType fills the ImageView and crops the image if necessary?",opts:["fitCenter","center","centerCrop","fitXY"],ans:2,exp:"centerCrop scales the image to fill the entire ImageView, cropping any overflow while maintaining aspect ratio."},
-  {q:"Which method changes an ImageView's image from Kotlin code?",opts:["setImage()","setImageResource()","changeImage()","loadImage()"],ans:1,exp:"setImageResource(R.drawable.image_name) is used to change the displayed image programmatically."},
-  {q:"CheckBox is a subclass of which class?",opts:["TextView","Button","CompoundButton","View"],ans:2,exp:"CheckBox is a subclass of CompoundButton, which is itself a subclass of Button."},
-  {q:"What ensures only one RadioButton can be selected at a time?",opts:["The RadioButton itself","A LinearLayout wrapper","A RadioGroup wrapper","The android:checked attribute"],ans:2,exp:"RadioButtons must be placed inside a RadioGroup. The RadioGroup enforces single selection by deselecting the previous button."},
-  {q:"Which attribute sets the text shown on a ToggleButton when it is ON?",opts:["android:textOn","android:onText","android:text","android:toggleOn"],ans:0,exp:"android:textOn sets the label displayed when the ToggleButton is in the checked/ON state."},
-  {q:"What is a Spinner equivalent to in web development?",opts:["A text input","A checkbox","A dropdown <select> menu","A radio group"],ans:2,exp:"A Spinner functions like a <select> dropdown in HTML — it lets users pick one item from a list."},
-  {q:"Which layout resource is used for the Spinner's dropdown list items?",opts:["simple_spinner_item","simple_list_item_1","simple_spinner_dropdown_item","dropdown_item"],ans:2,exp:"setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) defines the appearance of each item in the dropdown."},
-  {q:"Which interface must you implement to handle Spinner item selections?",opts:["OnClickListener","OnItemSelectedListener","OnCheckedChangeListener","OnSelectListener"],ans:1,exp:"AdapterView.OnItemSelectedListener requires implementing onItemSelected() and onNothingSelected()."},
-  {q:"What does android:contentDescription do on an ImageView?",opts:["Sets the image source","Describes the image for screen readers","Sets the scale type","Adds a caption below the image"],ans:1,exp:"contentDescription provides an accessibility label for screen readers, making apps accessible to visually impaired users."},
-  {q:"Which method creates an ArrayAdapter from a string-array resource?",opts:["ArrayAdapter()","ArrayAdapter.fromResource()","ArrayAdapter.createFromResource()","new ArrayAdapter()"],ans:2,exp:"ArrayAdapter.createFromResource(context, R.array.array_name, android.R.layout.simple_spinner_item) creates the adapter from strings.xml."},
-  {q:"How do you set a CheckBox's initial state to checked in XML?",opts:["android:state='checked'","android:checked='true'","android:isChecked='true'","android:default='true'"],ans:1,exp:"android:checked='true' sets the CheckBox to be checked when the layout first loads."},
-  {q:"What listener is used for BOTH CheckBox and ToggleButton state changes?",opts:["setOnClickListener","setOnCheckedChangeListener","setOnStateChangeListener","setOnToggleListener"],ans:1,exp:"setOnCheckedChangeListener { _, isChecked -> ... } works for both CheckBox and ToggleButton since both extend CompoundButton."},
-];
+    const quizQuestions = [
+      { q: "Which scaleType fills the ImageView and crops the image if necessary?", opts: ["fitCenter", "center", "centerCrop", "fitXY"], ans: 2, exp: "centerCrop scales the image to fill the entire ImageView, cropping any overflow while maintaining aspect ratio." },
+      { q: "Which method changes an ImageView's image from Kotlin code?", opts: ["setImage()", "setImageResource()", "changeImage()", "loadImage()"], ans: 1, exp: "setImageResource(R.drawable.image_name) is used to change the displayed image programmatically." },
+      { q: "CheckBox is a subclass of which class?", opts: ["TextView", "Button", "CompoundButton", "View"], ans: 2, exp: "CheckBox is a subclass of CompoundButton, which is itself a subclass of Button." },
+      { q: "What ensures only one RadioButton can be selected at a time?", opts: ["The RadioButton itself", "A LinearLayout wrapper", "A RadioGroup wrapper", "The android:checked attribute"], ans: 2, exp: "RadioButtons must be placed inside a RadioGroup. The RadioGroup enforces single selection by deselecting the previous button." },
+      { q: "Which attribute sets the text shown on a ToggleButton when it is ON?", opts: ["android:textOn", "android:onText", "android:text", "android:toggleOn"], ans: 0, exp: "android:textOn sets the label displayed when the ToggleButton is in the checked/ON state." },
+      { q: "What is a Spinner equivalent to in web development?", opts: ["A text input", "A checkbox", "A dropdown <select> menu", "A radio group"], ans: 2, exp: "A Spinner functions like a <select> dropdown in HTML — it lets users pick one item from a list." },
+      { q: "Which layout resource is used for the Spinner's dropdown list items?", opts: ["simple_spinner_item", "simple_list_item_1", "simple_spinner_dropdown_item", "dropdown_item"], ans: 2, exp: "setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) defines the appearance of each item in the dropdown." },
+      { q: "Which interface must you implement to handle Spinner item selections?", opts: ["OnClickListener", "OnItemSelectedListener", "OnCheckedChangeListener", "OnSelectListener"], ans: 1, exp: "AdapterView.OnItemSelectedListener requires implementing onItemSelected() and onNothingSelected()." },
+      { q: "What does android:contentDescription do on an ImageView?", opts: ["Sets the image source", "Describes the image for screen readers", "Sets the scale type", "Adds a caption below the image"], ans: 1, exp: "contentDescription provides an accessibility label for screen readers, making apps accessible to visually impaired users." },
+      { q: "Which method creates an ArrayAdapter from a string-array resource?", opts: ["ArrayAdapter()", "ArrayAdapter.fromResource()", "ArrayAdapter.createFromResource()", "new ArrayAdapter()"], ans: 2, exp: "ArrayAdapter.createFromResource(context, R.array.array_name, android.R.layout.simple_spinner_item) creates the adapter from strings.xml." },
+      { q: "How do you set a CheckBox's initial state to checked in XML?", opts: ["android:state='checked'", "android:checked='true'", "android:isChecked='true'", "android:default='true'"], ans: 1, exp: "android:checked='true' sets the CheckBox to be checked when the layout first loads." },
+      { q: "What listener is used for BOTH CheckBox and ToggleButton state changes?", opts: ["setOnClickListener", "setOnCheckedChangeListener", "setOnStateChangeListener", "setOnToggleListener"], ans: 1, exp: "setOnCheckedChangeListener { _, isChecked -> ... } works for both CheckBox and ToggleButton since both extend CompoundButton." },
+    ];
 
-const csd=[
-  {title:"ImageView — XML",items:["<ImageView\n    android:id=\"@+id/myImageView\"\n    android:layout_width=\"wrap_content\"\n    android:layout_height=\"wrap_content\"\n    android:src=\"@drawable/my_image\"\n    android:scaleType=\"centerCrop\"\n    android:contentDescription=\"@string/image_desc\" />"]},
-  {title:"ImageView — change image in Kotlin",items:["myImageView.setImageResource(R.drawable.new_image)"]},
-  {title:"CheckBox — XML + Kotlin",items:["<CheckBox\n    android:id=\"@+id/checkBox\"\n    android:layout_width=\"wrap_content\"\n    android:layout_height=\"wrap_content\"\n    android:text=\"Enable Feature\"\n    android:checked=\"false\" />","checkBox.setOnCheckedChangeListener { _, isChecked ->\n    if (isChecked) { /* checked */ } else { /* unchecked */ }\n}"]},
-  {title:"RadioButton — XML",items:["<RadioGroup android:id=\"@+id/radioGroup\">\n    <RadioButton android:id=\"@+id/rb1\" android:text=\"Option 1\" />\n    <RadioButton android:id=\"@+id/rb2\" android:text=\"Option 2\" />\n</RadioGroup>","radioGroup.setOnCheckedChangeListener { _, checkedId ->\n    when(checkedId) {\n        R.id.rb1 -> Toast.makeText(this,\"Option 1\",Toast.LENGTH_SHORT).show()\n        R.id.rb2 -> Toast.makeText(this,\"Option 2\",Toast.LENGTH_SHORT).show()\n    }\n}"]},
-  {title:"ToggleButton — XML + Kotlin",items:["<ToggleButton\n    android:id=\"@+id/toggle\"\n    android:textOn=\"ON\"\n    android:textOff=\"OFF\"\n    android:checked=\"false\" />","toggle.setOnCheckedChangeListener { _, isChecked ->\n    if (isChecked) { /* ON */ } else { /* OFF */ }\n}"]},
-  {title:"Spinner — full setup",items:["// strings.xml:\n<string-array name=\"options\">\n    <item>Option A</item>\n    <item>Option B</item>\n</string-array>","// MainActivity.kt:\nval adapter = ArrayAdapter.createFromResource(\n    this, R.array.options,\n    android.R.layout.simple_spinner_item\n)\nadapter.setDropDownViewResource(\n    android.R.layout.simple_spinner_dropdown_item\n)\nspinner.adapter = adapter\n\nspinner.onItemSelectedListener =\n    object : AdapterView.OnItemSelectedListener {\n        override fun onItemSelected(parent, view, pos, id) {\n            val selected = parent.getItemAtPosition(pos).toString()\n        }\n        override fun onNothingSelected(parent: AdapterView<*>) {}\n    }"]},
-];
+    const cheatsheetData = [
+      {
+        title: "🖼️ ImageView — XML & Kotlin", items: [
+          "<ImageView\n    android:id=\"@+id/myImageView\"\n    android:layout_width=\"wrap_content\"\n    android:layout_height=\"wrap_content\"\n    android:src=\"@drawable/my_image\"\n    android:scaleType=\"centerCrop\"\n    android:contentDescription=\"@string/image_desc\" />",
+          "// Change image programmatically\nmyImageView.setImageResource(R.drawable.new_image)"
+        ]
+      },
+      {
+        title: "☑️ CheckBox — XML + Listener", items: [
+          "<CheckBox\n    android:id=\"@+id/checkBox\"\n    android:layout_width=\"wrap_content\"\n    android:layout_height=\"wrap_content\"\n    android:text=\"Enable Feature\"\n    android:checked=\"false\" />",
+          "checkBox.setOnCheckedChangeListener { _, isChecked ->\n    if (isChecked) { /* checked */ } else { /* unchecked */ }\n}"
+        ]
+      },
+      {
+        title: "🔘 RadioButton & RadioGroup", items: [
+          "<RadioGroup android:id=\"@+id/radioGroup\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\">\n    <RadioButton android:id=\"@+id/rb1\" android:text=\"Option 1\" />\n    <RadioButton android:id=\"@+id/rb2\" android:text=\"Option 2\" />\n</RadioGroup>",
+          "radioGroup.setOnCheckedChangeListener { _, checkedId ->\n    when(checkedId) {\n        R.id.rb1 -> Toast.makeText(this,\"Option 1\",Toast.LENGTH_SHORT).show()\n        R.id.rb2 -> Toast.makeText(this,\"Option 2\",Toast.LENGTH_SHORT).show()\n    }\n}"
+        ]
+      },
+      {
+        title: "⚙️ ToggleButton — ON/OFF", items: [
+          "<ToggleButton\n    android:id=\"@+id/toggle\"\n    android:textOn=\"ON\"\n    android:textOff=\"OFF\"\n    android:checked=\"false\" />",
+          "toggle.setOnCheckedChangeListener { _, isChecked ->\n    if (isChecked) { /* ON state */ } else { /* OFF state */ }\n}"
+        ]
+      },
+      {
+        title: "📜 Spinner — ArrayAdapter with strings.xml", items: [
+          "// strings.xml\n<string-array name=\"options\">\n    <item>Option A</item>\n    <item>Option B</item>\n</string-array>",
+          "// MainActivity.kt\nval adapter = ArrayAdapter.createFromResource(\n    this, R.array.options,\n    android.R.layout.simple_spinner_item\n)\nadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)\nspinner.adapter = adapter\n\nspinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {\n    override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {\n        val selected = parent.getItemAtPosition(pos).toString()\n    }\n    override fun onNothingSelected(parent: AdapterView<*>) {}\n}"
+        ]
+      }
+    ];
 
-const topics=[
-  {label:"ImageView deep dive",prompt:"Explain Android ImageView thoroughly for my exam: all scaleType values with examples, how to add images to drawable, setting src in XML vs setImageResource in Kotlin, and contentDescription."},
-  {label:"CheckBox full explanation",prompt:"Explain Android CheckBox for my exam: XML attributes (id, text, checked), how setOnCheckedChangeListener works with isChecked, and give a full code example."},
-  {label:"RadioButton & RadioGroup",prompt:"Explain RadioButton and RadioGroup in Android for my exam: why RadioGroup is needed, how to set a default selection, how setOnCheckedChangeListener works with checkedId, and a full code example."},
-  {label:"ToggleButton explained",prompt:"Explain Android ToggleButton for my exam: textOn/textOff attributes, initial checked state, how to handle state changes in Kotlin, and how to customize it with a drawable XML file."},
-  {label:"Spinner complete guide",prompt:"Explain Android Spinner fully for my exam: adding it in XML, defining options in strings.xml as string-array, creating ArrayAdapter with createFromResource, setDropDownViewResource, and implementing OnItemSelectedListener with both required methods."},
-  {label:"Compare: CheckBox vs RadioButton vs Toggle",prompt:"Compare CheckBox, RadioButton and ToggleButton for my Android exam. When do you use each? What are the XML attributes and Kotlin listeners for each? Give a summary table."},
-  {label:"Adapter pattern",prompt:"Explain the Adapter pattern in Android for my exam. What is an ArrayAdapter? How does it connect data to UI components like ListView and Spinner? What is simple_spinner_item vs simple_spinner_dropdown_item?"},
-  {label:"All Lecture 4 in one summary",prompt:"Give me a complete exam-ready summary of Lecture 4: ImageView, CheckBox, RadioButton/RadioGroup, ToggleButton, and Spinner. Include the most important attributes and Kotlin patterns for each."},
-];
+    const topics = [
+      { label: "ImageView deep dive", prompt: "Explain Android ImageView thoroughly for my exam: all scaleType values with examples, how to add images to drawable, setting src in XML vs setImageResource in Kotlin, and contentDescription." },
+      { label: "CheckBox full explanation", prompt: "Explain Android CheckBox for my exam: XML attributes (id, text, checked), how setOnCheckedChangeListener works with isChecked, and give a full code example." },
+      { label: "RadioButton & RadioGroup", prompt: "Explain RadioButton and RadioGroup in Android for my exam: why RadioGroup is needed, how to set a default selection, how setOnCheckedChangeListener works with checkedId, and a full code example." },
+      { label: "ToggleButton explained", prompt: "Explain Android ToggleButton for my exam: textOn/textOff attributes, initial checked state, how to handle state changes in Kotlin, and how to customize it with a drawable XML file." },
+      { label: "Spinner complete guide", prompt: "Explain Android Spinner fully for my exam: adding it in XML, defining options in strings.xml as string-array, creating ArrayAdapter with createFromResource, setDropDownViewResource, and implementing OnItemSelectedListener with both required methods." },
+      { label: "Compare: CheckBox vs RadioButton vs Toggle", prompt: "Compare CheckBox, RadioButton and ToggleButton for my Android exam. When do you use each? What are the XML attributes and Kotlin listeners for each? Give a summary table." },
+      { label: "Adapter pattern", prompt: "Explain the Adapter pattern in Android for my exam. What is an ArrayAdapter? How does it connect data to UI components like ListView and Spinner? What is simple_spinner_item vs simple_spinner_dropdown_item?" },
+      { label: "All Lecture 4 in one summary", prompt: "Give me a complete exam-ready summary of Lecture 4: ImageView, CheckBox, RadioButton/RadioGroup, ToggleButton, and Spinner. Include the most important attributes and Kotlin patterns for each." },
+    ];
 
-function showTab(id){
-  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
-}
+    // ---------------------- UI RENDERING (modern style) -------------------------
+    function showTab(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      event.target.classList.add('active');
+    }
 
-function buildFC(){
-  const c=document.getElementById('fc');
-  c.innerHTML='<div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px;">Click "Reveal" to check yourself — all new content from Lecture 4.</div>';
-  fcs.forEach((f,i)=>{
-    const d=document.createElement('div');
-    d.className='card';
-    d.innerHTML=`<div class="card-q">${f.q}</div>${f.tags.map(t=>`<span class="badge bp">${t}</span>`).join('')}<div><button class="rbtn" onclick="tog(${i})">Reveal answer</button></div><div class="card-a" id="a${i}">${f.a}</div>`;
-    c.appendChild(d);
-  });
-}
-function tog(i){
-  const el=document.getElementById('a'+i);
-  const btn=el.previousElementSibling.firstChild;
-  if(el.style.display==='block'){el.style.display='none';btn.textContent='Reveal answer';}
-  else{el.style.display='block';btn.textContent='Hide answer';}
-}
+    function buildFlashcards() {
+      const container = document.getElementById('flashcards');
+      container.innerHTML = '<div style="font-size:13px; background: rgba(96,181,255,0.1); display:inline-block; padding:6px 20px; border-radius:30px; margin-bottom:14px;">🎴 Tap "Reveal answer" — master ImageView, CheckBox, RadioButton, Toggle, Spinner</div>';
+      flashcards.forEach((fc, idx) => {
+        let badgeClass = "badge-imageview";
+        if (fc.tags[0] === "CheckBox") badgeClass = "badge-checkbox";
+        else if (fc.tags[0] === "RadioButton") badgeClass = "badge-radiobutton";
+        else if (fc.tags[0] === "ToggleButton") badgeClass = "badge-toggle";
+        else if (fc.tags[0] === "Spinner") badgeClass = "badge-spinner";
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+            <div class="card-q">${fc.q}</div>
+            <span class="badge ${badgeClass}">${fc.tags[0]}</span>
+            <div><button class="reveal-btn" onclick="toggleAnswer(${idx})">🔍 Reveal answer</button></div>
+            <div class="card-a" id="ans-${idx}">${fc.a}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
 
-let qi=0,sc=0,answered=false;
-function renderQ(){
-  const q=qs[qi];
-  document.getElementById('qprog').textContent=`Question ${qi+1} of ${qs.length}`;
-  document.getElementById('qq').textContent=q.q;
-  const o=document.getElementById('qopts');o.innerHTML='';
-  q.opts.forEach((opt,i)=>{
-    const b=document.createElement('button');b.className='qopt';b.textContent=opt;
-    b.onclick=()=>checkA(i);o.appendChild(b);
-  });
-  document.getElementById('qfb').className='qfb';
-  document.getElementById('qfb').textContent='';
-  document.getElementById('nbtn').style.display='none';
-  answered=false;
-}
-function checkA(i){
-  if(answered)return;answered=true;
-  const q=qs[qi];
-  const opts=document.querySelectorAll('.qopt');
-  opts[q.ans].classList.add('correct');
-  if(i!==q.ans)opts[i].classList.add('wrong');else sc++;
-  const fb=document.getElementById('qfb');
-  fb.textContent=(i===q.ans?'✓ Correct! ':'✗ ')+q.exp;
-  fb.className='qfb show '+(i===q.ans?'ok':'bad');
-  document.getElementById('nbtn').style.display='block';
-}
-function nextQ(){
-  qi++;
-  if(qi>=qs.length){
-    document.getElementById('qcard').style.display='none';
-    document.getElementById('qprog').style.display='none';
-    document.getElementById('sbox').style.display='block';
-    document.getElementById('snum').textContent=sc+'/'+qs.length;
-  }else renderQ();
-}
-function resetQuiz(){
-  qi=0;sc=0;answered=false;
-  document.getElementById('qcard').style.display='block';
-  document.getElementById('qprog').style.display='block';
-  document.getElementById('sbox').style.display='none';
-  renderQ();
-}
+    function toggleAnswer(idx) {
+      const ansDiv = document.getElementById(`ans-${idx}`);
+      const btn = ansDiv.previousElementSibling.firstChild;
+      if (ansDiv.style.display === 'block') {
+        ansDiv.style.display = 'none';
+        btn.textContent = '🔍 Reveal answer';
+      } else {
+        ansDiv.style.display = 'block';
+        btn.textContent = '🙈 Hide answer';
+      }
+    }
 
-function buildCS(){
-  const c=document.getElementById('cs');
-  csd.forEach(g=>{
-    const d=document.createElement('div');d.className='cg';
-    d.innerHTML=`<div class="ct">${g.title}</div>`;
-    g.items.forEach(code=>{const p=document.createElement('div');p.className='cb';p.textContent=code;d.appendChild(p);});
-    c.appendChild(d);
-  });
-}
+    /// QUIZ LOGIC
+    let currentQIndex = 0, quizScore = 0, quizAnswered = false;
 
-function buildTP(){
-  const g=document.getElementById('tgrid');
-  topics.forEach(t=>{
-    const b=document.createElement('div');b.className='tcard';
-    b.innerHTML=`<div style="font-size:13px;color:var(--color-text-primary);">${t.label}</div><div style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px;">Ask Claude ↗</div>`;
-    b.onclick=()=>sendPrompt(t.prompt);g.appendChild(b);
-  });
-}
+    function renderQuiz() {
+      const q = quizQuestions[currentQIndex];
+      document.getElementById('quiz-progress').textContent = `Question ${currentQIndex + 1} of ${quizQuestions.length}`;
+      document.getElementById('quiz-q').textContent = q.q;
+      const optsDiv = document.getElementById('quiz-opts');
+      optsDiv.innerHTML = '';
+      q.opts.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt';
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(idx);
+        optsDiv.appendChild(btn);
+      });
+      document.getElementById('quiz-fb').className = 'quiz-feedback';
+      document.getElementById('quiz-fb').textContent = '';
+      document.getElementById('next-btn').style.display = 'none';
+      quizAnswered = false;
+    }
 
-buildFC();renderQ();buildCS();buildTP();
-</script>
+    function checkAnswer(selectedIdx) {
+      if (quizAnswered) return;
+      quizAnswered = true;
+      const q = quizQuestions[currentQIndex];
+      const allOpts = document.querySelectorAll('.quiz-opt');
+      allOpts[q.ans].classList.add('correct');
+      if (selectedIdx !== q.ans) {
+        allOpts[selectedIdx].classList.add('wrong');
+      } else {
+        quizScore++;
+      }
+      const fbDiv = document.getElementById('quiz-fb');
+      fbDiv.textContent = (selectedIdx === q.ans ? '✓ Correct! ' : '✗ ') + q.exp;
+      fbDiv.className = `quiz-feedback show ${selectedIdx === q.ans ? 'ok' : 'bad'}`;
+      document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function nextQ() {
+      currentQIndex++;
+      if (currentQIndex >= quizQuestions.length) {
+        document.getElementById('quiz-card').style.display = 'none';
+        document.getElementById('quiz-progress').style.display = 'none';
+        const scoreBox = document.getElementById('score-box');
+        scoreBox.style.display = 'block';
+        document.getElementById('score-num').textContent = `${quizScore}/${quizQuestions.length}`;
+      } else {
+        renderQuiz();
+      }
+    }
+
+    function resetQuiz() {
+      currentQIndex = 0;
+      quizScore = 0;
+      quizAnswered = false;
+      document.getElementById('quiz-card').style.display = 'block';
+      document.getElementById('quiz-progress').style.display = 'block';
+      document.getElementById('score-box').style.display = 'none';
+      renderQuiz();
+    }
+
+    function buildCheatsheet() {
+      const container = document.getElementById('cheatsheet');
+      cheatsheetData.forEach(group => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'cheatsheet-group';
+        groupDiv.innerHTML = `<div class="cheatsheet-title">📘 ${group.title}</div>`;
+        group.items.forEach(code => {
+          const pre = document.createElement('div');
+          pre.className = 'code-block';
+          pre.textContent = code;
+          groupDiv.appendChild(pre);
+        });
+        container.appendChild(groupDiv);
+      });
+    }
+
+    function buildTopics() {
+      const grid = document.getElementById('topic-grid');
+      topics.forEach(topic => {
+        const card = document.createElement('div');
+        card.className = 'topic-card';
+        card.innerHTML = `<div class="topic-label">📖 ${topic.label}</div><div class="topic-hint">✨ ask AI (deep explanation)</div>`;
+        card.onclick = () => sendPrompt(topic.prompt);
+        grid.appendChild(card);
+      });
+    }
+
+    function sendPrompt(promptText) {
+      if (window.ai?.chat) window.ai.chat(promptText);
+      else alert("✨ AI prompt ready! Copy this for Claude/ChatGPT:\n\n" + promptText);
+    }
+
+    // Initialize everything
+    buildFlashcards();
+    renderQuiz();
+    buildCheatsheet();
+    buildTopics();
+  </script>
+</body>
+
+</html>

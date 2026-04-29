@@ -333,7 +333,7 @@
     <button class="tab active" onclick="showTab('flashcards')">📇 Flashcards</button>
     <button class="tab" onclick="showTab('quiz')">⚡ Quiz</button>
     <button class="tab" onclick="showTab('cheatsheet')">📘 Code Cheatsheet</button>
-    <button class="tab" onclick="showTab('topics')">🗺️ Topic Q&A (from lecture)</button>
+    <button class="tab" onclick="showTab('topics')">🗺️ Topic Q&A (with answers)</button>
 </div>
 
 <div id="flashcards" class="section active">
@@ -362,7 +362,7 @@
     <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:14px;">❓ Click any question below — the answer appears directly from the lecture content 📖</div>
     <div class="topic-grid" id="topic-grid"></div>
     <div id="liveAnswer" class="answer-panel" style="display: none;">
-        <span>📌 Answer from lecture:</span> <span id="answerText"></span>
+        <span>📌 Answer:</span> <span id="answerText"></span>
     </div>
 </div>
 </div>
@@ -553,7 +553,7 @@ function buildTopicQA() {
         const card = document.createElement('div');
         card.className = 'topic-card';
         card.innerHTML = `<div class="topic-question">❓ ${item.q}</div>
-                          <div class="topic-hint">📖 click to reveal answer (from lecture)</div>`;
+                          <div class="topic-hint">📖 click to reveal answer </div>`;
         card.onclick = () => {
             const panel = document.getElementById('liveAnswer');
             document.getElementById('answerText').innerHTML = item.a;
