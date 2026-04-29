@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ViewBinding · Android Lecture 9 | Eliminate findViewById</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-sunshine: #FFE588;
+            --color-coral: #F79D65;
+            --color-ember: #F35252;
+            --color-mint: #5EF2D5;
+            --color-sky: #60B5FF;
+            --color-bg-page: #FFFBF2;
+            --color-bg-card: #FFFFFF;
+            --color-text-primary: #1E2A32;
+            --color-text-secondary: #2F4858;
+            --color-text-tertiary: #5E6F7D;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--color-bg-page);
+            color: var(--color-text-primary);
+            padding: 1.8rem 1.2rem;
+            line-height: 1.5;
+        }
+
+        .main-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            padding: 0.5rem 0 1.2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(96, 181, 255, 0.2);
+            margin-bottom: 0.25rem;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            border-radius: 40px;
+            transition: all 0.2s ease;
+        }
+
+        .tab:hover {
+            background: rgba(96, 181, 255, 0.12);
+        }
+
+        .tab.active {
+            background: var(--color-sunshine);
+            color: #2F2A1F;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(255, 229, 136, 0.4);
+        }
+
+        .section {
+            display: none;
+            padding: 1.2rem 0 1rem;
+            animation: fadeSlideUp 0.25s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--color-bg-card);
+            border: 1px solid rgba(255, 229, 136, 0.5);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(247, 157, 101, 0.3);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-q {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+            color: #1E2A32;
+        }
+
+        .card-a {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            display: none;
+            border-top: 1px solid rgba(94, 242, 213, 0.4);
+            padding-top: 0.9rem;
+            margin-top: 0.8rem;
+            line-height: 1.55;
+            background: #FEFCF5;
+            border-radius: 16px;
+            padding: 0.9rem 1rem;
+        }
+
+        .reveal-btn {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-sky);
+            background: rgba(96, 181, 255, 0.08);
+            border: none;
+            padding: 5px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: 0.15s;
+        }
+
+        .reveal-btn:hover {
+            background: rgba(96, 181, 255, 0.2);
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 50px;
+            margin-right: 6px;
+            margin-bottom: 8px;
+            background: #EAF5FF;
+            color: #1F6392;
+            border-left: 3px solid var(--color-sky);
+        }
+
+        .progress {
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: rgba(94, 242, 213, 0.2);
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-opt {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px 18px;
+            margin: 8px 0;
+            border: 1.5px solid rgba(0, 0, 0, 0.07);
+            border-radius: 60px;
+            background: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quiz-opt:hover {
+            background: #FEFBF2;
+            border-color: var(--color-coral);
+            transform: translateX(4px);
+        }
+
+        .quiz-opt.correct {
+            border-color: var(--color-mint);
+            background: #E5F9F4;
+            color: #0F5A49;
+        }
+
+        .quiz-opt.wrong {
+            border-color: var(--color-ember);
+            background: #FDEFEC;
+            color: #A13B1D;
+        }
+
+        .quiz-feedback {
+            font-size: 0.85rem;
+            padding: 10px 18px;
+            border-radius: 40px;
+            margin-top: 12px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.ok {
+            background: #E0FBF5;
+            color: #0D6956;
+            border-left: 5px solid var(--color-mint);
+        }
+
+        .quiz-feedback.bad {
+            background: #FEF0EC;
+            color: #BC4A26;
+            border-left: 5px solid var(--color-ember);
+        }
+
+        .next-btn {
+            margin-top: 16px;
+            padding: 8px 24px;
+            border: none;
+            background: rgba(96, 181, 255, 0.12);
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .next-btn:hover {
+            background: var(--color-sky);
+            color: white;
+        }
+
+        .score-box {
+            background: linear-gradient(135deg, #FFFFFF, #FEF9EF);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 229, 136, 0.7);
+        }
+
+        .score-num {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #F79D65, #F35252);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .cheatsheet-group {
+            margin-bottom: 2rem;
+        }
+
+        .cheatsheet-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            color: var(--color-text-tertiary);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--color-mint);
+            padding-left: 12px;
+        }
+
+        .code-block {
+            background: #FDF9F0;
+            border-radius: 20px;
+            padding: 14px 18px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            border: 1px solid rgba(94, 242, 213, 0.3);
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            cursor: pointer;
+            border: 1px solid #FFE9BD;
+            transition: 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .topic-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--color-coral);
+            box-shadow: 0 12px 20px rgba(247, 157, 101, 0.12);
+            background: #FFFEF8;
+        }
+
+        .topic-question {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #1E2A32;
+        }
+
+        .answer-reveal {
+            font-size: 0.7rem;
+            color: var(--color-sky);
+            margin-top: 8px;
+        }
+
+        .live-answer {
+            background: #F4F9FE;
+            border-radius: 24px;
+            padding: 1rem 1.4rem;
+            margin-top: 1.5rem;
+            border-left: 6px solid var(--color-mint);
+            font-size: 0.9rem;
+            color: #1F5345;
+            font-weight: 500;
+            display: none;
+        }
+
+        .live-answer span {
+            font-weight: 700;
+            color: #1F6392;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .topic-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <h2 class="sr-only">Lecture 9: ViewBinding — Modern Android view access without findViewById</h2>
+
+        <div class="tab-bar">
+            <button class="tab active" onclick="showTab('flashcards')">📇 Flashcards</button>
+            <button class="tab" onclick="showTab('quiz')">⚡ Quiz</button>
+            <button class="tab" onclick="showTab('cheatsheet')">📘 Code & Setup</button>
+            <button class="tab" onclick="showTab('topics')">🗺️ Topic Q&A</button>
+        </div>
+
+        <div id="flashcards" class="section active">
+            <div
+                style="font-size:13px; background: rgba(96,181,255,0.1); display:inline-block; padding:6px 20px; border-radius:30px; margin-bottom:14px;">
+                🔍 ViewBinding: type‑safe, null‑safe, no more findViewById</div>
+        </div>
+
+        <div id="quiz" class="section">
+            <div class="progress" id="quiz-progress">Question 1 of 10</div>
+            <div class="card" id="quiz-card">
+                <div class="card-q" id="quiz-q"></div>
+                <div id="quiz-opts"></div>
+                <div class="quiz-feedback" id="quiz-fb"></div>
+                <button class="next-btn" id="next-btn" onclick="nextQ()">Next →</button>
+            </div>
+            <div class="score-box" id="score-box" style="display: none;">
+                <div class="score-num" id="score-num"></div>
+                <div style="margin:8px 0 16px;">questions correct</div>
+                <button class="quiz-opt" style="width:auto;display:inline-block;" onclick="resetQuiz()">⟳ Retake
+                    quiz</button>
+                <button class="quiz-opt" style="width:auto;margin-left:8px;"
+                    onclick="sendPrompt('Generate more advanced ViewBinding questions: including in Dialogs, Fragments, and custom views')">✨
+                    More questions</button>
+            </div>
+        </div>
+
+        <div id="cheatsheet" class="section"></div>
+        <div id="topics" class="section">
+            <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:14px;">❓ Click any question —
+                answer appears directly from the lecture material</div>
+            <div class="topic-grid" id="topic-grid"></div>
+            <div id="liveAnswer" class="live-answer">
+                <span>📌 Lecture answer:</span> <span id="answerText"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---------------------------- FLASHCARDS (ViewBinding specific) ----------------------------
+        const flashcards = [
+            { q: "What is ViewBinding in Android?", a: "A feature that generates a binding class for each XML layout file, providing direct, type‑safe access to all views without using findViewById().", tags: ["Concept"] },
+            { q: "How do you enable ViewBinding in build.gradle (Module: app)?", a: "android { buildFeatures { viewBinding true } }", tags: ["Setup"] },
+            { q: "What binding class is generated for activity_main.xml?", a: "ActivityMainBinding (based on the XML filename, converted to PascalCase with 'Binding' suffix).", tags: ["Generated"] },
+            { q: "How do you inflate a binding and set the content view in an Activity?", a: "val binding = ActivityMainBinding.inflate(layoutInflater); setContentView(binding.root)", tags: ["Activity"] },
+            { q: "What does binding.root represent?", a: "The root view of the layout (the top‑most ViewGroup). Used with setContentView().", tags: ["Usage"] },
+            { q: "How do you access a TextView with id 'myTextView' using ViewBinding?", a: "binding.myTextView (direct property, correct type and null‑safe).", tags: ["Usage"] },
+            { q: "What happens if a view with an ID exists in the layout but not in the binding class?", a: "Binding class will still have a reference; but if you remove the ID, the field disappears. There’s no runtime crash — compile‑time safe.", tags: ["Safety"] },
+            { q: "Is ViewBinding faster than findViewById?", a: "Slightly faster because it avoids runtime view lookups; all views are pre‑linked at compile time.", tags: ["Performance"] },
+            { q: "Can ViewBinding be used for Fragments? If yes, how?", a: "Yes: val binding = FragmentXxxBinding.inflate(layoutInflater, container, false); return binding.root; and hold binding reference in onDestroyView().", tags: ["Fragment"] },
+            { q: "What must you do to avoid memory leaks when using ViewBinding in a Fragment?", a: "Set binding = null in onDestroyView() because the binding holds references to the inflated views.", tags: ["Fragment"] },
+            { q: "How do you use ViewBinding in a Dialog (AlertDialog with custom layout)?", a: "val dialogBinding = DialogLayoutBinding.inflate(layoutInflater); alertDialog.setView(dialogBinding.root); then access views via dialogBinding.viewId.", tags: ["Dialog"] },
+            { q: "What is the difference between ViewBinding and DataBinding?", a: "DataBinding also allows live data binding expressions in XML, bidirectional binding, and observable data. ViewBinding only provides view references (simpler, faster compilation).", tags: ["Comparison"] },
+            { q: "Is ViewBinding backwards compatible?", a: "Yes, works with any Android version back to API level 14 (no minimum version constraint).", tags: ["Compatibility"] },
+            { q: "Can you use ViewBinding in a RecyclerView.Adapter?", a: "Yes: inside onCreateViewHolder, inflate with ItemBinding.inflate(layoutInflater, parent, false); then use holder.binding.textView.setText(...).", tags: ["Adapter"] },
+            { q: "Do you need to enable ViewBinding for every module individually?", a: "Yes, each module (app, library) must set viewBinding true in its own build.gradle file.", tags: ["Setup"] }
+        ];
+
+        // ---------------------------- QUIZ (10 questions on ViewBinding essentials) ----------------------------
+        const quizQuestions = [
+            { q: "Which build.gradle configuration enables ViewBinding?", opts: ["android.buildFeatures.viewBinding = true", "android.viewBinding.enabled = true", "useViewBinding true", "bindingEnabled true"], ans: 0, exp: "Inside android { buildFeatures { viewBinding true } } is the correct syntax." },
+            { q: "What class name is generated for layout file 'activity_main.xml'?", opts: ["ActivityMainBinding", "MainActivityBinding", "activity_mainBinding", "MainBinding"], ans: 0, exp: "Each XML becomes a binding class named after the file in PascalCase + 'Binding': ActivityMainBinding." },
+            { q: "Which method inflates the binding in an Activity?", opts: ["ActivityMainBinding.inflate(layoutInflater)", "ActivityMainBinding.bind(rootView)", "ActivityMainBinding.create()", "LayoutBinding.from(context)"], ans: 0, exp: "inflate(layoutInflater) creates the binding and inflates the layout." },
+            { q: "What does binding.root return?", opts: ["The root View of the layout", "The Context", "The Activity reference", "The layout resource ID"], ans: 0, exp: "binding.root is the outermost View (e.g., ConstraintLayout) from the XML." },
+            { q: "How do you access a Button with id 'btnSubmit' using ViewBinding?", opts: ["binding.btnSubmit", "findViewById(R.id.btnSubmit)", "binding.getButton()", "binding.submitBtn"], ans: 0, exp: "The binding generates a direct property named after the id (btnSubmit)." },
+            { q: "In a Fragment, why must you set binding = null in onDestroyView()?", opts: ["To avoid memory leaks", "To improve performance", "To regenerate the binding", "To release the context"], ans: 0, exp: "Binding holds references to views; if not cleared, the fragment can leak its view hierarchy." },
+            { q: "Which statement is TRUE about ViewBinding vs findViewById?", opts: ["ViewBinding is slower", "findViewById is type‑safe", "ViewBinding is null‑safe and type‑safe", "Both have compile‑time safety"], ans: 2, exp: "ViewBinding guarantees non‑null views (if present in layout) and correct type, while findViewById can return null and requires casting." },
+            { q: "Can ViewBinding be used for layouts that are included via <include> tag?", opts: ["No, included layouts are ignored", "Yes, but only if you add an id to <include>", "Yes, automatically generates fields", "Only if you use dataBinding"], ans: 1, exp: "If the <include> tag has an id, the binding will have a reference to the included layout's binding (e.g., binding.includeLayout.viewId)." },
+            { q: "What is the main advantage of ViewBinding over DataBinding for simple view access?", opts: ["Faster compilation", "Supports two‑way binding", "No need to enable dataBinding", "Both A and C"], ans: 3, exp: "ViewBinding compiles faster because it doesn't process data binding expressions, and it requires only viewBinding=true, not dataBinding=true." },
+            { q: "How do you use ViewBinding in an activity if the layout is activity_main?", opts: ["val binding = ActivityMainBinding.inflate(layoutInflater); setContentView(binding.root)", "binding = ActivityMainBinding.create(this)", "setContentView(R.layout.activity_main); val binding = ActivityMainBinding.bind(findViewById(android.R.id.content))", "Both A and C are correct"], ans: 3, exp: "Both A (inflate) and C (setContentView first then bind) work; A is more common." }
+        ];
+
+        // ---------------------------- CHEAT SHEET (practical code snippets) ----------------------------
+        const cheatsheetData = [
+            {
+                title: "📦 Enable ViewBinding in build.gradle.kts (Module: app)", items: [
+                    "android {\n    buildFeatures {\n        viewBinding = true\n    }\n}"
+                ]
+            },
+            {
+                title: "📱 Activity — Basic usage", items: [
+                    "class MainActivity : AppCompatActivity() {\n    private lateinit var binding: ActivityMainBinding\n\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        binding = ActivityMainBinding.inflate(layoutInflater)\n        setContentView(binding.root)\n        \n        // Access views directly\n        binding.myTextView.text = \"Hello ViewBinding!\"\n        binding.myButton.setOnClickListener { /* ... */ }\n    }\n}"
+                ]
+            },
+            {
+                title: "🧩 Fragment — with proper cleanup", items: [
+                    "class ExampleFragment : Fragment() {\n    private var _binding: FragmentExampleBinding? = null\n    private val binding get() = _binding!!\n\n    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {\n        _binding = FragmentExampleBinding.inflate(inflater, container, false)\n        return binding.root\n    }\n\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\n        super.onViewCreated(view, savedInstanceState)\n        binding.titleTextView.text = \"Fragment with ViewBinding\"\n    }\n\n    override fun onDestroyView() {\n        super.onDestroyView()\n        _binding = null  // avoid memory leaks\n    }\n}"
+                ]
+            },
+            {
+                title: "🗂️ RecyclerView Adapter with ViewBinding", items: [
+                    "class ItemAdapter(private val items: List<String>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {\n\n    inner class ViewHolder(val binding: ItemLayoutBinding) : RecyclerView.ViewHolder(binding.root)\n\n    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {\n        val binding = ItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)\n        return ViewHolder(binding)\n    }\n\n    override fun onBindViewHolder(holder: ViewHolder, position: Int) {\n        holder.binding.itemText.text = items[position]\n    }\n\n    override fun getItemCount() = items.size\n}"
+                ]
+            },
+            {
+                title: "📄 Dialog — AlertDialog with custom layout", items: [
+                    "val dialogBinding = DialogCustomBinding.inflate(layoutInflater)\nAlertDialog.Builder(this)\n    .setView(dialogBinding.root)\n    .setPositiveButton(\"OK\") { _, _ ->\n        val input = dialogBinding.editText.text.toString()\n    }\n    .show()"
+                ]
+            },
+            {
+                title: "⚠️ Handling <include> tags with id", items: [
+                    "// layout_main.xml:\n<include\n    android:id=\"@+id/toolbar_include\"\n    layout=\"@layout/toolbar_layout\" />\n\n// In Activity:\nbinding.toolbarInclude.titleTextView.text = \"Included View\""
+                ]
+            }
+        ];
+
+        // ---------------------------- TOPIC Q&A (direct answers from lecture concepts) ----------------------------
+        const topicQA = [
+            { q: "What problem does ViewBinding solve that findViewById has?", a: "findViewById requires manual casting (causing ClassCastException), can return null, and is verbose. ViewBinding generates type-safe, non-null references for all views with IDs, reducing boilerplate and runtime errors." },
+            { q: "Do I need to enable both viewBinding and dataBinding to use ViewBinding?", a: "No. viewBinding is a separate feature. You only need viewBinding = true. DataBinding is more powerful but adds compilation time and complexity." },
+            { q: "What does the generated binding class look like for a layout with a Button and TextView?", a: "The class (e.g., ActivityMainBinding) has public final fields: myButton: Button and myTextView: TextView, plus a root: View and an inflate()/bind() method." },
+            { q: "How to use ViewBinding in an activity without using inflate()? (Alternative approach)", a: "Call setContentView(R.layout.activity_main) first, then val binding = ActivityMainBinding.bind(findViewById(android.R.id.content)). But inflate() is cleaner." },
+            { q: "Why is it recommended to use a nullable _binding variable in Fragments?", a: "Because Fragment views can be destroyed (onDestroyView) while the Fragment instance lives. If you keep a strong reference to binding, it can cause memory leaks (views not GC). Setting _binding = null releases view references." },
+            { q: "Can ViewBinding be used for views created programmatically (not from XML)?", a: "No. ViewBinding only works with layouts defined in XML. For dynamically created views, you still use traditional instantiation." },
+            { q: "What is the naming convention for binding classes?", a: "Convert XML filename to PascalCase, remove underscores, append 'Binding'. Example: `activity_main.xml` → `ActivityMainBinding`; `fragment_details.xml` → `FragmentDetailsBinding`." },
+            { q: "Does ViewBinding work with merged layouts (merge tag)?", a: "Yes, but the binding class will not have a root view of its own (since <merge> doesn’t create a View). The binding still provides fields for child views." },
+        ];
+
+        // ---------------------------- UI RENDERING (identical to previous hubs) ----------------------------
+        function showTab(id) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function buildFlashcards() {
+            const container = document.getElementById('flashcards');
+            container.innerHTML = '<div style="font-size:13px; background: rgba(96,181,255,0.1); display:inline-block; padding:6px 20px; border-radius:30px; margin-bottom:14px;">🔍 ViewBinding: type‑safe, null‑safe, no more findViewById</div>';
+            flashcards.forEach((fc, idx) => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
+            <div class="card-q">${fc.q}</div>
+            <span class="badge">${fc.tags[0]}</span>
+            <div><button class="reveal-btn" onclick="toggleAnswer(${idx})">🔍 Reveal answer</button></div>
+            <div class="card-a" id="ans-${idx}">${fc.a}</div>
+        `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleAnswer(idx) {
+            const ansDiv = document.getElementById(`ans-${idx}`);
+            const btn = ansDiv.previousElementSibling.firstChild;
+            if (ansDiv.style.display === 'block') {
+                ansDiv.style.display = 'none';
+                btn.textContent = '🔍 Reveal answer';
+            } else {
+                ansDiv.style.display = 'block';
+                btn.textContent = '🙈 Hide answer';
+            }
+        }
+
+        // Quiz logic
+        let currentQ = 0, quizScore = 0, isAnswered = false;
+
+        function renderQuiz() {
+            const q = quizQuestions[currentQ];
+            document.getElementById('quiz-progress').textContent = `Question ${currentQ + 1} of ${quizQuestions.length}`;
+            document.getElementById('quiz-q').textContent = q.q;
+            const optsDiv = document.getElementById('quiz-opts');
+            optsDiv.innerHTML = '';
+            q.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-opt';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(idx);
+                optsDiv.appendChild(btn);
+            });
+            document.getElementById('quiz-fb').className = 'quiz-feedback';
+            document.getElementById('quiz-fb').textContent = '';
+            document.getElementById('next-btn').style.display = 'none';
+            isAnswered = false;
+        }
+
+        function checkAnswer(selected) {
+            if (isAnswered) return;
+            isAnswered = true;
+            const q = quizQuestions[currentQ];
+            const opts = document.querySelectorAll('.quiz-opt');
+            opts[q.ans].classList.add('correct');
+            if (selected !== q.ans) {
+                opts[selected].classList.add('wrong');
+            } else {
+                quizScore++;
+            }
+            const fb = document.getElementById('quiz-fb');
+            fb.textContent = (selected === q.ans ? '✓ Correct! ' : '✗ ') + q.exp;
+            fb.className = `quiz-feedback show ${selected === q.ans ? 'ok' : 'bad'}`;
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function nextQ() {
+            currentQ++;
+            if (currentQ >= quizQuestions.length) {
+                document.getElementById('quiz-card').style.display = 'none';
+                document.getElementById('quiz-progress').style.display = 'none';
+                const sb = document.getElementById('score-box');
+                sb.style.display = 'block';
+                document.getElementById('score-num').textContent = `${quizScore}/${quizQuestions.length}`;
+            } else {
+                renderQuiz();
+            }
+        }
+
+        function resetQuiz() {
+            currentQ = 0;
+            quizScore = 0;
+            isAnswered = false;
+            document.getElementById('quiz-card').style.display = 'block';
+            document.getElementById('quiz-progress').style.display = 'block';
+            document.getElementById('score-box').style.display = 'none';
+            renderQuiz();
+        }
+
+        function buildCheatsheet() {
+            const container = document.getElementById('cheatsheet');
+            cheatsheetData.forEach(group => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'cheatsheet-group';
+                groupDiv.innerHTML = `<div class="cheatsheet-title">📘 ${group.title}</div>`;
+                group.items.forEach(code => {
+                    const pre = document.createElement('div');
+                    pre.className = 'code-block';
+                    pre.textContent = code;
+                    groupDiv.appendChild(pre);
+                });
+                container.appendChild(groupDiv);
+            });
+        }
+
+        function buildTopicQA() {
+            const grid = document.getElementById('topic-grid');
+            topicQA.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = 'topic-card';
+                card.innerHTML = `<div class="topic-question">❓ ${item.q}</div><div class="answer-reveal">📖 click to see answer (from lecture)</div>`;
+                card.onclick = () => {
+                    const panel = document.getElementById('liveAnswer');
+                    document.getElementById('answerText').innerHTML = item.a;
+                    panel.style.display = 'block';
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        function sendPrompt(promptText) {
+            if (window.ai?.chat) window.ai.chat(promptText);
+            else alert("✨ Prompt ready for AI (ChatGPT/Claude):\n\n" + promptText);
+        }
+
+        // Initialize everything
+        buildFlashcards();
+        renderQuiz();
+        buildCheatsheet();
+        buildTopicQA();
+    </script>
+</body>
+
+</html>

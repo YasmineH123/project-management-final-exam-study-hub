@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,7 +50,11 @@
             --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             font-family: var(--font-sans);
@@ -58,8 +63,38 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 1.5rem 1.5rem 1.5rem 4rem;
             margin: 0;
+        }
+
+        /* Floating Back Button */
+        .back-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 44px;
+            height: 44px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--gray-700);
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+            transform: translateX(-3px);
+        }
+
+        .back-btn i {
+            font-size: 1.1rem;
         }
 
         .app {
@@ -94,28 +129,60 @@
             letter-spacing: 0.01em;
         }
 
-        .tab.active { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
-        .tab:hover:not(.active) { background: var(--gray-100); color: var(--gray-800); }
-
-        .panel { display: none; animation: fade 0.2s ease; }
-        .panel.active { display: block; }
-
-        @keyframes fade {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+        .tab.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
         }
 
-        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; }
+        .tab:hover:not(.active) {
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .panel {
+            display: none;
+            animation: fade 0.2s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+        }
 
         .section-title {
-            font-size: 15px; font-weight: 600; color: var(--gray-800);
-            margin-bottom: 1rem; letter-spacing: -0.01em;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
         }
 
         .concept-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 14px; margin-bottom: 1.8rem;
+            gap: 14px;
+            margin-bottom: 1.8rem;
         }
 
         .concept-card {
@@ -126,157 +193,455 @@
             box-shadow: var(--shadow-sm);
             transition: box-shadow 0.2s, border-color 0.2s;
         }
-        .concept-card:hover { box-shadow: var(--shadow-md); border-color: var(--gray-200); }
+
+        .concept-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--gray-200);
+        }
+
         .concept-card .label {
-            font-size: 11px; font-weight: 600; text-transform: uppercase;
-            letter-spacing: 0.04em; color: var(--gray-500); margin-bottom: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--gray-500);
+            margin-bottom: 8px;
         }
+
         .concept-card .title {
-            font-size: 15px; font-weight: 600; color: var(--gray-800); margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 8px;
         }
+
         .concept-card .body {
-            font-size: 13.5px; color: var(--gray-600); line-height: 1.65;
+            font-size: 13.5px;
+            color: var(--gray-600);
+            line-height: 1.65;
         }
 
         .highlight {
-            background: var(--accent-light); border-radius: 4px;
-            padding: 1px 6px; color: #1d4ed8; font-size: 12px; font-weight: 500;
+            background: var(--accent-light);
+            border-radius: 4px;
+            padding: 1px 6px;
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 500;
         }
 
         .formula-box {
-            background: #f8fafc; border-radius: var(--border-radius-md);
-            padding: 14px 18px; font-size: 14px; margin-bottom: 14px;
-            border-left: 4px solid var(--accent); box-shadow: var(--shadow-sm);
+            background: #f8fafc;
+            border-radius: var(--border-radius-md);
+            padding: 14px 18px;
+            font-size: 14px;
+            margin-bottom: 14px;
+            border-left: 4px solid var(--accent);
+            box-shadow: var(--shadow-sm);
         }
+
         .formula-box code {
-            font-family: var(--font-mono); font-size: 15px;
-            color: var(--gray-800); background: white;
-            padding: 4px 10px; border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 15px;
+            color: var(--gray-800);
+            background: white;
+            padding: 4px 10px;
+            border-radius: 6px;
         }
 
         .risk-table {
-            width: 100%; border-collapse: collapse; font-size: 13px;
-            margin-top: 10px; border-radius: var(--border-radius-md);
-            overflow: hidden; box-shadow: var(--shadow-sm);
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 10px;
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
             border: 1px solid var(--color-border-light);
         }
+
         .risk-table th {
-            background: var(--gray-50); padding: 10px 14px;
-            text-align: left; font-weight: 600; color: var(--gray-700);
+            background: var(--gray-50);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
             border-bottom: 1px solid var(--gray-200);
         }
+
         .risk-table td {
-            padding: 10px 14px; border-bottom: 1px solid var(--gray-100);
-            color: var(--gray-800); vertical-align: top; background: white;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-800);
+            vertical-align: top;
+            background: white;
         }
-        .risk-table tr:last-child td { border-bottom: none; }
+
+        .risk-table tr:last-child td {
+            border-bottom: none;
+        }
 
         .badge {
-            display: inline-block; padding: 3px 12px; border-radius: 100px;
-            font-size: 12px; font-weight: 600; margin-right: 6px; letter-spacing: 0.01em;
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+            letter-spacing: 0.01em;
         }
-        .badge-low { background: #d1fae5; color: #065f46; }
-        .badge-med { background: #fef3c7; color: #92400e; }
-        .badge-high { background: #fee2e2; color: #991b1b; }
-        .badge-info { background: #dbeafe; color: #1e40af; }
 
-        .fc-area { max-width: 600px; margin: 0 auto; }
-        .fc-progress { font-size: 13px; color: var(--gray-500); text-align: center; margin-bottom: 16px; }
+        .badge-low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-med {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .fc-area {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .fc-progress {
+            font-size: 13px;
+            color: var(--gray-500);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
         .fc-card {
-            background: white; border: 1px solid var(--gray-200);
-            border-radius: var(--border-radius-lg); padding: 2.2rem 2rem;
-            min-height: 200px; display: flex; align-items: center;
-            justify-content: center; text-align: center; cursor: pointer;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-lg);
+            padding: 2.2rem 2rem;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
             transition: box-shadow 0.25s, border-color 0.2s;
-            position: relative; box-shadow: var(--shadow-md);
+            position: relative;
+            box-shadow: var(--shadow-md);
         }
-        .fc-card:hover { border-color: var(--accent); box-shadow: 0 12px 28px rgba(0,0,0,0.06); }
-        .fc-side {
-            font-size: 11px; font-weight: 600; color: var(--gray-500);
-            text-transform: uppercase; letter-spacing: 0.05em;
-            position: absolute; top: 16px; left: 20px;
-            background: var(--gray-50); padding: 3px 10px; border-radius: 20px;
-        }
-        .fc-text { font-size: 16px; color: var(--gray-800); line-height: 1.6; font-weight: 500; }
-        .fc-hint { font-size: 12px; color: var(--gray-500); text-align: center; margin-top: 10px; }
-        .fc-nav { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        .fc-nav button {
-            padding: 8px 22px; border-radius: 100px; border: 1px solid var(--gray-200);
-            background: white; cursor: pointer; font-size: 13px; font-weight: 500;
-            color: var(--gray-700); transition: all 0.2s;
-        }
-        .fc-nav button:hover { background: var(--gray-50); border-color: var(--gray-300); }
-        .fc-nav .primary { background: var(--accent); color: white; border-color: var(--accent); font-weight: 500; }
-        .fc-nav .primary:hover { background: #1d4ed8; }
 
-        .quiz-area { max-width: 680px; margin: 0 auto; }
-        .quiz-progress-bar { height: 5px; background: var(--gray-100); border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; }
-        .quiz-progress-fill { height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.4s ease; }
-        .quiz-q { font-size: 16px; font-weight: 600; color: var(--gray-800); margin-bottom: 1.2rem; line-height: 1.5; }
-        .quiz-opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.2rem; }
+        .fc-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+        }
+
+        .fc-side {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            background: var(--gray-50);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .fc-text {
+            font-size: 16px;
+            color: var(--gray-800);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .fc-hint {
+            font-size: 12px;
+            color: var(--gray-500);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .fc-nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .fc-nav button {
+            padding: 8px 22px;
+            border-radius: 100px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            transition: all 0.2s;
+        }
+
+        .fc-nav button:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+
+        .fc-nav .primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            font-weight: 500;
+        }
+
+        .fc-nav .primary:hover {
+            background: #1d4ed8;
+        }
+
+        .quiz-area {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .quiz-progress-bar {
+            height: 5px;
+            background: var(--gray-100);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .quiz-progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-q {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+        }
+
+        .quiz-opts {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 1.2rem;
+        }
+
         .quiz-opt {
-            padding: 12px 18px; border: 1px solid var(--gray-200);
-            border-radius: var(--border-radius-md); cursor: pointer;
-            font-size: 14px; color: var(--gray-700); text-align: left;
-            background: white; transition: all 0.15s; line-height: 1.5;
+            padding: 12px 18px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--gray-700);
+            text-align: left;
+            background: white;
+            transition: all 0.15s;
+            line-height: 1.5;
             box-shadow: var(--shadow-sm);
         }
-        .quiz-opt:hover:not(:disabled) { background: #f0f4ff; border-color: var(--accent); transform: translateY(-1px); }
-        .quiz-opt.correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
-        .quiz-opt.wrong { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
-        .quiz-opt.reveal-correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
+
+        .quiz-opt:hover:not(:disabled) {
+            background: #f0f4ff;
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .quiz-opt.correct {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .quiz-opt.wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .quiz-opt.reveal-correct {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
         .quiz-feedback {
-            font-size: 13.5px; margin-bottom: 16px; padding: 12px 16px;
-            border-radius: var(--border-radius-md); line-height: 1.5; font-weight: 500;
+            font-size: 13.5px;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: var(--border-radius-md);
+            line-height: 1.5;
+            font-weight: 500;
         }
-        .quiz-feedback.good { background: #ecfdf5; color: #065f46; border-left: 4px solid #10b981; }
-        .quiz-feedback.bad { background: #fef2f2; color: #991b1b; border-left: 4px solid #ef4444; }
-        .quiz-score { font-size: 13px; color: var(--gray-500); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .quiz-nav { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+
+        .quiz-feedback.good {
+            background: #ecfdf5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .quiz-feedback.bad {
+            background: #fef2f2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .quiz-score {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quiz-nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
         .quiz-nav button {
-            padding: 9px 24px; border-radius: 100px; border: 1px solid var(--gray-200);
-            background: white; cursor: pointer; font-size: 13px; font-weight: 500;
-            color: var(--gray-700); transition: all 0.2s;
+            padding: 9px 24px;
+            border-radius: 100px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            transition: all 0.2s;
         }
-        .quiz-nav .primary { background: var(--accent); color: white; border-color: var(--accent); }
-        .quiz-nav .primary:hover { background: #1d4ed8; }
-        .final-score { text-align: center; padding: 2.5rem 2rem; background: #f9fafb; border-radius: var(--border-radius-lg); }
-        .score-big { font-size: 56px; font-weight: 700; color: var(--gray-800); letter-spacing: -0.02em; }
-        .score-label { font-size: 15px; color: var(--gray-600); margin-top: 8px; margin-bottom: 1.8rem; }
+
+        .quiz-nav .primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .quiz-nav .primary:hover {
+            background: #1d4ed8;
+        }
+
+        .final-score {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: #f9fafb;
+            border-radius: var(--border-radius-lg);
+        }
+
+        .score-big {
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--gray-800);
+            letter-spacing: -0.02em;
+        }
+
+        .score-label {
+            font-size: 15px;
+            color: var(--gray-600);
+            margin-top: 8px;
+            margin-bottom: 1.8rem;
+        }
+
         .final-score button {
-            padding: 10px 28px; border-radius: 100px; background: var(--accent);
-            color: white; border: none; font-weight: 600; font-size: 14px;
-            cursor: pointer; transition: background 0.2s;
+            padding: 10px 28px;
+            border-radius: 100px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
         }
-        .final-score button:hover { background: #1e40af; }
+
+        .final-score button:hover {
+            background: #1e40af;
+        }
 
         .pair-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 12px; margin-bottom: 1.2rem;
+            gap: 12px;
+            margin-bottom: 1.2rem;
         }
+
         .pair-card {
-            background: #f8fafc; border: 1px solid var(--color-border-light);
-            border-radius: var(--border-radius-md); padding: 14px 16px;
-            display: flex; gap: 12px; align-items: flex-start;
+            background: #f8fafc;
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-md);
+            padding: 14px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
         }
-        .pair-icon { font-size: 18px; min-width: 28px; text-align: center; }
-        .pair-content .pair-title { font-weight: 600; font-size: 13px; color: var(--gray-800); margin-bottom: 3px; }
-        .pair-content .pair-desc { font-size: 12px; color: var(--gray-600); line-height: 1.5; }
+
+        .pair-icon {
+            font-size: 18px;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .pair-content .pair-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--gray-800);
+            margin-bottom: 3px;
+        }
+
+        .pair-content .pair-desc {
+            font-size: 12px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
 
         @media (max-width: 640px) {
-            .app { padding: 1.2rem; }
-            .concept-grid { grid-template-columns: 1fr; }
-            .pair-grid { grid-template-columns: 1fr; }
+            .app {
+                padding: 1.2rem;
+            }
+
+            .concept-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pair-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
+    <!-- Floating Back Button -->
+    <a href="course-pm.html" class="back-btn" title="Back to Course">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
     <div class="app">
         <h2 class="sr-only">Chapter 9 Project Scheduling — Interactive Study Tool</h2>
         <div style="margin-bottom:1.5rem;">
-            <div style="font-size:20px;font-weight:700;color:var(--gray-800);margin-bottom:6px;">Chapter 9 — Project Scheduling</div>
-            <div style="font-size:14px;color:var(--gray-500);">BMGT 300 · Networks, Duration Estimation, Critical Path</div>
+            <div style="font-size:20px;font-weight:700;color:var(--gray-800);margin-bottom:6px;">Chapter 9 — Project
+                Scheduling</div>
+            <div style="font-size:14px;color:var(--gray-500);">BMGT 300 · Networks, Duration Estimation, Critical Path
+            </div>
         </div>
 
         <div class="tabs">
@@ -294,37 +659,73 @@
                 <div class="concept-card">
                     <div class="label">Definition</div>
                     <div class="title">Project schedule</div>
-                    <div class="body">An output of a schedule model that presents linked activities with planned dates, durations, milestones, and resources (PMBoK).</div>
+                    <div class="body">An output of a schedule model that presents linked activities with planned dates,
+                        durations, milestones, and resources (PMBoK).</div>
                 </div>
                 <div class="concept-card">
                     <div class="label">Definition</div>
                     <div class="title">Project planning</div>
-                    <div class="body">Identification of project objectives and the ordered activities needed to complete the project, including resource types and quantities.</div>
+                    <div class="body">Identification of project objectives and the ordered activities needed to complete
+                        the project, including resource types and quantities.</div>
                 </div>
                 <div class="concept-card">
                     <div class="label">Key network types</div>
                     <div class="title">AON vs AOA</div>
-                    <div class="body"><strong>AON (Activity-on-Node):</strong> Nodes = activities, arrows = dependencies.<br><strong>AOA (Activity-on-Arrow):</strong> Arrows = activities, nodes = events (start/finish).</div>
+                    <div class="body"><strong>AON (Activity-on-Node):</strong> Nodes = activities, arrows =
+                        dependencies.<br><strong>AOA (Activity-on-Arrow):</strong> Arrows = activities, nodes = events
+                        (start/finish).</div>
                 </div>
                 <div class="concept-card">
                     <div class="label">Critical concepts</div>
                     <div class="title">Float & Critical Path</div>
-                    <div class="body"><strong>Float (slack):</strong> time an activity can be delayed without delaying the project.<br><strong>Critical path:</strong> longest path through the network; activities on it have zero total float.</div>
+                    <div class="body"><strong>Float (slack):</strong> time an activity can be delayed without delaying
+                        the project.<br><strong>Critical path:</strong> longest path through the network; activities on
+                        it have zero total float.</div>
                 </div>
             </div>
 
             <div class="section-title">Key scheduling terminology</div>
             <table class="risk-table">
-                <tr><th>Term</th><th>Definition</th></tr>
-                <tr><td>Path</td><td>Sequence of activities defined by the network logic</td></tr>
-                <tr><td>Event</td><td>A point when an activity is started or completed</td></tr>
-                <tr><td>Node</td><td>Junction point joined by dependency lines</td></tr>
-                <tr><td>Predecessors</td><td>Activities that must be completed before a later activity can start</td></tr>
-                <tr><td>Successors</td><td>Activities that cannot start until previous ones are completed</td></tr>
-                <tr><td>Merge activity</td><td>An activity with two or more immediate predecessors</td></tr>
-                <tr><td>Burst activity</td><td>An activity with two or more immediate successors</td></tr>
-                <tr><td>Float (slack)</td><td>Amount of time an activity can be delayed without delaying the project</td></tr>
-                <tr><td>Critical Path Method (CPM)</td><td>Network analysis technique to determine schedule flexibility and minimum project duration</td></tr>
+                <tr>
+                    <th>Term</th>
+                    <th>Definition</th>
+                </tr>
+                <tr>
+                    <td>Path</td>
+                    <td>Sequence of activities defined by the network logic</td>
+                </tr>
+                <tr>
+                    <td>Event</td>
+                    <td>A point when an activity is started or completed</td>
+                </tr>
+                <tr>
+                    <td>Node</td>
+                    <td>Junction point joined by dependency lines</td>
+                </tr>
+                <tr>
+                    <td>Predecessors</td>
+                    <td>Activities that must be completed before a later activity can start</td>
+                </tr>
+                <tr>
+                    <td>Successors</td>
+                    <td>Activities that cannot start until previous ones are completed</td>
+                </tr>
+                <tr>
+                    <td>Merge activity</td>
+                    <td>An activity with two or more immediate predecessors</td>
+                </tr>
+                <tr>
+                    <td>Burst activity</td>
+                    <td>An activity with two or more immediate successors</td>
+                </tr>
+                <tr>
+                    <td>Float (slack)</td>
+                    <td>Amount of time an activity can be delayed without delaying the project</td>
+                </tr>
+                <tr>
+                    <td>Critical Path Method (CPM)</td>
+                    <td>Network analysis technique to determine schedule flexibility and minimum project duration</td>
+                </tr>
             </table>
         </div>
 
@@ -335,22 +736,28 @@
                 <div class="concept-card">
                     <div class="label">Node label</div>
                     <div class="title">Standard AON node</div>
-                    <div class="body">Each node shows: <strong>Early Start (ES), Early Finish (EF), Late Start (LS), Late Finish (LF), Activity ID, Duration.</strong> The forward pass fills ES/EF, backward pass fills LS/LF.</div>
+                    <div class="body">Each node shows: <strong>Early Start (ES), Early Finish (EF), Late Start (LS),
+                            Late Finish (LF), Activity ID, Duration.</strong> The forward pass fills ES/EF, backward
+                        pass fills LS/LF.</div>
                 </div>
                 <div class="concept-card">
                     <div class="label">Logic</div>
                     <div class="title">Serial vs Concurrent</div>
-                    <div class="body"><strong>Serial activities</strong> flow one after another. <strong>Concurrent activities</strong> can happen at the same time, creating parallel paths through the network.</div>
+                    <div class="body"><strong>Serial activities</strong> flow one after another. <strong>Concurrent
+                            activities</strong> can happen at the same time, creating parallel paths through the
+                        network.</div>
                 </div>
                 <div class="concept-card">
                     <div class="label">Structure</div>
                     <div class="title">Merge activity</div>
-                    <div class="body">An activity that cannot start until multiple predecessors finish. Example: Activity D depends on A, B, and C.</div>
+                    <div class="body">An activity that cannot start until multiple predecessors finish. Example:
+                        Activity D depends on A, B, and C.</div>
                 </div>
                 <div class="concept-card">
                     <div class="label">Structure</div>
                     <div class="title">Burst activity</div>
-                    <div class="body">An activity that, once completed, allows multiple successors to begin. Example: Activity A releases B, C, and D simultaneously.</div>
+                    <div class="body">An activity that, once completed, allows multiple successors to begin. Example:
+                        Activity A releases B, C, and D simultaneously.</div>
                 </div>
             </div>
         </div>
@@ -372,35 +779,86 @@
                 <div class="concept-card">
                     <div class="label">Method 3</div>
                     <div class="title">Mathematical derivation (Beta distribution)</div>
-                    <div class="body">Use three time estimates: <strong>a</strong> = optimistic, <strong>m</strong> = most likely, <strong>b</strong> = pessimistic.</div>
+                    <div class="body">Use three time estimates: <strong>a</strong> = optimistic, <strong>m</strong> =
+                        most likely, <strong>b</strong> = pessimistic.</div>
                 </div>
             </div>
 
             <div class="section-title">Beta distribution formulas</div>
             <div class="formula-box">
-                <div style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Expected time (TE)</div>
+                <div
+                    style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">
+                    Expected time (TE)</div>
                 <code>TE = (a + 4m + b) / 6</code>
             </div>
             <div class="formula-box">
-                <div style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Activity variance (σ²)</div>
+                <div
+                    style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">
+                    Activity variance (σ²)</div>
                 <code>σ² = ((b − a) / 6)²</code>
             </div>
             <div class="formula-box">
-                <div style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Project variance & standard deviation</div>
+                <div
+                    style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">
+                    Project variance & standard deviation</div>
                 <code>Project σ² = Σ variances on critical path</code><br>
                 <code>Project σ = √(project variance)</code>
             </div>
 
-            <div class="section-title" style="margin-top:1.5rem;">Example (Project Delta, critical path: A–C–D–F–H)</div>
+            <div class="section-title" style="margin-top:1.5rem;">Example (Project Delta, critical path: A–C–D–F–H)
+            </div>
             <table class="risk-table">
-                <tr><th>Activity</th><th>a</th><th>m</th><th>b</th><th>TE</th><th>Variance</th></tr>
-                <tr><td>A</td><td>3</td><td>5</td><td>11</td><td>5.33</td><td>1.78</td></tr>
-                <tr><td>C</td><td>4</td><td>6</td><td>8</td><td>6</td><td>1.00</td></tr>
-                <tr><td>D</td><td>8</td><td>10</td><td>12</td><td>10</td><td>4.00</td></tr>
-                <tr><td>F</td><td>3</td><td>4</td><td>5</td><td>4</td><td>0.69</td></tr>
-                <tr><td>H</td><td>2</td><td>3</td><td>4</td><td>3</td><td>0.25</td></tr>
+                <tr>
+                    <th>Activity</th>
+                    <th>a</th>
+                    <th>m</th>
+                    <th>b</th>
+                    <th>TE</th>
+                    <th>Variance</th>
+                </tr>
+                <tr>
+                    <td>A</td>
+                    <td>3</td>
+                    <td>5</td>
+                    <td>11</td>
+                    <td>5.33</td>
+                    <td>1.78</td>
+                </tr>
+                <tr>
+                    <td>C</td>
+                    <td>4</td>
+                    <td>6</td>
+                    <td>8</td>
+                    <td>6</td>
+                    <td>1.00</td>
+                </tr>
+                <tr>
+                    <td>D</td>
+                    <td>8</td>
+                    <td>10</td>
+                    <td>12</td>
+                    <td>10</td>
+                    <td>4.00</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>0.69</td>
+                </tr>
+                <tr>
+                    <td>H</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td>0.25</td>
+                </tr>
             </table>
-            <div style="font-size:13px; color:var(--gray-600); margin-top:8px;">Project variance = 1.78 + 1 + 4 + 0.69 + 0.25 = <strong>7.72</strong> · Std dev = √7.72 = <strong>2.78</strong></div>
+            <div style="font-size:13px; color:var(--gray-600); margin-top:8px;">Project variance = 1.78 + 1 + 4 + 0.69 +
+                0.25 = <strong>7.72</strong> · Std dev = √7.72 = <strong>2.78</strong></div>
         </div>
 
         <!-- CRITICAL PATH -->
@@ -410,33 +868,43 @@
                 <div class="concept-card">
                     <div class="label">Step 1</div>
                     <div class="title">Forward pass</div>
-                    <div class="body">Additive move from start to finish. Determines <strong>Earliest Start (ES)</strong> and <strong>Earliest Finish (EF)</strong>. The finish EF gives the overall project duration.</div>
+                    <div class="body">Additive move from start to finish. Determines <strong>Earliest Start
+                            (ES)</strong> and <strong>Earliest Finish (EF)</strong>. The finish EF gives the overall
+                        project duration.</div>
                 </div>
                 <div class="concept-card">
                     <div class="label">Step 2</div>
                     <div class="title">Backward pass</div>
-                    <div class="body">Subtractive move from finish to start. Determines <strong>Latest Start (LS)</strong> and <strong>Latest Finish (LF)</strong>. Begins with the project end date as the LF of the last activity.</div>
+                    <div class="body">Subtractive move from finish to start. Determines <strong>Latest Start
+                            (LS)</strong> and <strong>Latest Finish (LF)</strong>. Begins with the project end date as
+                        the LF of the last activity.</div>
                 </div>
                 <div class="concept-card">
                     <div class="label">Step 3</div>
                     <div class="title">Calculate float</div>
-                    <div class="body">Float = LS − ES (or LF − EF). Activities with zero total float are on the <strong>critical path</strong>.</div>
+                    <div class="body">Float = LS − ES (or LF − EF). Activities with zero total float are on the
+                        <strong>critical path</strong>.</div>
                 </div>
                 <div class="concept-card">
                     <div class="label">Step 4</div>
                     <div class="title">Identify critical path</div>
-                    <div class="body">The path with the longest total duration and zero float. Determines the <strong>minimum project duration</strong>.</div>
+                    <div class="body">The path with the longest total duration and zero float. Determines the
+                        <strong>minimum project duration</strong>.</div>
                 </div>
             </div>
 
             <div class="section-title">Probability of finishing on time</div>
             <div class="formula-box">
-                <div style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">Z‑score formula</div>
+                <div
+                    style="font-size:11px;color:var(--gray-500);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">
+                    Z‑score formula</div>
                 <code>Z = (Due date − Expected completion) / Project standard deviation</code>
-                <div style="font-size:13px;color:var(--gray-600);margin-top:8px;">Look up Z in the standard normal table to find the probability of finishing by the due date.</div>
+                <div style="font-size:13px;color:var(--gray-600);margin-top:8px;">Look up Z in the standard normal table
+                    to find the probability of finishing by the due date.</div>
             </div>
             <div class="concept-card">
-                <div class="body"><strong>Example:</strong> If expected completion = 30 weeks, due date = 32 weeks, σ = 2.78, then Z = (32−30)/2.78 = 0.72 → probability ≈ <strong>76.42%</strong>.</div>
+                <div class="body"><strong>Example:</strong> If expected completion = 30 weeks, due date = 32 weeks, σ =
+                    2.78, then Z = (32−30)/2.78 = 0.72 → probability ≈ <strong>76.42%</strong>.</div>
             </div>
         </div>
 
@@ -459,7 +927,9 @@
 
         <!-- QUIZ -->
         <div id="panel-quiz" class="panel">
-            <div class="quiz-area"><div id="quiz-inner"></div></div>
+            <div class="quiz-area">
+                <div id="quiz-inner"></div>
+            </div>
         </div>
     </div>
 
@@ -577,4 +1047,5 @@
         renderQuiz();
     </script>
 </body>
+
 </html>

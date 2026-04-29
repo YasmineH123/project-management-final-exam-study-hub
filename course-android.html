@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Development Course</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1055/1055687.png" type="image/png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg: #fafafa;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b6b6b;
+            --text-tertiary: #9b9b9b;
+            --border: #f0f0f0;
+            --accent: #34a853;
+            --accent-light: #e6f4ea;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --radius-lg: 12px;
+            --radius-md: 8px;
+            --radius-sm: 6px;
+            --font: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* Floating Back Button */
+        .back-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 44px;
+            height: 44px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+            transform: translateX(-3px);
+        }
+
+        .back-btn i {
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 1rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .course-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-light);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .course-icon i {
+            font-size: 2.5rem;
+            color: var(--accent);
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .material-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.2s, transform 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .material-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+
+        .material-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            background: var(--accent-light);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            margin-bottom: 0.75rem;
+            width: fit-content;
+        }
+
+        .material-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text-primary);
+        }
+
+        .material-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .material-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .material-meta i {
+            color: var(--accent);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+                padding-top: 5rem;
+            }
+
+            .back-btn {
+                top: 1rem;
+                left: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Floating Back Button -->
+    <a href="index.html" class="back-btn" title="Back to Dashboard">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <div class="container">
+        <div class="page-header">
+            <div class="course-icon">
+                <i class="fas fa-android"></i>
+            </div>
+            <h1>Android Development</h1>
+            <p>Mobile app development materials and notes</p>
+        </div>
+
+        <div class="materials-grid">
+            <!-- Lectures 1-3 -->
+            <a href="Lectures1to3.html" class="material-card">
+                <span class="material-tag">Lectures 1-3</span>
+                <h3 class="material-title">Introduction to Android</h3>
+                <p class="material-desc">Kotlin, Android Studio & more</p>
+                <div class="material-meta">
+                    <i class="fas fa-book-open"></i>
+                    <span>Interactive Study</span>
+                </div>
+            </a>
+
+            <!-- Lecture 4 -->
+            <a href="lecture4_study_hub.html" class="material-card">
+                <span class="material-tag">Lecture 4</span>
+                <h3 class="material-title">Project Selection</h3>
+                <p class="material-desc">Methods for selecting and prioritizing projects.</p>
+                <div class="material-meta">
+                    <i class="fas fa-book-open"></i>
+                    <span>Interactive Study</span>
+                </div>
+            </a>
+
+            <!-- Lectures 5-6 -->
+            <a href="Lectures5&6.html" class="material-card">
+                <span class="material-tag">Lectures 5-6</span>
+                <h3 class="material-title">Project Planning</h3>
+                <p class="material-desc">Advanced planning techniques and methodologies.</p>
+                <div class="material-meta">
+                    <i class="fas fa-book-open"></i>
+                    <span>Interactive Study</span>
+                </div>
+            </a>
+
+            <!-- Lectures 7-8 -->
+            <a href="Lectures7&8.html" class="material-card">
+                <span class="material-tag">Lectures 7-8</span>
+                <h3 class="material-title">Android Core Components</h3>
+                <p class="material-desc">Intents, Lifecycle, Services, Broadcasts - fundamental Android building blocks.
+                </p>
+                <div class="material-meta">
+                    <i class="fas fa-book-open"></i>
+                    <span>Interactive Study</span>
+                </div>
+            </a>
+
+            <!-- Lecture 9 -->
+            <a href="Lecture9.html" class="material-card">
+                <span class="material-tag">Lecture 9</span>
+                <h3 class="material-title">Data & Storage</h3>
+                <p class="material-desc">SQLite databases, SharedPreferences, and data persistence in Android.</p>
+                <div class="material-meta">
+                    <i class="fas fa-book-open"></i>
+                    <span>Interactive Study</span>
+                </div>
+            </a>
+
+            <!-- Lecture 10 -->
+            <a href="Lecture10.html" class="material-card">
+                <span class="material-tag">Lecture 10</span>
+                <h3 class="material-title">Advanced Android</h3>
+                <p class="material-desc">Advanced topics in Android development and best practices.</p>
+                <div class="material-meta">
+                    <i class="fas fa-book-open"></i>
+                    <span>Interactive Study</span>
+                </div>
+            </a>
+
+            <!-- Notes App 1 -->
+            <a href="NotesApp1.html" class="material-card">
+                <span class="material-tag">Practical</span>
+                <h3 class="material-title">Notes App - Part 1</h3>
+                <p class="material-desc">Build a complete notes application with Android Studio.</p>
+                <div class="material-meta">
+                    <i class="fas fa-code"></i>
+                    <span>Practical Exercise</span>
+                </div>
+            </a>
+
+            <!-- Notes App 2 -->
+            <a href="NotesApp2.html" class="material-card">
+                <span class="material-tag">Practical</span>
+                <h3 class="material-title">Notes App - Part 2</h3>
+                <p class="material-desc">Continue building the notes app with advanced features.</p>
+                <div class="material-meta">
+                    <i class="fas fa-code"></i>
+                    <span>Practical Exercise</span>
+                </div>
+            </a>
+
+            <!-- Firebase & More -->
+            <a href="firebase&more.html" class="material-card">
+                <span class="material-tag">Advanced</span>
+                <h3 class="material-title">Firebase & Backend</h3>
+                <p class="material-desc">Integrate Firebase for authentication, database, and cloud functions.</p>
+                <div class="material-meta">
+                    <i class="fas fa-cloud"></i>
+                    <span>Cloud Integration</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

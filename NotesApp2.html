@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Notes App SQLite · Update & Delete Notes | Part 3 & 4 Study Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-sunshine: #FFE588;
+            --color-coral: #F79D65;
+            --color-ember: #F35252;
+            --color-mint: #5EF2D5;
+            --color-sky: #60B5FF;
+            --color-bg-page: #FFFBF2;
+            --color-bg-card: #FFFFFF;
+            --color-text-primary: #1E2A32;
+            --color-text-secondary: #2F4858;
+            --color-text-tertiary: #5E6F7D;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--color-bg-page);
+            color: var(--color-text-primary);
+            padding: 1.8rem 1.2rem;
+            line-height: 1.5;
+        }
+
+        .main-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            padding: 0.5rem 0 1.2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(96, 181, 255, 0.2);
+            margin-bottom: 0.25rem;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            border-radius: 40px;
+            transition: all 0.2s ease;
+        }
+
+        .tab:hover {
+            background: rgba(96, 181, 255, 0.12);
+        }
+
+        .tab.active {
+            background: var(--color-sunshine);
+            color: #2F2A1F;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(255, 229, 136, 0.4);
+        }
+
+        .section {
+            display: none;
+            padding: 1.2rem 0 1rem;
+            animation: fadeSlideUp 0.25s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--color-bg-card);
+            border: 1px solid rgba(255, 229, 136, 0.5);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(247, 157, 101, 0.3);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-q {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+            color: #1E2A32;
+        }
+
+        .card-a {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            display: none;
+            border-top: 1px solid rgba(94, 242, 213, 0.4);
+            padding-top: 0.9rem;
+            margin-top: 0.8rem;
+            line-height: 1.55;
+            background: #FEFCF5;
+            border-radius: 16px;
+            padding: 0.9rem 1rem;
+        }
+
+        .reveal-btn {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-sky);
+            background: rgba(96, 181, 255, 0.08);
+            border: none;
+            padding: 5px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: 0.15s;
+        }
+
+        .reveal-btn:hover {
+            background: rgba(96, 181, 255, 0.2);
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 50px;
+            margin-right: 6px;
+            margin-bottom: 8px;
+        }
+
+        .badge-update {
+            background: #EAF5FF;
+            color: #1F6392;
+            border-left: 3px solid var(--color-sky);
+        }
+
+        .badge-delete {
+            background: #FFF0E8;
+            color: #B15327;
+            border-left: 3px solid var(--color-coral);
+        }
+
+        .badge-adapter {
+            background: #E0FCF5;
+            color: #116454;
+            border-left: 3px solid var(--color-mint);
+        }
+
+        .badge-ui {
+            background: #FFF5DF;
+            color: #966C2C;
+            border-left: 3px solid var(--color-sunshine);
+        }
+
+        .progress {
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: rgba(94, 242, 213, 0.2);
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-opt {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px 18px;
+            margin: 8px 0;
+            border: 1.5px solid rgba(0, 0, 0, 0.07);
+            border-radius: 60px;
+            background: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quiz-opt:hover {
+            background: #FEFBF2;
+            border-color: var(--color-coral);
+            transform: translateX(4px);
+        }
+
+        .quiz-opt.correct {
+            border-color: var(--color-mint);
+            background: #E5F9F4;
+            color: #0F5A49;
+        }
+
+        .quiz-opt.wrong {
+            border-color: var(--color-ember);
+            background: #FDEFEC;
+            color: #A13B1D;
+        }
+
+        .quiz-feedback {
+            font-size: 0.85rem;
+            padding: 10px 18px;
+            border-radius: 40px;
+            margin-top: 12px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.ok {
+            background: #E0FBF5;
+            color: #0D6956;
+            border-left: 5px solid var(--color-mint);
+        }
+
+        .quiz-feedback.bad {
+            background: #FEF0EC;
+            color: #BC4A26;
+            border-left: 5px solid var(--color-ember);
+        }
+
+        .next-btn {
+            margin-top: 16px;
+            padding: 8px 24px;
+            border: none;
+            background: rgba(96, 181, 255, 0.12);
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .next-btn:hover {
+            background: var(--color-sky);
+            color: white;
+        }
+
+        .score-box {
+            background: linear-gradient(135deg, #FFFFFF, #FEF9EF);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 229, 136, 0.7);
+        }
+
+        .score-num {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #F79D65, #F35252);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .cheatsheet-group {
+            margin-bottom: 2rem;
+        }
+
+        .cheatsheet-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            color: var(--color-text-tertiary);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--color-mint);
+            padding-left: 12px;
+        }
+
+        .code-block {
+            background: #FDF9F0;
+            border-radius: 20px;
+            padding: 14px 18px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            border: 1px solid rgba(94, 242, 213, 0.3);
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            cursor: pointer;
+            border: 1px solid #FFE9BD;
+            transition: 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .topic-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--color-coral);
+            box-shadow: 0 12px 20px rgba(247, 157, 101, 0.12);
+            background: #FFFEF8;
+        }
+
+        .topic-question {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #1E2A32;
+        }
+
+        .answer-reveal {
+            font-size: 0.7rem;
+            color: var(--color-sky);
+            margin-top: 8px;
+        }
+
+        .live-answer {
+            background: #F4F9FE;
+            border-radius: 24px;
+            padding: 1rem 1.4rem;
+            margin-top: 1.5rem;
+            border-left: 6px solid var(--color-mint);
+            font-size: 0.9rem;
+            color: #1F5345;
+            font-weight: 500;
+            display: none;
+        }
+
+        .live-answer span {
+            font-weight: 700;
+            color: #1F6392;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .topic-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <h2 class="sr-only">Notes App with SQLite — Part 3: Update Note & Part 4: Delete Note | Complete CRUD now</h2>
+
+        <div class="tab-bar">
+            <button class="tab active" onclick="showTab('flashcards')">📇 Flashcards</button>
+            <button class="tab" onclick="showTab('quiz')">⚡ Quiz</button>
+            <button class="tab" onclick="showTab('cheatsheet')">📘 Code & Steps</button>
+            <button class="tab" onclick="showTab('topics')">🗺️ Topic Q&A (from lectures)</button>
+        </div>
+
+        <div id="flashcards" class="section active">
+            <div
+                style="font-size:13px; background: rgba(96,181,255,0.1); display:inline-block; padding:6px 20px; border-radius:30px; margin-bottom:14px;">
+                ✏️ Update & 🗑️ Delete Notes — SQLite, Adapter clicks, UpdateActivity, deletion flow</div>
+        </div>
+
+        <div id="quiz" class="section">
+            <div class="progress" id="quiz-progress">Question 1 of 12</div>
+            <div class="card" id="quiz-card">
+                <div class="card-q" id="quiz-q"></div>
+                <div id="quiz-opts"></div>
+                <div class="quiz-feedback" id="quiz-fb"></div>
+                <button class="next-btn" id="next-btn" onclick="nextQ()">Next →</button>
+            </div>
+            <div class="score-box" id="score-box" style="display: none;">
+                <div class="score-num" id="score-num"></div>
+                <div style="margin:8px 0 16px;">questions correct</div>
+                <button class="quiz-opt" style="width:auto;display:inline-block;" onclick="resetQuiz()">⟳ Retake
+                    quiz</button>
+                <button class="quiz-opt" style="width:auto;margin-left:8px;"
+                    onclick="sendPrompt('Generate more Android SQLite exam questions on updating and deleting records, Intents with IDs, and adapter patterns')">✨
+                    More questions</button>
+            </div>
+        </div>
+
+        <div id="cheatsheet" class="section"></div>
+        <div id="topics" class="section">
+            <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:14px;">❓ Click any question —
+                answer appears directly from Part 3 & Part 4 lecture slides</div>
+            <div class="topic-grid" id="topic-grid"></div>
+            <div id="liveAnswer" class="live-answer">
+                <span>📌 Lecture answer:</span> <span id="answerText"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---------------------------- FLASHCARDS (Part 3 Update + Part 4 Delete) ----------------------------
+        const flashcards = [
+            { q: "What icons are added in Part 3 and Part 4? For what purpose?", a: "Edit icon (Part 3) added to drawable for updating a note. Delete icon (Part 4) added for removing a note. Both are placed in note_item.xml as ImageViews.", tags: ["UI"] },
+            { q: "How do you modify note_item.xml to support update and delete?", a: "Add two ImageViews inside the ConstraintLayout: one for edit (e.g., @+id/ivEdit) and one for delete (@+id/ivDelete). Position them next to title or content.", tags: ["UI"] },
+            { q: "What new Activity is created for updating a note?", a: "UpdateNoteActivity (empty views activity) with layout activity_update_note.xml — similar to AddNoteActivity but with different IDs and pre-filled data.", tags: ["Update"] },
+            { q: "How do you pass the note ID from NotesAdapter to UpdateNoteActivity?", a: "In onBindViewHolder, set click listener on edit icon. Create intent: Intent(context, UpdateNoteActivity::class.java). Put extra: intent.putExtra(\"NOTE_ID\", note.id). Then context.startActivity(intent).", tags: ["Update"] },
+            { q: "What two database functions are added in NotesDatabaseHelper for update?", a: "fun getNoteById(id: Int): Note (returns a single note) and fun updateNote(note: Note): Int (updates title and content where id matches).", tags: ["Database"] },
+            { q: "Write the SQL for updateNote() method.", a: "val db = writableDatabase; val values = ContentValues().apply { put(COLUMN_TITLE, note.title); put(COLUMN_CONTENT, note.content) }; return db.update(TABLE_NAME, values, \"$COLUMN_ID=?\", arrayOf(note.id.toString()))", tags: ["Database"] },
+            { q: "How do you get the note ID in UpdateNoteActivity?", a: "val noteId = intent.getIntExtra(\"NOTE_ID\", -1). If invalid, finish() or show error.", tags: ["Update"] },
+            { q: "How do you pre-fill the EditTexts in UpdateNoteActivity?", a: "val note = dbHelper.getNoteById(noteId); binding.etUpdateTitle.setText(note.title); binding.etUpdateContent.setText(note.content).", tags: ["Update"] },
+            { q: "What happens when the user clicks the update button in UpdateNoteActivity?", a: "Get updated title/content, create Note object with same id, call dbHelper.updateNote(note), show Toast \"Note updated\", then finish().", tags: ["Update"] },
+            { q: "How do you implement delete functionality in NotesAdapter?", a: "In onBindViewHolder, set click listener on delete icon. Inside, call dbHelper.deleteNote(note.id), refresh the data list, and notifyDataSetChanged(). Show a Toast confirmation.", tags: ["Delete"] },
+            { q: "What is the signature of deleteNote() in NotesDatabaseHelper?", a: "fun deleteNote(id: Int): Int { val db = writableDatabase; return db.delete(TABLE_NAME, \"$COLUMN_ID=?\", arrayOf(id.toString())) }", tags: ["Database"] },
+            { q: "Why do you need a dbHelper instance inside NotesAdapter for delete?", a: "Because the adapter directly performs database operation when user clicks delete icon. It calls deleteNote, then refreshes the adapter list.", tags: ["Delete"] },
+            { q: "How do you refresh the RecyclerView after delete without going back to MainActivity?", a: "Inside delete click listener: notesList = notesList.toMutableList().apply { removeAt(position) }; notifyItemRemoved(position); notifyItemRangeChanged(position, itemCount). Or call adapter.refreshData(newList).", tags: ["Adapter"] },
+            { q: "What happens if you delete a note while UpdateNoteActivity is open?", a: "The delete is independent. If user updates a deleted note, the update will affect 0 rows, but normally the flow prevents that because the note is gone from list.", tags: ["Delete"] },
+            { q: "How do you ensure the RecyclerView updates after returning from UpdateNoteActivity?", a: "Same as after insert: override onResume() in MainActivity to call loadNotes() which refreshes the adapter. This catches both update and delete from other activities.", tags: ["Lifecycle"] }
+        ];
+
+        // ---------------------------- QUIZ (12 questions covering both parts) ----------------------------
+        const quizQuestions = [
+            { q: "Which icon is added to note_item.xml for updating a note?", opts: ["Delete icon", "Edit icon", "Share icon", "Add icon"], ans: 1, exp: "Edit icon (pencil) is added in Part 3 to allow updating an existing note." },
+            { q: "What extra data is passed from NotesAdapter to UpdateNoteActivity via Intent?", opts: ["NOTE_TITLE", "NOTE_ID", "NOTE_CONTENT", "NOTE_POSITION"], ans: 1, exp: "The note's unique id is passed as \"NOTE_ID\" so the update activity knows which record to modify." },
+            { q: "Which database method retrieves a single note by its ID?", opts: ["getNote()", "getNoteById()", "fetchNote()", "queryNote()"], ans: 1, exp: "getNoteById(id) returns a Note object using a SELECT query with WHERE clause." },
+            { q: "What method in SQLiteOpenHelper performs an UPDATE operation?", opts: ["db.insert()", "db.update()", "db.updateNote()", "db.modify()"], ans: 1, exp: "db.update(table, contentValues, whereClause, whereArgs) is used to update rows." },
+            { q: "In UpdateNoteActivity, after successful update, which method is called to close the activity?", opts: ["close()", "finish()", "destroy()", "onBackPressed()"], ans: 1, exp: "finish() returns to MainActivity, and onResume() there refreshes the RecyclerView." },
+            { q: "What two functions are added to NotesDatabaseHelper for Part 3 (update)?", opts: ["updateNote() and deleteNote()", "updateNote() and getNoteById()", "getAllNotes() and updateNote()", "updateNote() and refreshNote()"], ans: 1, exp: "getNoteById() to fetch existing data, updateNote() to save changes." },
+            { q: "Which icon is added to note_item.xml for deleting a note (Part 4)?", opts: ["Edit", "Delete", "Trash can", "Both B and C"], ans: 3, exp: "A delete icon (often a trash can) is added in Part 4, next to the edit icon." },
+            { q: "What does the deleteNote() method return?", opts: ["Boolean", "Long (row ID)", "Int (number of rows deleted)", "Nothing"], ans: 2, exp: "db.delete() returns the number of affected rows (int)." },
+            { q: "In NotesAdapter, where do you create the dbHelper instance to perform delete?", opts: ["In the companion object", "Inside NoteViewHolder", "Inside onCreateViewHolder", "Inside the adapter class constructor or onBindViewHolder"], ans: 3, exp: "Usually create dbHelper once in the adapter (lazy or passed in constructor) and use it in onBindViewHolder for delete click." },
+            { q: "After deleting a note, what should you call to update the RecyclerView?", opts: ["adapter.notifyItemRemoved(position)", "adapter.refreshData(newList)", "Both A and B are valid", "adapter.recreate()"], ans: 2, exp: "You can either call notifyItemRemoved(position) or update the entire data set and call notifyDataSetChanged(). Both work." },
+            { q: "What is the XML layout name for the update note screen?", opts: ["activity_add_note.xml", "activity_update_note.xml", "activity_edit_note.xml", "note_update.xml"], ans: 1, exp: "activity_update_note.xml (similar to add note layout with different IDs)." },
+            { q: "How do you bind the edit icon click in NotesAdapter to open UpdateNoteActivity?", opts: ["Start activity with explicit intent and pass note id", "Directly call updateNote() in adapter", "Show a dialog", "Open a fragment"], ans: 0, exp: "Create Intent(context, UpdateNoteActivity::class.java), putExtra(\"NOTE_ID\", note.id), then startActivity." }
+        ];
+
+        // ---------------------------- CHEAT SHEET (code snippets from Part 3 & 4) ----------------------------
+        const cheatsheetData = [
+            {
+                title: "✏️ Update - Add edit icon to note_item.xml", items: [
+                    "<ImageView\n    android:id=\"@+id/ivEdit\"\n    android:layout_width=\"24dp\"\n    android:layout_height=\"24dp\"\n    android:src=\"@drawable/ic_edit\"\n    android:tint=\"@color/orange\"\n    app:layout_constraintEnd_toEndOf=\"parent\"\n    app:layout_constraintTop_toTopOf=\"parent\"\n    android:padding=\"4dp\"/>"
+                ]
+            },
+            {
+                title: "🗑️ Delete - Add delete icon to note_item.xml", items: [
+                    "<ImageView\n    android:id=\"@+id/ivDelete\"\n    android:layout_width=\"24dp\"\n    android:layout_height=\"24dp\"\n    android:src=\"@drawable/ic_delete\"\n    android:tint=\"@color/orange\"\n    app:layout_constraintEnd_toStartOf=\"@id/ivEdit\"\n    app:layout_constraintTop_toTopOf=\"parent\"\n    android:padding=\"4dp\"/>"
+                ]
+            },
+            {
+                title: "📄 NotesAdapter - Update and Delete click handlers", items: [
+                    "inner class NoteViewHolder(binding: NoteItemBinding) : RecyclerView.ViewHolder(binding.root) {\n    val tvTitle = binding.tvTitle\n    val tvContent = binding.tvContent\n    val ivEdit = binding.ivEdit\n    val ivDelete = binding.ivDelete\n}\n\noverride fun onBindViewHolder(holder: NoteViewHolder, position: Int) {\n    val note = notesList[position]\n    holder.tvTitle.text = note.title\n    holder.tvContent.text = note.content\n\n    // Update click\n    holder.ivEdit.setOnClickListener {\n        val intent = Intent(context, UpdateNoteActivity::class.java)\n        intent.putExtra(\"NOTE_ID\", note.id)\n        context.startActivity(intent)\n    }\n\n    // Delete click\n    holder.ivDelete.setOnClickListener {\n        dbHelper.deleteNote(note.id)\n        refreshData(dbHelper.getAllNotes())\n        Toast.makeText(context, \"Note deleted\", Toast.LENGTH_SHORT).show()\n    }\n}"
+                ]
+            },
+            {
+                title: "🗄️ Database helper - getNoteById & updateNote", items: [
+                    "fun getNoteById(id: Int): Note {\n    val db = readableDatabase\n    val cursor = db.query(TABLE_NAME, null, \"$COLUMN_ID=?\", arrayOf(id.toString()), null, null, null)\n    cursor.moveToFirst()\n    val note = Note(\n        cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),\n        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE)),\n        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT))\n    )\n    cursor.close()\n    return note\n}\n\nfun updateNote(note: Note): Int {\n    val db = writableDatabase\n    val values = ContentValues().apply {\n        put(COLUMN_TITLE, note.title)\n        put(COLUMN_CONTENT, note.content)\n    }\n    return db.update(TABLE_NAME, values, \"$COLUMN_ID=?\", arrayOf(note.id.toString()))\n}"
+                ]
+            },
+            {
+                title: "🔄 UpdateNoteActivity - full implementation", items: [
+                    "class UpdateNoteActivity : AppCompatActivity() {\n    private lateinit var binding: ActivityUpdateNoteBinding\n    private lateinit var dbHelper: NotesDatabaseHelper\n    private var noteId: Int = -1\n\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        binding = ActivityUpdateNoteBinding.inflate(layoutInflater)\n        setContentView(binding.root)\n\n        dbHelper = NotesDatabaseHelper(this)\n        noteId = intent.getIntExtra(\"NOTE_ID\", -1)\n        if (noteId == -1) finish()\n\n        val note = dbHelper.getNoteById(noteId)\n        binding.etUpdateTitle.setText(note.title)\n        binding.etUpdateContent.setText(note.content)\n\n        binding.btnUpdate.setOnClickListener {\n            val newTitle = binding.etUpdateTitle.text.toString()\n            val newContent = binding.etUpdateContent.text.toString()\n            if (newTitle.isNotBlank() && newContent.isNotBlank()) {\n                val updatedNote = Note(noteId, newTitle, newContent)\n                val rows = dbHelper.updateNote(updatedNote)\n                if (rows > 0) {\n                    Toast.makeText(this, \"Note updated\", Toast.LENGTH_SHORT).show()\n                    finish()\n                } else {\n                    Toast.makeText(this, \"Update failed\", Toast.LENGTH_SHORT).show()\n                }\n            } else {\n                Toast.makeText(this, \"Fields cannot be empty\", Toast.LENGTH_SHORT).show()\n            }\n        }\n    }\n}"
+                ]
+            },
+            {
+                title: "🗑️ Database helper - deleteNote", items: [
+                    "fun deleteNote(id: Int): Int {\n    val db = writableDatabase\n    return db.delete(TABLE_NAME, \"$COLUMN_ID=?\", arrayOf(id.toString()))\n}"
+                ]
+            },
+            {
+                title: "🔄 Refresh onResume in MainActivity (catches updates and deletes)", items: [
+                    "override fun onResume() {\n    super.onResume()\n    loadNotes()  // calls dbHelper.getAllNotes() and adapter.refreshData()\n}"
+                ]
+            }
+        ];
+
+        // ---------------------------- TOPIC Q&A (direct from Part 3 & 4 slides) ----------------------------
+        const topicQA = [
+            { q: "What are the exact steps to add the edit icon to note_item.xml (Part 3)?", a: "1. Download edit icon from fonts.google.com/icons as vector asset. 2. Add to drawable folder. 3. In note_item.xml, add ImageView with id `ivEdit`, set src to @drawable/ic_edit, tint to orange, and constrain it to the end of parent." },
+            { q: "How do you pass the note ID from the adapter to UpdateNoteActivity?", a: "In onBindViewHolder, inside edit icon's setOnClickListener, create an Intent from the context to UpdateNoteActivity::class.java, then intent.putExtra(\"NOTE_ID\", note.id), then startActivity(intent)." },
+            { q: "What does the getNoteById() method look like in NotesDatabaseHelper?", a: "It uses readableDatabase, queries with WHERE COLUMN_ID = ?, moves cursor to first, extracts id, title, content, returns a Note object. Closes cursor." },
+            { q: "How does the updateNote() method work? What does it return?", a: "It gets writableDatabase, creates ContentValues with new title/content, calls db.update(TABLE_NAME, values, \"$COLUMN_ID=?\", arrayOf(id.toString())). Returns number of affected rows (should be 1 if successful)." },
+            { q: "What happens in UpdateNoteActivity after the user clicks the update button?", a: "It retrieves updated text from EditTexts, validates non-empty, creates Note with the same id, calls dbHelper.updateNote(), shows Toast, then finish() to return to MainActivity." },
+            { q: "How do you add the delete icon and implement delete functionality (Part 4)?", a: "Add delete vector asset to drawable. Add ImageView in note_item.xml (id ivDelete). In NotesAdapter, inside onBindViewHolder, set click listener on ivDelete. Inside, call dbHelper.deleteNote(note.id), then refresh the adapter data and show Toast." },
+            { q: "Why do we need a dbHelper instance inside NotesAdapter for delete?", a: "Because the delete operation is initiated from the adapter itself, not from an activity. The adapter needs direct access to the database to remove the record immediately." },
+            { q: "How do you refresh the RecyclerView after deleting a note without restarting the activity?", a: "Call adapter.refreshData(dbHelper.getAllNotes()) which updates the internal list and calls notifyDataSetChanged(). Alternatively, remove item locally: notesList = notesList.toMutableList().apply { removeAt(position) } and call notifyItemRemoved(position)." },
+            { q: "What is the purpose of the update button's click listener in UpdateNoteActivity? Explain each step.", a: "1. Get title and content from EditTexts. 2. Check not empty. 3. Create updated Note object with existing id. 4. Call dbHelper.updateNote(). 5. If rows>0, show success Toast and finish(). Else show error Toast." },
+            { q: "How does MainActivity know to refresh the list after an update or delete?", a: "Both UpdateNoteActivity and delete operation eventually cause MainActivity to come to the foreground. MainActivity overrides onResume() and calls loadNotes() which fetches fresh data from database and updates the RecyclerView via adapter.refreshData()." }
+        ];
+
+        // ---------------------------- UI RENDERING (same pattern) ----------------------------
+        function showTab(id) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function buildFlashcards() {
+            const container = document.getElementById('flashcards');
+            container.innerHTML = '<div style="font-size:13px; background: rgba(96,181,255,0.1); display:inline-block; padding:6px 20px; border-radius:30px; margin-bottom:14px;">✏️ Update & 🗑️ Delete Notes — SQLite, Adapter clicks, UpdateActivity, deletion flow</div>';
+            flashcards.forEach((fc, idx) => {
+                let badgeClass = "badge-update";
+                if (fc.tags[0] === "Delete") badgeClass = "badge-delete";
+                else if (fc.tags[0] === "Adapter") badgeClass = "badge-adapter";
+                else if (fc.tags[0] === "UI") badgeClass = "badge-ui";
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
+            <div class="card-q">${fc.q}</div>
+            <span class="badge ${badgeClass}">${fc.tags[0]}</span>
+            <div><button class="reveal-btn" onclick="toggleAnswer(${idx})">🔍 Reveal answer</button></div>
+            <div class="card-a" id="ans-${idx}">${fc.a}</div>
+        `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleAnswer(idx) {
+            const ansDiv = document.getElementById(`ans-${idx}`);
+            const btn = ansDiv.previousElementSibling.firstChild;
+            if (ansDiv.style.display === 'block') {
+                ansDiv.style.display = 'none';
+                btn.textContent = '🔍 Reveal answer';
+            } else {
+                ansDiv.style.display = 'block';
+                btn.textContent = '🙈 Hide answer';
+            }
+        }
+
+        // Quiz logic
+        let currentQ = 0, quizScore = 0, isAnswered = false;
+
+        function renderQuiz() {
+            const q = quizQuestions[currentQ];
+            document.getElementById('quiz-progress').textContent = `Question ${currentQ + 1} of ${quizQuestions.length}`;
+            document.getElementById('quiz-q').textContent = q.q;
+            const optsDiv = document.getElementById('quiz-opts');
+            optsDiv.innerHTML = '';
+            q.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-opt';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(idx);
+                optsDiv.appendChild(btn);
+            });
+            document.getElementById('quiz-fb').className = 'quiz-feedback';
+            document.getElementById('quiz-fb').textContent = '';
+            document.getElementById('next-btn').style.display = 'none';
+            isAnswered = false;
+        }
+
+        function checkAnswer(selected) {
+            if (isAnswered) return;
+            isAnswered = true;
+            const q = quizQuestions[currentQ];
+            const opts = document.querySelectorAll('.quiz-opt');
+            opts[q.ans].classList.add('correct');
+            if (selected !== q.ans) {
+                opts[selected].classList.add('wrong');
+            } else {
+                quizScore++;
+            }
+            const fb = document.getElementById('quiz-fb');
+            fb.textContent = (selected === q.ans ? '✓ Correct! ' : '✗ ') + q.exp;
+            fb.className = `quiz-feedback show ${selected === q.ans ? 'ok' : 'bad'}`;
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function nextQ() {
+            currentQ++;
+            if (currentQ >= quizQuestions.length) {
+                document.getElementById('quiz-card').style.display = 'none';
+                document.getElementById('quiz-progress').style.display = 'none';
+                const sb = document.getElementById('score-box');
+                sb.style.display = 'block';
+                document.getElementById('score-num').textContent = `${quizScore}/${quizQuestions.length}`;
+            } else {
+                renderQuiz();
+            }
+        }
+
+        function resetQuiz() {
+            currentQ = 0;
+            quizScore = 0;
+            isAnswered = false;
+            document.getElementById('quiz-card').style.display = 'block';
+            document.getElementById('quiz-progress').style.display = 'block';
+            document.getElementById('score-box').style.display = 'none';
+            renderQuiz();
+        }
+
+        function buildCheatsheet() {
+            const container = document.getElementById('cheatsheet');
+            cheatsheetData.forEach(group => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'cheatsheet-group';
+                groupDiv.innerHTML = `<div class="cheatsheet-title">📘 ${group.title}</div>`;
+                group.items.forEach(code => {
+                    const pre = document.createElement('div');
+                    pre.className = 'code-block';
+                    pre.textContent = code;
+                    groupDiv.appendChild(pre);
+                });
+                container.appendChild(groupDiv);
+            });
+        }
+
+        function buildTopicQA() {
+            const grid = document.getElementById('topic-grid');
+            topicQA.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = 'topic-card';
+                card.innerHTML = `<div class="topic-question">❓ ${item.q}</div><div class="answer-reveal">📖 click to see answer (from lecture)</div>`;
+                card.onclick = () => {
+                    const panel = document.getElementById('liveAnswer');
+                    document.getElementById('answerText').innerHTML = item.a;
+                    panel.style.display = 'block';
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        function sendPrompt(promptText) {
+            if (window.ai?.chat) window.ai.chat(promptText);
+            else alert("✨ Prompt ready for AI (ChatGPT/Claude):\n\n" + promptText);
+        }
+
+        // Initialize
+        buildFlashcards();
+        renderQuiz();
+        buildCheatsheet();
+        buildTopicQA();
+    </script>
+</body>
+
+</html>

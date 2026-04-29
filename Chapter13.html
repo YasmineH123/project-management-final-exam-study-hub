@@ -63,8 +63,38 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 1.5rem 1.5rem 1.5rem 4rem;
             margin: 0;
+        }
+
+        /* Floating Back Button */
+        .back-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 44px;
+            height: 44px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--gray-700);
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+            transform: translateX(-3px);
+        }
+
+        .back-btn i {
+            font-size: 1.1rem;
         }
 
         .app {
@@ -602,6 +632,11 @@
 </head>
 
 <body>
+    <!-- Floating Back Button -->
+    <a href="course-pm.html" class="back-btn" title="Back to Course">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
     <div class="app">
         <h2 class="sr-only">Chapter 13 Project Evaluation and Control — Interactive Study Tool</h2>
         <div style="margin-bottom:1.5rem;">

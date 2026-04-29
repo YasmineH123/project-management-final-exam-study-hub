@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Mobile Dev Hub · Android & Kotlin Study Tool</title>
+    <!-- modern font + better readability -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* 🌟 GIVEN COLOR PALETTE */
+            --color-sunshine: #FFE588;
+            /* fresh yellow, warm highlights */
+            --color-coral: #F79D65;
+            /* energetic accent, buttons */
+            --color-ember: #F35252;
+            /* mistakes, warnings */
+            --color-mint: #5EF2D5;
+            /* correct answers, teal success */
+            --color-sky: #60B5FF;
+            /* info, links, interactive elements */
+
+            /* extended neutrals based on palette */
+            --color-bg-page: #FFFBF2;
+            /* soft creamy background (sunshine tint) */
+            --color-bg-card: #FFFFFF;
+            --color-bg-subtle: #FEF7E8;
+            --color-border-light: rgba(0, 0, 0, 0.06);
+            --color-border-medium: rgba(0, 0, 0, 0.1);
+            --color-text-primary: #1E2A32;
+            --color-text-secondary: #2F4858;
+            --color-text-tertiary: #5E6F7D;
+            --color-shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05);
+            --color-shadow-md: 0 12px 28px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.02);
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-sm: 12px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--color-bg-page);
+            color: var(--color-text-primary);
+            line-height: 1.5;
+            padding: 1.8rem 1.2rem;
+        }
+
+        /* main container – centered & beautiful breathing space */
+        .main-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            background: transparent;
+        }
+
+        /* tab bar – modern pill style */
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            padding: 0.5rem 0 1.2rem 0;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(96, 181, 255, 0.15);
+            margin-bottom: 0.25rem;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            border-radius: 40px;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            letter-spacing: -0.01em;
+        }
+
+        .tab:hover {
+            background: rgba(96, 181, 255, 0.12);
+            color: #1E2A32;
+        }
+
+        .tab.active {
+            background: var(--color-sunshine);
+            color: #2F2A1F;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(255, 229, 136, 0.4);
+        }
+
+        /* sections animation */
+        .section {
+            display: none;
+            padding: 1.5rem 0 1rem 0;
+            animation: fadeSlideUp 0.25s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* card redesign – fresh & airy */
+        .card {
+            background: var(--color-bg-card);
+            border: 1px solid rgba(255, 229, 136, 0.5);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--color-shadow-sm);
+            transition: transform 0.18s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--color-shadow-md);
+            border-color: rgba(247, 157, 101, 0.3);
+        }
+
+        .card-q {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 0.7rem;
+            line-height: 1.4;
+        }
+
+        .card-a {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            display: none;
+            border-top: 1px solid rgba(94, 242, 213, 0.4);
+            padding-top: 0.9rem;
+            margin-top: 0.8rem;
+            line-height: 1.55;
+            background: #FEFCF5;
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+        }
+
+        .reveal-btn {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--color-sky);
+            background: rgba(96, 181, 255, 0.08);
+            border: none;
+            padding: 5px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.15s;
+            margin-top: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reveal-btn:hover {
+            background: rgba(96, 181, 255, 0.2);
+            color: #1F6392;
+        }
+
+        /* badge styling fully refreshed with the color palette */
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 50px;
+            letter-spacing: -0.2px;
+            margin-right: 6px;
+            margin-bottom: 8px;
+            background: #F3F6FC;
+            color: #2C3E50;
+        }
+
+        .badge-purple {
+            background: #EAF5FF;
+            color: #1F6392;
+            border-left: 3px solid var(--color-sky);
+        }
+
+        /* blue accent */
+        .badge-teal {
+            background: #E0FCF5;
+            color: #116454;
+            border-left: 3px solid var(--color-mint);
+        }
+
+        .badge-coral {
+            background: #FFF0E8;
+            color: #B15327;
+            border-left: 3px solid var(--color-coral);
+        }
+
+        .badge-blue {
+            background: #E3F0FF;
+            color: #1A6091;
+            border-left: 3px solid #60B5FF;
+        }
+
+        .badge-amber {
+            background: #FFF5DF;
+            color: #966C2C;
+            border-left: 3px solid var(--color-sunshine);
+        }
+
+        /* QUIZ SECTION */
+        .progress {
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: rgba(94, 242, 213, 0.2);
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 40px;
+            color: #1B6C5C;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-opt {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px 18px;
+            margin: 8px 0;
+            border: 1.5px solid rgba(0, 0, 0, 0.07);
+            border-radius: 60px;
+            background: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.02);
+        }
+
+        .quiz-opt:hover {
+            background: #FEFBF2;
+            border-color: var(--color-coral);
+            transform: translateX(4px);
+        }
+
+        .quiz-opt.correct {
+            border-color: var(--color-mint);
+            background: #E5F9F4;
+            color: #0F5A49;
+            box-shadow: 0 0 0 2px rgba(94, 242, 213, 0.3);
+        }
+
+        .quiz-opt.wrong {
+            border-color: var(--color-ember);
+            background: #FDEFEC;
+            color: #A13B1D;
+        }
+
+        .quiz-feedback {
+            font-size: 0.85rem;
+            padding: 12px 18px;
+            border-radius: 40px;
+            margin-top: 12px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.ok {
+            background: #E0FBF5;
+            color: #0D6956;
+            border-left: 5px solid var(--color-mint);
+        }
+
+        .quiz-feedback.bad {
+            background: #FEF0EC;
+            color: #BC4A26;
+            border-left: 5px solid var(--color-ember);
+        }
+
+        .next-btn {
+            margin-top: 16px;
+            padding: 9px 24px;
+            border: none;
+            background: rgba(96, 181, 255, 0.12);
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--color-text-primary);
+            transition: all 0.2s;
+        }
+
+        .next-btn:hover {
+            background: var(--color-sky);
+            color: white;
+            box-shadow: 0 4px 8px rgba(96, 181, 255, 0.3);
+        }
+
+        /* score box */
+        .score-box {
+            background: linear-gradient(135deg, #FFFFFF, #FEF9EF);
+            border-radius: var(--radius-lg);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 229, 136, 0.7);
+            box-shadow: var(--color-shadow-md);
+        }
+
+        .score-num {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #F79D65, #F35252);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -1px;
+        }
+
+        /* cheat sheet blocks */
+        .cheatsheet-group {
+            margin-bottom: 2rem;
+        }
+
+        .cheatsheet-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            color: var(--color-text-tertiary);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--color-mint);
+            padding-left: 10px;
+        }
+
+        .code-block {
+            background: #FDF9F0;
+            border-radius: 20px;
+            padding: 14px 18px;
+            font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #2F3B3E;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            border: 1px solid rgba(94, 242, 213, 0.3);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        /* topic map buttons - interactive grid */
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 20px;
+            padding: 0.9rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #FFE9BD;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .topic-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--color-sunshine);
+            background: #FFFEF9;
+            box-shadow: 0 14px 24px rgba(247, 157, 101, 0.12);
+        }
+
+        .topic-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #2D3E4B;
+        }
+
+        .topic-hint {
+            font-size: 0.7rem;
+            color: var(--color-sky);
+            margin-top: 8px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* retake & more buttons inside score box */
+        .score-box .quiz-opt {
+            width: auto;
+            display: inline-block;
+            margin: 8px 6px;
+            background: white;
+        }
+
+        .score-box .quiz-opt:hover {
+            background: var(--color-sunshine);
+            border-color: #D9B85C;
+            transform: scale(0.98);
+        }
+
+        hr {
+            margin: 10px 0;
+        }
+
+        /* extra polish for flashcard header */
+        #flashcards>div:first-of-type {
+            background: rgba(96, 181, 255, 0.05);
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+
+        button,
+        .quiz-opt,
+        .tab {
+            cursor: pointer;
+        }
+
+        /* responsiveness */
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .tab {
+                padding: 6px 14px;
+                font-size: 0.8rem;
+            }
+
+            .quiz-opt {
+                padding: 10px 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <h2 class="sr-only">Interactive study tool for Mobile Application Development — covers Android basics, Kotlin,
+            and Android UI components</h2>
+
+        <div class="tab-bar">
+            <button class="tab active" onclick="showTab('flashcards')">📇 Flashcards</button>
+            <button class="tab" onclick="showTab('quiz')">⚡ Quiz</button>
+            <button class="tab" onclick="showTab('cheatsheet')">📘 Cheat sheet</button>
+            <button class="tab" onclick="showTab('topics')">🗺️ Topic map</button>
+        </div>
+
+        <div id="flashcards" class="section active">
+            <div
+                style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px; background: rgba(94,242,213,0.15); padding: 8px 16px; border-radius: 30px; display: inline-block;">
+                ✨ Tap "Reveal answer" — learn active recall ✨</div>
+        </div>
+
+        <div id="quiz" class="section">
+            <div class="progress" id="quiz-progress">Question 1 of 15</div>
+            <div class="card" id="quiz-card">
+                <div class="card-q" id="quiz-q"></div>
+                <div id="quiz-opts"></div>
+                <div class="quiz-feedback" id="quiz-fb"></div>
+                <button class="next-btn" id="next-btn" onclick="nextQ()">Next question →</button>
+            </div>
+            <div class="score-box" id="score-box">
+                <div class="score-num" id="score-num"></div>
+                <div style="font-size:14px;color:var(--color-text-secondary);margin:8px 0 16px;">questions correct 🎯
+                </div>
+                <button class="quiz-opt" style="width:auto;display:inline-block;" onclick="resetQuiz()">⟳ Retake
+                    quiz</button>
+                <button class="quiz-opt" style="width:auto;display:inline-block;margin-left:8px;"
+                    onclick="sendPrompt('Give me harder quiz questions on Mobile App Development topics I might have missed')">✨
+                    More questions ↗</button>
+            </div>
+        </div>
+
+        <div id="cheatsheet" class="section">
+        </div>
+
+        <div id="topics" class="section">
+            <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:14px;">🗂️ Click any topic → deep
+                dive with AI (powered by Claude)</div>
+        </div>
+    </div>
+
+    <script>
+        // ------------------------------------------------------------------
+        //  ALL DATA (CONTENT REMAINS INTACT - only design improvements)
+        // ------------------------------------------------------------------
+        const flashcards = [
+            { q: "What are the 4 main components of Android?", a: "Activities (single screen UI), Services (background ops), Broadcast Receivers (listens to system events), Content Providers (manages structured data access).", tags: ["Android Basics"] },
+            { q: "What is the difference between var and val in Kotlin?", a: "var = mutable (can be changed). val = read-only/immutable. Always prefer val unless mutation is needed.", tags: ["Kotlin"] },
+            { q: "What does the AndroidManifest.xml file do?", a: "Defines the app's structure: declares all components (activities, services, receivers, providers), required permissions, hardware features, and metadata the Android system needs.", tags: ["Android Structure"] },
+            { q: "What is the res/ folder structure?", a: "drawable/ (images), layout/ (XML layouts), mipmap/ (launcher icons), values/ (strings.xml, colors.xml, dimens.xml, styles.xml), xml/ (config files like network security).", tags: ["Android Structure"] },
+            { q: "How do you link a Kotlin file to an XML layout?", a: "Using setContentView(R.layout.activity_main) inside onCreate(). This is called when the app launches.", tags: ["Android UI"] },
+            { q: "What is lateinit in Kotlin and when is it used?", a: "It delays initialization of a variable. Used for UI components (like TextView, Button) that can't be initialized at class creation time but will be initialized before first use (in onCreate).", tags: ["Kotlin"] },
+            { q: "How do you access a UI component from Kotlin code?", a: "Use findViewById(R.id.componentId). For example: myText = findViewById(R.id.TextView1)", tags: ["Android UI"] },
+            { q: "What is the Constraint Layout and its main rule?", a: "A layout that makes apps look similar on all screen sizes. Rule: each view must have at least 2 constraints — one horizontal and one vertical. Without constraints, component defaults to position (0,0).", tags: ["Android UI"] },
+            { q: "What is the difference between wrap_content and match_parent?", a: "wrap_content: view sizes to fit its content. match_parent: view expands to fill its parent ViewGroup.", tags: ["Android UI"] },
+            { q: "What is Null Safety in Kotlin?", a: "Kotlin prevents null pointer exceptions at compile time. By default types are non-nullable (String). Use String? for nullable types. Operators: ?. (safe call), ?: (Elvis — returns default if null), !! (asserts non-null, throws exception if null).", tags: ["Kotlin"] },
+            { q: "What is the 'when' expression in Kotlin?", a: "Kotlin's equivalent to switch/case. Use -> to map values to actions. Can be used as a statement (no return) or expression (returns a value). Must have 'else' when used as expression.", tags: ["Kotlin"] },
+            { q: "What is Gradle in Android development?", a: "A build system that automates building, testing, packaging, and deploying Android apps. Key files: build.gradle (Project Level) for project-wide settings, build.gradle (Module Level) for app-specific settings like compile SDK and dependencies.", tags: ["Android Structure"] },
+            { q: "How do you declare a Kotlin function?", a: "Using the fun keyword. Example: fun sum(x: Int, y: Int): Int { return x + y }. Single-expression shorthand: fun sum(x: Int, y: Int) = x + y", tags: ["Kotlin"] },
+            { q: "What are Kotlin Collections?", a: "Lists (ordered, allows duplicates), Sets (unordered, unique items only), Maps (key-value pairs, unique keys). Each can be read-only (listOf, setOf, mapOf) or mutable (mutableListOf, mutableSetOf, mutableMapOf).", tags: ["Kotlin"] },
+            { q: "What is a Snackbar vs Toast vs Dialog?", a: "Toast: simple floating message, no interaction. Snackbar: bottom message, can have action button (Close etc), uses a view reference. AlertDialog: popup window with title, message, and buttons (setPositiveButton, setNegativeButton, setNeutralButton).", tags: ["Android UI"] },
+            { q: "How does inheritance work in Kotlin?", a: "All classes are final by default. Use 'open' keyword to allow inheritance. Child class uses : ParentClass(). Override methods using 'override fun'. Call parent method using super.methodName().", tags: ["Kotlin"] },
+            { q: "What is an ArrayAdapter and when is it used?", a: "Used with ListView to bind a data source (like a list of strings) to list items. Created with: ArrayAdapter(context, android.R.layout.simple_list_item_1, dataList). Then set listView.adapter = adapter.", tags: ["Android UI"] },
+            { q: "What is the difference between a primary and a package name?", a: "Name: human-readable app name (e.g. 'MyApp'). Package Name: unique identifier auto-generated (e.g. com.example.myapp). Used for imports in code and to identify the app on Google Play.", tags: ["Android Basics"] },
+        ];
+
+        const questions = [
+            { q: "Which keyword declares a read-only variable in Kotlin?", opts: ["var", "val", "let", "const"], ans: 1, exp: "val declares immutable/read-only variables. var declares mutable ones." },
+            { q: "What does setContentView() do?", opts: ["Creates a new activity", "Links the Kotlin file to the XML layout", "Sets app permissions", "Inflates a menu"], ans: 1, exp: "setContentView(R.layout.activity_main) links the Kotlin logic file to its XML UI layout." },
+            { q: "Which Android component runs in the background for long operations?", opts: ["Activity", "Content Provider", "Service", "Broadcast Receiver"], ans: 2, exp: "A Service runs in the background — e.g., a music player that keeps playing when you switch apps." },
+            { q: "What happens if you don't set constraints in ConstraintLayout?", opts: ["The app crashes", "Component appears at position (0,0)", "Component is invisible", "Component fills parent"], ans: 1, exp: "Without constraints, the view defaults to position (0,0) — the top-left corner." },
+            { q: "What does the ?. operator do in Kotlin?", opts: ["Forces non-null", "Throws exception if null", "Safe call — executes only if non-null", "Assigns a default value"], ans: 2, exp: "?. is the safe call operator. firstName?.toUpperCase() only runs toUpperCase() if firstName is not null." },
+            { q: "Which folder contains XML layout files in Android?", opts: ["res/drawable", "res/layout", "res/values", "res/xml"], ans: 1, exp: "res/layout/ contains XML files defining the app's UI structure (e.g., activity_main.xml)." },
+            { q: "What does the ?: (Elvis) operator return?", opts: ["null always", "The right value if the left is null", "Throws an exception", "Forces non-null cast"], ans: 1, exp: "val name = firstName ?: 'Unknown' — returns 'Unknown' if firstName is null." },
+            { q: "Which collection type only stores unique unordered items?", opts: ["List", "Map", "Set", "Array"], ans: 2, exp: "Sets are unordered and only store unique items. Duplicates are automatically dropped." },
+            { q: "What is the purpose of AndroidManifest.xml?", opts: ["Store string resources", "Define UI layouts", "Declare app components and permissions", "Manage build dependencies"], ans: 2, exp: "AndroidManifest.xml declares all components (activities, services, etc.), permissions, and metadata." },
+            { q: "What keyword makes a Kotlin class inheritable?", opts: ["public", "abstract", "open", "override"], ans: 2, exp: "Kotlin classes are final by default. The 'open' keyword allows a class to be inherited." },
+            { q: "Which function reads a line of user input in Kotlin?", opts: ["readLine()", "input()", "scan()", "getLine()"], ans: 0, exp: "readLine() reads a string from standard input. Always returns a String, so use .toInt() etc. to convert." },
+            { q: "What does wrap_content mean for a layout dimension?", opts: ["Fill the entire screen", "Size to the content inside", "Match the parent size", "Fixed 100dp"], ans: 1, exp: "wrap_content tells the view to size itself to exactly fit its content." },
+            { q: "Which Kotlin loop is used to iterate over a collection or range?", opts: ["while", "do-while", "for-each", "for ... in"], ans: 3, exp: "In Kotlin, 'for (item in collection)' is equivalent to foreach in other languages." },
+            { q: "What does lateinit allow in Kotlin?", opts: ["Null assignment", "Delayed non-null initialization", "Read-only declaration", "Type inference"], ans: 1, exp: "lateinit lets you declare a non-null variable without initializing it immediately — you promise to initialize it before use." },
+            { q: "How do you add an item click listener to a ListView?", opts: [".setOnClickListener", ".setOnItemSelectedListener", ".setOnItemClickListener", ".addClickHandler"], ans: 2, exp: "listView.setOnItemClickListener { parent, view, position, id -> ... } handles item clicks in a ListView." },
+        ];
+
+        const topics = [
+            { label: "Android OS & versions", prompt: "Explain the history of Android OS versions from 1.0 to Android 16, including their code names and API levels. Help me memorize the key ones for my exam." },
+            { label: "4 Android components", prompt: "Deeply explain the 4 main Android components: Activities, Services, Broadcast Receivers, and Content Providers with real exam-style examples." },
+            { label: "Android project structure", prompt: "Explain the full directory structure of an Android project: manifests, kotlin+java, res folder (drawable, layout, mipmap, values, xml), and Gradle scripts." },
+            { label: "AndroidManifest.xml", prompt: "Explain every key element of AndroidManifest.xml: manifest, uses-permission, uses-feature, application, activity, service, receiver, provider. Give me exam tips." },
+            { label: "Kotlin basics", prompt: "Teach me Kotlin basics for my mobile dev exam: variables (var/val), data types, operators, comments, println vs print, and string templates." },
+            { label: "Kotlin null safety", prompt: "Explain Kotlin null safety thoroughly: nullable vs non-nullable types, safe call operator ?., Elvis operator ?:, and the !! operator. Give a summary table." },
+            { label: "Kotlin control flow", prompt: "Explain Kotlin control flow: if-else as expression, when statement vs when expression, ranges (.., ..<, downTo, step), while, do-while, and for loops." },
+            { label: "Kotlin collections", prompt: "Explain Kotlin's List, Set, and Map collections. Cover listOf vs mutableListOf, operations like add/remove/count/in operator, and Map access patterns." },
+            { label: "Kotlin classes & OOP", prompt: "Explain Kotlin classes: primary constructor, class properties, member functions, lateinit, inheritance with open keyword, override, and the super keyword." },
+            { label: "Layouts & Views", prompt: "Explain Android layouts for my exam: View vs ViewGroup, LinearLayout, ConstraintLayout rules, wrap_content vs match_parent, and how to set IDs." },
+            { label: "UI components", prompt: "Explain Android UI components: TextView, Button, EditText (input types), how to set OnClickListener, and how to access components with findViewById." },
+            { label: "Top App Bar & menus", prompt: "Explain how to implement a Top App Bar in Android: AppBarLayout, MaterialToolbar, adding menu items in toolbar_menu.xml, and handling menu item clicks in Kotlin." },
+            { label: "Snackbars & Dialogs", prompt: "Explain Snackbars and AlertDialogs in Android: how to create them, add action buttons (setAction, setPositiveButton, setNegativeButton), and setCancelable." },
+            { label: "ListView & Adapters", prompt: "Explain Android ListView: how to create one in XML, use ArrayAdapter to bind data, populate from strings.xml string-array, and handle OnItemClickListener." },
+            { label: "Colors & Strings resources", prompt: "Explain Android resource files: how to define colors in colors.xml, strings in strings.xml (including string-array), and reference them with @color/ and @string/." },
+        ];
+
+        const cheatsheetData = [
+            { title: "Kotlin — variable declaration", items: ["var name = \"Ali\"  // mutable", "val age = 20      // immutable", "var x: String     // must assign before use\nx = \"hello\"", "var s: String? = null  // nullable"] },
+            { title: "Kotlin — null safety operators", items: ["val len = s?.length   // safe call (null if s is null)", "val n = s ?: \"default\"  // Elvis operator", "val n = s!!.length   // force non-null (crash if null)"] },
+            { title: "Kotlin — when expression", items: ["val result = when(day) {\n  1 -> \"Monday\"\n  2 -> \"Tuesday\"\n  else -> \"Other\"\n}", "when(num) {\n  in 1..3 -> println(\"Spring\")\n  in 4..6 -> println(\"Summer\")\n  !in 1..12 -> println(\"Invalid\")\n}"] },
+            { title: "Kotlin — collections", items: ["val list = listOf(\"a\", \"b\")   // read-only", "val ml = mutableListOf(\"a\")   // mutable\nml.add(\"b\"); ml.remove(\"a\")", "val map = mapOf(\"apple\" to 100)\nmap[\"apple\"]  // → 100", "val set = setOf(1, 2, 2, 3)  // → {1,2,3}"] },
+            { title: "Android — access UI component", items: ["// in class body:\nlateinit var myBtn: Button\n\n// in onCreate():\nmyBtn = findViewById(R.id.button1)\nmyBtn.setOnClickListener {\n  // action here\n}"] },
+            { title: "Android — Toast & Snackbar", items: ["Toast.makeText(this, \"Hello\", Toast.LENGTH_SHORT).show()", "Snackbar.make(layout, \"Message\", Snackbar.LENGTH_SHORT)\n  .setAction(\"Close\") {}.show()"] },
+            { title: "Android — AlertDialog", items: ["val d = AlertDialog.Builder(this)\nd.setTitle(\"Title\")\nd.setMessage(\"Message\")\nd.setCancelable(false)\nd.setPositiveButton(\"Yes\") { dialog, _ -> }\nd.setNegativeButton(\"No\") { dialog, _ -> dialog.cancel() }\nd.create().show()"] },
+            { title: "Android — ListView", items: ["val items = listOf(\"A\", \"B\", \"C\")\nval adapter = ArrayAdapter(this,\n  android.R.layout.simple_list_item_1, items)\nlistView.adapter = adapter\n\nlistView.setOnItemClickListener { parent, _, pos, _ ->\n  val selected = parent.getItemAtPosition(pos)\n  Toast.makeText(this, \"$selected\", Toast.LENGTH_SHORT).show()\n}"] },
+        ];
+
+        // ----- functions (exactly same as original, no modifications) -----
+        function showTab(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+        }
+        function buildFlashcards() {
+            const cont = document.getElementById('flashcards');
+            flashcards.forEach((fc, i) => {
+                const div = document.createElement('div'); div.className = 'card';
+                div.innerHTML = `<div class="card-q">${fc.q}</div>
+      ${fc.tags.map(t => `<span class="badge badge-${t === 'Android Basics' ? 'purple' : (t === 'Kotlin' ? 'teal' : (t === 'Android Structure' ? 'coral' : (t === 'Android UI' ? 'blue' : 'amber')))}">${t}</span>`).join('')}
+      <div><button class="reveal-btn" onclick="toggleAns(${i})">🔎 Reveal answer</button></div>
+      <div class="card-a" id="ans-${i}">${fc.a}</div>`;
+                cont.appendChild(div);
+            });
+        }
+        function toggleAns(i) {
+            const el = document.getElementById('ans-' + i);
+            const btn = el.previousElementSibling.firstChild;
+            if (el.style.display === 'block') { el.style.display = 'none'; btn.textContent = '🔎 Reveal answer'; }
+            else { el.style.display = 'block'; btn.textContent = '🙈 Hide answer'; }
+        }
+        let qIdx = 0, score = 0, answered = false;
+        function buildQuiz() { renderQ(); }
+        function renderQ() {
+            const q = questions[qIdx];
+            document.getElementById('quiz-progress').textContent = `Question ${qIdx + 1} of ${questions.length}`;
+            document.getElementById('quiz-q').textContent = q.q;
+            const optsEl = document.getElementById('quiz-opts'); optsEl.innerHTML = '';
+            q.opts.forEach((o, i) => { const btn = document.createElement('button'); btn.className = 'quiz-opt'; btn.textContent = o; btn.onclick = () => checkAns(i); optsEl.appendChild(btn); });
+            document.getElementById('quiz-fb').className = 'quiz-feedback'; document.getElementById('quiz-fb').textContent = '';
+            document.getElementById('next-btn').style.display = 'none'; answered = false;
+        }
+        function checkAns(i) { if (answered) return; answered = true; const q = questions[qIdx]; const opts = document.querySelectorAll('.quiz-opt'); opts[q.ans].classList.add('correct'); if (i !== q.ans) opts[i].classList.add('wrong'); else score++; const fb = document.getElementById('quiz-fb'); fb.textContent = i === q.ans ? '✓ Correct! ' + q.exp : '✗ ' + q.exp; fb.className = 'quiz-feedback show ' + (i === q.ans ? 'ok' : 'bad'); document.getElementById('next-btn').style.display = 'block'; }
+        function nextQ() { qIdx++; if (qIdx >= questions.length) { document.getElementById('quiz-card').style.display = 'none'; document.getElementById('quiz-progress').style.display = 'none'; const sb = document.getElementById('score-box'); sb.style.display = 'block'; document.getElementById('score-num').textContent = score + '/' + questions.length; } else renderQ(); }
+        function resetQuiz() { qIdx = 0; score = 0; answered = false; document.getElementById('quiz-card').style.display = 'block'; document.getElementById('quiz-progress').style.display = 'block'; document.getElementById('score-box').style.display = 'none'; renderQ(); }
+        function buildCheatsheet() { const cont = document.getElementById('cheatsheet'); cheatsheetData.forEach(g => { const div = document.createElement('div'); div.className = 'cheatsheet-group'; div.innerHTML = `<div class="cheatsheet-title">📌 ${g.title}</div>`; g.items.forEach(c => { const pre = document.createElement('div'); pre.className = 'code-block'; pre.textContent = c; div.appendChild(pre); }); cont.appendChild(div); }); }
+        function buildTopics() { const cont = document.getElementById('topics'); const grid = document.createElement('div'); grid.className = 'topic-grid'; topics.forEach(t => { const btn = document.createElement('div'); btn.className = 'topic-card'; btn.innerHTML = `<div class="topic-label">🗨️ ${t.label}</div><div class="topic-hint">✨ ask AI →</div>`; btn.onclick = () => sendPrompt(t.prompt); grid.appendChild(btn); }); cont.appendChild(grid); }
+        function sendPrompt(p) { if (window.ai?.chat) window.ai.chat(p); else alert("✨ Claude-ready prompt:\n\n" + p); }
+        buildFlashcards(); buildQuiz(); buildCheatsheet(); buildTopics();
+    </script>
+</body>
+
+</html>
