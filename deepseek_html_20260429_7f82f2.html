@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>RecyclerView Mastery · Android Lecture 10 Study Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-sunshine: #FFE588;
+            --color-coral: #F79D65;
+            --color-ember: #F35252;
+            --color-mint: #5EF2D5;
+            --color-sky: #60B5FF;
+            --color-bg-page: #FFFBF2;
+            --color-bg-card: #FFFFFF;
+            --color-text-primary: #1E2A32;
+            --color-text-secondary: #2F4858;
+            --color-text-tertiary: #5E6F7D;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            background: var(--color-bg-page);
+            color: var(--color-text-primary);
+            padding: 1.8rem 1.2rem;
+            line-height: 1.5;
+        }
+
+        .main-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            padding: 0.5rem 0 1.2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(96, 181, 255, 0.2);
+            margin-bottom: 0.25rem;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            border-radius: 40px;
+            transition: all 0.2s ease;
+        }
+
+        .tab:hover {
+            background: rgba(96, 181, 255, 0.12);
+        }
+
+        .tab.active {
+            background: var(--color-sunshine);
+            color: #2F2A1F;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(255, 229, 136, 0.4);
+        }
+
+        .section {
+            display: none;
+            padding: 1.2rem 0 1rem;
+            animation: fadeSlideUp 0.25s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .card {
+            background: var(--color-bg-card);
+            border: 1px solid rgba(255, 229, 136, 0.5);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 4px rgba(0,0,0,0.03);
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(247, 157, 101, 0.3);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.05);
+        }
+
+        .card-q {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+            color: #1E2A32;
+        }
+
+        .card-a {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            display: none;
+            border-top: 1px solid rgba(94, 242, 213, 0.4);
+            padding-top: 0.9rem;
+            margin-top: 0.8rem;
+            line-height: 1.55;
+            background: #FEFCF5;
+            border-radius: 16px;
+            padding: 0.9rem 1rem;
+        }
+
+        .reveal-btn {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-sky);
+            background: rgba(96, 181, 255, 0.08);
+            border: none;
+            padding: 5px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: 0.15s;
+        }
+
+        .reveal-btn:hover {
+            background: rgba(96, 181, 255, 0.2);
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 50px;
+            margin-right: 6px;
+            margin-bottom: 8px;
+        }
+        .badge-core { background: #EAF5FF; color: #1F6392; border-left: 3px solid var(--color-sky); }
+        .badge-adapter { background: #E0FCF5; color: #116454; border-left: 3px solid var(--color-mint); }
+        .badge-design { background: #FFF0E8; color: #B15327; border-left: 3px solid var(--color-coral); }
+        .badge-advanced { background: #FFF5DF; color: #966C2C; border-left: 3px solid var(--color-sunshine); }
+
+        .progress {
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: rgba(94, 242, 213, 0.2);
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-opt {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px 18px;
+            margin: 8px 0;
+            border: 1.5px solid rgba(0,0,0,0.07);
+            border-radius: 60px;
+            background: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quiz-opt:hover {
+            background: #FEFBF2;
+            border-color: var(--color-coral);
+            transform: translateX(4px);
+        }
+
+        .quiz-opt.correct {
+            border-color: var(--color-mint);
+            background: #E5F9F4;
+            color: #0F5A49;
+        }
+
+        .quiz-opt.wrong {
+            border-color: var(--color-ember);
+            background: #FDEFEC;
+            color: #A13B1D;
+        }
+
+        .quiz-feedback {
+            font-size: 0.85rem;
+            padding: 10px 18px;
+            border-radius: 40px;
+            margin-top: 12px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.ok { background: #E0FBF5; color: #0D6956; border-left: 5px solid var(--color-mint); }
+        .quiz-feedback.bad { background: #FEF0EC; color: #BC4A26; border-left: 5px solid var(--color-ember); }
+
+        .next-btn {
+            margin-top: 16px;
+            padding: 8px 24px;
+            border: none;
+            background: rgba(96, 181, 255, 0.12);
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .next-btn:hover {
+            background: var(--color-sky);
+            color: white;
+        }
+
+        .score-box {
+            background: linear-gradient(135deg, #FFFFFF, #FEF9EF);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255,229,136,0.7);
+        }
+
+        .score-num {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #F79D65, #F35252);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .cheatsheet-group {
+            margin-bottom: 2rem;
+        }
+        .cheatsheet-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            color: var(--color-text-tertiary);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--color-mint);
+            padding-left: 12px;
+        }
+        .code-block {
+            background: #FDF9F0;
+            border-radius: 20px;
+            padding: 14px 18px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            border: 1px solid rgba(94, 242, 213, 0.3);
+            overflow-x: auto;
+        }
+
+        /* Topic map (questions directly from lecture) */
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+            margin-bottom: 2rem;
+        }
+        .topic-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1rem;
+            cursor: pointer;
+            border: 1px solid #FFE9BD;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .topic-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--color-coral);
+            box-shadow: 0 14px 22px rgba(247, 157, 101, 0.12);
+            background: #FFFEF8;
+        }
+        .topic-question {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1E2A32;
+            line-height: 1.3;
+        }
+        .topic-hint {
+            font-size: 0.7rem;
+            color: var(--color-sky);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .answer-panel {
+            background: #F4F9FE;
+            border-radius: 28px;
+            padding: 1rem 1.4rem;
+            margin-top: 1rem;
+            border-left: 6px solid var(--color-mint);
+            font-size: 0.9rem;
+            color: #1F5345;
+            font-weight: 500;
+            transition: 0.1s;
+        }
+        .answer-panel span {
+            font-weight: 700;
+            color: #1F6392;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 1rem; }
+            .card { padding: 1rem; }
+            .topic-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+<h2 class="sr-only">RecyclerView Masterclass — Android Lecture 10: RecyclerView, Adapter, ViewHolder, CardView, Circular ImageView</h2>
+
+<div class="tab-bar">
+    <button class="tab active" onclick="showTab('flashcards')">📇 Flashcards</button>
+    <button class="tab" onclick="showTab('quiz')">⚡ Quiz</button>
+    <button class="tab" onclick="showTab('cheatsheet')">📘 Code Cheatsheet</button>
+    <button class="tab" onclick="showTab('topics')">🗺️ Topic Q&A (from lecture)</button>
+</div>
+
+<div id="flashcards" class="section active">
+    <div style="font-size:13px; background: rgba(96,181,255,0.1); display:inline-block; padding:6px 20px; border-radius:30px; margin-bottom:14px;">♻️ Master RecyclerView — efficient, recycling, flexible</div>
+</div>
+
+<div id="quiz" class="section">
+    <div class="progress" id="quiz-progress">Question 1 of 15</div>
+    <div class="card" id="quiz-card">
+        <div class="card-q" id="quiz-q"></div>
+        <div id="quiz-opts"></div>
+        <div class="quiz-feedback" id="quiz-fb"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQ()">Next →</button>
+    </div>
+    <div class="score-box" id="score-box">
+        <div class="score-num" id="score-num"></div>
+        <div style="margin:8px 0 16px;">correct answers</div>
+        <button class="quiz-opt" style="width:auto;display:inline-block;" onclick="resetQuiz()">⟳ Retake</button>
+        <button class="quiz-opt" style="width:auto;margin-left:8px;" onclick="sendPrompt('Generate 5 advanced RecyclerView interview questions with answers about DiffUtil, ItemAnimator, and Nested RecyclerView')">✨ More questions</button>
+    </div>
+</div>
+
+<div id="cheatsheet" class="section"></div>
+
+<div id="topics" class="section">
+    <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:14px;">❓ Click any question below — the answer appears directly from the lecture content 📖</div>
+    <div class="topic-grid" id="topic-grid"></div>
+    <div id="liveAnswer" class="answer-panel" style="display: none;">
+        <span>📌 Answer from lecture:</span> <span id="answerText"></span>
+    </div>
+</div>
+</div>
+
+<script>
+// ---------------------- FLASHCARDS (based on Lecture 10) -------------------------
+const flashcards = [
+    { q: "What is RecyclerView? How does it improve performance?", a: "RecyclerView is a flexible view group for displaying collections efficiently. It recycles views that scroll off-screen and reuses them for new items, reducing memory and improving responsiveness.", tags: ["core"] },
+    { q: "Name the 3 main steps to implement RecyclerView.", a: "1. Decide layout manager (how list/grid looks). 2. Design each item (extend ViewHolder). 3. Define the Adapter that binds data to ViewHolder views.", tags: ["core"] },
+    { q: "What is the role of LayoutManager in RecyclerView?", a: "LayoutManager measures and positions item views, and decides when to recycle off-screen views. Examples: LinearLayoutManager (vertical/horizontal), GridLayoutManager, StaggeredGridLayoutManager.", tags: ["core"] },
+    { q: "Which 3 methods must be overridden in a RecyclerView.Adapter?", a: "onCreateViewHolder() — inflates item layout. onBindViewHolder() — binds data to views. getItemCount() — returns total number of items.", tags: ["adapter"] },
+    { q: "What is a ViewHolder pattern? Why used?", a: "ViewHolder holds references to views inside each item (e.g., ImageView, TextView). It avoids repeated findViewById calls, improving scroll performance.", tags: ["adapter"] },
+    { q: "How to add a custom CardView design per item?", a: "Create an XML layout (e.g., card_design.xml) with a CardView root. Add ImageView + TextViews inside. Set margins, corner radius, elevation. Reference this layout in onCreateViewHolder.", tags: ["design"] },
+    { q: "How to get circular ImageView in RecyclerView item?", a: "Add dependency: 'com.github.bumptech.glide:glide' or use CircleImageView library. In lecture: add 'de.hdodenhof:circleimageview:3.1.0' to build.gradle, then use <de.hdodenhof.circleimageview.CircleImageView> in layout.", tags: ["design"] },
+    { q: "What attributes make CardView look rounded with shadow?", a: "app:cardCornerRadius for rounded corners, app:cardElevation for shadow, app:cardBackgroundColor for tint. Also margin between items using android:layout_margin.", tags: ["design"] },
+    { q: "How to set layout manager for vertical list?", a: "recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)", tags: ["adapter"] },
+    { q: "What goes inside onCreateViewHolder()?", a: "Inflate the item layout (card_design.xml) using LayoutInflater, then return new ViewHolder(itemView).", tags: ["adapter"] },
+    { q: "What does onBindViewHolder() do?", a: "Called when a view is ready to be displayed. Sets data (text, images) to the views inside ViewHolder at specific position.", tags: ["adapter"] },
+    { q: "How to set click listener on RecyclerView items?", a: "Inside onBindViewHolder, set itemView.setOnClickListener { } or bind a listener from adapter. Lecture shows using position to get data.", tags: ["adapter"] },
+    { q: "How to add a floating action button or margin between cards?", a: "In card item XML, add android:layout_margin=\"8dp\". For outer RecyclerView, add clipToPadding=false and padding.", tags: ["design"] },
+    { q: "What's the difference between ListView and RecyclerView?", a: "RecyclerView is more efficient, enforces ViewHolder, supports different layouts (grid, staggered), has built-in item animations, and provides better recycling.", tags: ["advanced"] },
+    { q: "What is the purpose of the Adapter class in RecyclerView?", a: "Adapter acts as a bridge between the data source (ArrayList, database) and the ViewHolder views. It creates views when needed and binds data.", tags: ["adapter"] },
+    { q: "How to define a primary constructor in CountriesAdapter?", a: "class CountriesAdapter(val countriesList: ArrayList<String>, val detailsList: ArrayList<String>, val flagList: ArrayList<Int>) : RecyclerView.Adapter<CountriesAdapter.ViewHolder>()", tags: ["adapter"] }
+];
+
+// ---------------------- QUIZ (directly from lecture details) -------------------------
+const questions = [
+    { q: "Which component recycles views to improve performance in a scrollable list?", opts: ["ListView", "RecyclerView", "GridView", "ScrollView"], ans: 1, exp: "RecyclerView explicitly recycles item views off-screen, boosting performance." },
+    { q: "How many basic steps are needed to implement RecyclerView (according to lecture)?", opts: ["2", "3", "4", "5"], ans: 1, exp: "Three steps: layout manager, design each item (ViewHolder), define adapter." },
+    { q: "Which class is responsible for positioning items inside RecyclerView?", opts: ["Adapter", "LayoutManager", "ViewHolder", "ItemDecoration"], ans: 1, exp: "LayoutManager measures and positions views; LinearLayoutManager, GridLayoutManager etc." },
+    { q: "Which method inflates the item layout in RecyclerView.Adapter?", opts: ["onBindViewHolder", "onCreateViewHolder", "getItemCount", "onAttachedToRecyclerView"], ans: 1, exp: "onCreateViewHolder inflates layout (e.g., card_design.xml) and returns ViewHolder." },
+    { q: "What library is used in the lecture to create circular ImageView?", opts: ["Glide", "Picasso", "CircleImageView (de.hdodenhof)", "AndroidX CircularView"], ans: 2, exp: "'de.hdodenhof:circleimageview' added to build.gradle, then use <CircleImageView>." },
+    { q: "Which attribute gives a CardView rounded corners?", opts: ["android:radius", "app:cardCornerRadius", "cardRadius", "corner_radius"], ans: 1, exp: "app:cardCornerRadius (e.g., 8dp) creates rounded corners." },
+    { q: "What is the correct way to set a vertical LinearLayoutManager?", opts: ["LinearLayoutManager.VERTICAL", "RecyclerView.VERTICAL", "LayoutManager.vertical", "setVertical(true)"], ans: 0, exp: "LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)." },
+    { q: "In the CountriesAdapter example, which fields were passed to the adapter constructor?", opts: ["Context only", "ArrayList of countries, details, flags", "ViewHolder reference", "LayoutManager"], ans: 1, exp: "CountriesAdapter(ArrayList countries, ArrayList details, ArrayList flags)." },
+    { q: "What is the main benefit of ViewHolder pattern?", opts: ["Less code", "Faster findViewById using view caching", "Automatic data binding", "Grid support"], ans: 1, exp: "ViewHolder caches references to views, avoiding expensive findViewById lookups." },
+    { q: "Which method returns number of items in RecyclerView?", opts: ["getItemViewType", "getItemCount", "getAdapterPosition", "getItemId"], ans: 1, exp: "getItemCount() returns total items in data set." },
+    { q: "How to set a custom layout (card_design) for each row?", opts: ["RecyclerView.layoutManager = card_design", "In onCreateViewHolder: inflate(R.layout.card_design)", "Set listitem attribute in XML", "Both B and C"], ans: 3, exp: "Either inflate inside onCreateViewHolder or use app:listitem in XML (older approach). Lecture uses inflate." },
+    { q: "What attribute adds shadow to CardView?", opts: ["app:cardElevation", "android:elevation", "shadow", "cardShadow"], ans: 0, exp: "app:cardElevation (e.g., 4dp) gives the shadow effect." },
+    { q: "What is the role of onBindViewHolder?", opts: ["Create new ViewHolder", "Set data to views at specific position", "Count items", "Set layout manager"], ans: 1, exp: "onBindViewHolder populates views with data for the given position." },
+    { q: "Why should you add dependency for CircleImageView?", opts: ["To make images rounded", "To load images from URL", "To improve recycling", "To add borders"], ans: 0, exp: "CircleImageView library provides circular/clipped image views easily." },
+    { q: "What does the Adapter return in getItemCount()?", opts: ["Number of visible items", "Number of items in dataset", "Number of view types", "Item id"], ans: 1, exp: "Typically dataList.size." }
+];
+
+// ---------------------- CHEATSHEET (code snippets from lecture) -------------------------
+const cheatsheetData = [
+    { title: "📌 Step 1 — Add RecyclerView in activity_main.xml", items: [
+        "<androidx.recyclerview.widget.RecyclerView\n    android:id=\"@+id/rvCountries\"\n    android:layout_width=\"0dp\"\n    android:layout_height=\"0dp\"\n    app:layout_constraintBottom_toBottomOf=\"parent\"\n    app:layout_constraintEnd_toEndOf=\"parent\"\n    app:layout_constraintStart_toStartOf=\"parent\"\n    app:layout_constraintTop_toTopOf=\"parent\" />"
+    ]},
+    { title: "🎨 Card Item Design (card_design.xml) — CardView + circular image + 2 TextViews", items: [
+        "<androidx.cardview.widget.CardView\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"wrap_content\"\n    android:layout_margin=\"8dp\"\n    app:cardCornerRadius=\"12dp\"\n    app:cardElevation=\"6dp\">\n\n    <androidx.constraintlayout.widget.ConstraintLayout\n        android:layout_width=\"match_parent\"\n        android:layout_height=\"75dp\">\n\n        <de.hdodenhof.circleimageview.CircleImageView\n            android:id=\"@+id/ivFlag\"\n            android:layout_width=\"60dp\"\n            android:layout_height=\"60dp\"\n            android:src=\"@drawable/ic_usa\"\n            app:layout_constraintStart_toStartOf=\"parent\"\n            app:layout_constraintTop_toTopOf=\"parent\"\n            app:layout_constraintBottom_toBottomOf=\"parent\"\n            android:layout_marginStart=\"8dp\"/>\n\n        <TextView\n            android:id=\"@+id/tvCountry\"\n            android:layout_width=\"0dp\"\n            android:layout_height=\"wrap_content\"\n            android:text=\"USA\"\n            android:textStyle=\"bold\"\n            app:layout_constraintStart_toEndOf=\"@id/ivFlag\"\n            app:layout_constraintTop_toTopOf=\"@id/ivFlag\"\n            android:layout_marginStart=\"16dp\"/>\n\n        <TextView\n            android:id=\"@+id/tvDetail\"\n            android:layout_width=\"0dp\"\n            android:layout_height=\"wrap_content\"\n            android:text=\"Washington D.C.\"\n            app:layout_constraintStart_toStartOf=\"@id/tvCountry\"\n            app:layout_constraintTop_toBottomOf=\"@id/tvCountry\"/>\n\n    </androidx.constraintlayout.widget.ConstraintLayout>\n</androidx.cardview.widget.CardView>"
+    ]},
+    { title: "🧩 Adapter skeleton (CountriesAdapter.kt)", items: [
+        "class CountriesAdapter(\n    private val countryList: ArrayList<String>,\n    private val detailList: ArrayList<String>,\n    private val flagList: ArrayList<Int>\n) : RecyclerView.Adapter<CountriesAdapter.CountryViewHolder>() {\n\n    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryViewHolder {\n        val view = LayoutInflater.from(parent.context).inflate(R.layout.card_design, parent, false)\n        return CountryViewHolder(view)\n    }\n\n    override fun onBindViewHolder(holder: CountryViewHolder, position: Int) {\n        holder.tvCountry.text = countryList[position]\n        holder.tvDetail.text = detailList[position]\n        holder.ivFlag.setImageResource(flagList[position])\n    }\n\n    override fun getItemCount(): Int = countryList.size\n\n    inner class CountryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {\n        val tvCountry: TextView = itemView.findViewById(R.id.tvCountry)\n        val tvDetail: TextView = itemView.findViewById(R.id.tvDetail)\n        val ivFlag: CircleImageView = itemView.findViewById(R.id.ivFlag)\n    }\n}"
+    ]},
+    { title: "⚙️ Setting up in MainActivity", items: [
+        "val recyclerView = findViewById<RecyclerView>(R.id.rvCountries)\nrecyclerView.layoutManager = LinearLayoutManager(this)\nval countries = arrayListOf(\"USA\", \"Canada\", \"UK\")\nval details = arrayListOf(\"Washington\", \"Ottawa\", \"London\")\nval flags = arrayListOf(R.drawable.usa, R.drawable.canada, R.drawable.uk)\nval adapter = CountriesAdapter(countries, details, flags)\nrecyclerView.adapter = adapter"
+    ]},
+    { title: "🔧 Add CircleImageView dependency (build.gradle.kts)", items: [
+        "dependencies {\n    implementation('de.hdodenhof:circleimageview:3.1.0')\n}"
+    ]},
+    { title: "📐 LayoutManager variations", items: [
+        "// Vertical list\nLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)\n// Horizontal list\nLinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)\n// Grid (2 columns)\nGridLayoutManager(this, 2)\n// Staggered grid\nStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)"
+    ]}
+];
+
+// ---------------------- TOPIC Q&A - Direct answers from lecture (NO AI, direct lecture facts) -------------------------
+const topicQA = [
+    { q: "What is the main advantage of RecyclerView over ListView?", a: "RecyclerView recycles views more efficiently, enforces ViewHolder pattern, supports multiple layouts (list, grid, staggered), and has built-in item animations." },
+    { q: "Name the three obligatory methods to implement when extending RecyclerView.Adapter.", a: "onCreateViewHolder() — inflates item layout; onBindViewHolder() — binds data to views; getItemCount() — returns dataset size." },
+    { q: "How to create a circular ImageView for country flags (lecture steps)?", a: "1) Add 'de.hdodenhof:circleimageview' dependency. 2) In card_design.xml, use <de.hdodenhof.circleimageview.CircleImageView>. 3) Set width/height 60dp, constraints, and src resource." },
+    { q: "What attributes customize CardView's appearance?", a: "app:cardCornerRadius (rounded corners), app:cardElevation (shadow), app:cardBackgroundColor (tint), android:layout_margin (space between cards)." },
+    { q: "How do you set the layout manager to display items horizontally?", a: "recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)" },
+    { q: "Explain the role of onBindViewHolder in the CountriesAdapter example.", a: "It sets the country name, detail text, and flag image resource to the views inside the ViewHolder at a given position." },
+    { q: "Why do we extend RecyclerView.ViewHolder? What does it store?", a: "It stores references to views (TextView, ImageView) of each item, avoiding repeated findViewById calls and making scrolling smooth." },
+    { q: "What is the purpose of setHasFixedSize(true)?", a: "It tells the RecyclerView that the adapter content size doesn't change, allowing optimizations — not mandatory but improves performance." },
+    { q: "How to add a margin between each card item?", a: "In the root CardView, set android:layout_margin=\"8dp\" (or top/bottom margins)." },
+    { q: "What is the function of LayoutInflater inside onCreateViewHolder?", a: "It converts the XML layout (card_design.xml) into a View object that becomes the item view for each row." }
+];
+
+// ---------- UI Functions ----------
+function showTab(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+}
+
+function buildFlashcards() {
+    const cont = document.getElementById('flashcards');
+    flashcards.forEach((fc, idx) => {
+        let badgeCls = "badge-core";
+        if (fc.tags[0] === "adapter") badgeCls = "badge-adapter";
+        else if (fc.tags[0] === "design") badgeCls = "badge-design";
+        else if (fc.tags[0] === "advanced") badgeCls = "badge-advanced";
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `<div class="card-q">${fc.q}</div>
+            <span class="badge ${badgeCls}">${fc.tags[0]}</span>
+            <div><button class="reveal-btn" onclick="toggleAns(${idx})">🔍 Reveal answer</button></div>
+            <div class="card-a" id="ans-${idx}">${fc.a}</div>`;
+        cont.appendChild(div);
+    });
+}
+
+function toggleAns(i) {
+    const el = document.getElementById('ans-' + i);
+    const btn = el.previousElementSibling.firstChild;
+    if (el.style.display === 'block') {
+        el.style.display = 'none';
+        btn.textContent = '🔍 Reveal answer';
+    } else {
+        el.style.display = 'block';
+        btn.textContent = '🙈 Hide answer';
+    }
+}
+
+// Quiz logic
+let qIdx = 0, score = 0, answered = false;
+function buildQuiz() { renderQ(); }
+function renderQ() {
+    const q = questions[qIdx];
+    document.getElementById('quiz-progress').textContent = `Question ${qIdx+1} of ${questions.length}`;
+    document.getElementById('quiz-q').textContent = q.q;
+    const optsEl = document.getElementById('quiz-opts');
+    optsEl.innerHTML = '';
+    q.opts.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt';
+        btn.textContent = opt;
+        btn.onclick = () => checkAns(idx);
+        optsEl.appendChild(btn);
+    });
+    document.getElementById('quiz-fb').className = 'quiz-feedback';
+    document.getElementById('quiz-fb').textContent = '';
+    document.getElementById('next-btn').style.display = 'none';
+    answered = false;
+}
+function checkAns(selected) {
+    if (answered) return;
+    answered = true;
+    const q = questions[qIdx];
+    const opts = document.querySelectorAll('.quiz-opt');
+    opts[q.ans].classList.add('correct');
+    if (selected !== q.ans) opts[selected].classList.add('wrong');
+    else score++;
+    const fb = document.getElementById('quiz-fb');
+    fb.textContent = (selected === q.ans ? '✓ Correct! ' : '✗ ') + q.exp;
+    fb.className = `quiz-feedback show ${selected === q.ans ? 'ok' : 'bad'}`;
+    document.getElementById('next-btn').style.display = 'block';
+}
+function nextQ() {
+    qIdx++;
+    if (qIdx >= questions.length) {
+        document.getElementById('quiz-card').style.display = 'none';
+        document.getElementById('quiz-progress').style.display = 'none';
+        document.getElementById('score-box').style.display = 'block';
+        document.getElementById('score-num').textContent = `${score}/${questions.length}`;
+    } else renderQ();
+}
+function resetQuiz() {
+    qIdx = 0; score = 0; answered = false;
+    document.getElementById('quiz-card').style.display = 'block';
+    document.getElementById('quiz-progress').style.display = 'block';
+    document.getElementById('score-box').style.display = 'none';
+    renderQ();
+}
+
+function buildCheatsheet() {
+    const container = document.getElementById('cheatsheet');
+    cheatsheetData.forEach(group => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'cheatsheet-group';
+        groupDiv.innerHTML = `<div class="cheatsheet-title">📎 ${group.title}</div>`;
+        group.items.forEach(code => {
+            const pre = document.createElement('div');
+            pre.className = 'code-block';
+            pre.textContent = code;
+            groupDiv.appendChild(pre);
+        });
+        container.appendChild(groupDiv);
+    });
+}
+
+function buildTopicQA() {
+    const grid = document.getElementById('topic-grid');
+    topicQA.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'topic-card';
+        card.innerHTML = `<div class="topic-question">❓ ${item.q}</div>
+                          <div class="topic-hint">📖 click to reveal answer (from lecture)</div>`;
+        card.onclick = () => {
+            const panel = document.getElementById('liveAnswer');
+            document.getElementById('answerText').innerHTML = item.a;
+            panel.style.display = 'block';
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        };
+        grid.appendChild(card);
+    });
+}
+
+function sendPrompt(p) {
+    if (window.ai?.chat) window.ai.chat(p);
+    else alert("✨ Extended prompt (for Claude/Gemini):\n\n" + p);
+}
+
+// Initialization
+buildFlashcards();
+buildQuiz();
+buildCheatsheet();
+buildTopicQA();
+</script>
+</body>
+</html>

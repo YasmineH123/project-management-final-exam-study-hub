@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Android UI Mastery · Top App Bar, Snackbar, Dialog, ListView</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-sunshine: #FFE588;
+            --color-coral: #F79D65;
+            --color-ember: #F35252;
+            --color-mint: #5EF2D5;
+            --color-sky: #60B5FF;
+            --color-bg-page: #FFFBF2;
+            --color-bg-card: #FFFFFF;
+            --color-border-light: rgba(0, 0, 0, 0.06);
+            --color-text-primary: #1E2A32;
+            --color-text-secondary: #2F4858;
+            --color-text-tertiary: #5E6F7D;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            background: var(--color-bg-page);
+            color: var(--color-text-primary);
+            padding: 1.8rem 1.2rem;
+            line-height: 1.5;
+        }
+
+        .main-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            padding: 0.5rem 0 1.2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(96, 181, 255, 0.2);
+            margin-bottom: 0.25rem;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            border-radius: 40px;
+            transition: all 0.2s ease;
+        }
+
+        .tab:hover {
+            background: rgba(96, 181, 255, 0.12);
+        }
+
+        .tab.active {
+            background: var(--color-sunshine);
+            color: #2F2A1F;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(255, 229, 136, 0.4);
+        }
+
+        .section {
+            display: none;
+            padding: 1.2rem 0 1rem;
+            animation: fadeSlideUp 0.25s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .card {
+            background: var(--color-bg-card);
+            border: 1px solid rgba(255, 229, 136, 0.5);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 4px rgba(0,0,0,0.03);
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(247, 157, 101, 0.3);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.05);
+        }
+
+        .card-q {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+            color: #1E2A32;
+        }
+
+        .card-a {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            display: none;
+            border-top: 1px solid rgba(94, 242, 213, 0.4);
+            padding-top: 0.9rem;
+            margin-top: 0.8rem;
+            line-height: 1.55;
+            background: #FEFCF5;
+            border-radius: 16px;
+            padding: 0.9rem 1rem;
+        }
+
+        .reveal-btn {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-sky);
+            background: rgba(96, 181, 255, 0.08);
+            border: none;
+            padding: 5px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: 0.15s;
+        }
+
+        .reveal-btn:hover {
+            background: rgba(96, 181, 255, 0.2);
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 50px;
+            margin-right: 6px;
+            margin-bottom: 8px;
+            background: #F3F6FC;
+        }
+        .badge-toolbar { background: #EAF5FF; color: #1F6392; border-left: 3px solid var(--color-sky); }
+        .badge-snackbar { background: #E0FCF5; color: #116454; border-left: 3px solid var(--color-mint); }
+        .badge-dialog { background: #FFF0E8; color: #B15327; border-left: 3px solid var(--color-coral); }
+        .badge-listview { background: #FFF5DF; color: #966C2C; border-left: 3px solid var(--color-sunshine); }
+
+        .progress {
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: rgba(94, 242, 213, 0.2);
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-opt {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 12px 18px;
+            margin: 8px 0;
+            border: 1.5px solid rgba(0,0,0,0.07);
+            border-radius: 60px;
+            background: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quiz-opt:hover {
+            background: #FEFBF2;
+            border-color: var(--color-coral);
+            transform: translateX(4px);
+        }
+
+        .quiz-opt.correct {
+            border-color: var(--color-mint);
+            background: #E5F9F4;
+            color: #0F5A49;
+        }
+
+        .quiz-opt.wrong {
+            border-color: var(--color-ember);
+            background: #FDEFEC;
+            color: #A13B1D;
+        }
+
+        .quiz-feedback {
+            font-size: 0.85rem;
+            padding: 10px 18px;
+            border-radius: 40px;
+            margin-top: 12px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.ok { background: #E0FBF5; color: #0D6956; border-left: 5px solid var(--color-mint); }
+        .quiz-feedback.bad { background: #FEF0EC; color: #BC4A26; border-left: 5px solid var(--color-ember); }
+
+        .next-btn {
+            margin-top: 16px;
+            padding: 8px 24px;
+            border: none;
+            background: rgba(96, 181, 255, 0.12);
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .next-btn:hover {
+            background: var(--color-sky);
+            color: white;
+        }
+
+        .score-box {
+            background: linear-gradient(135deg, #FFFFFF, #FEF9EF);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255,229,136,0.7);
+        }
+
+        .score-num {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #F79D65, #F35252);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .cheatsheet-group {
+            margin-bottom: 2rem;
+        }
+        .cheatsheet-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            color: var(--color-text-tertiary);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--color-mint);
+            padding-left: 12px;
+        }
+        .code-block {
+            background: #FDF9F0;
+            border-radius: 20px;
+            padding: 14px 18px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            border: 1px solid rgba(94, 242, 213, 0.3);
+        }
+
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .topic-card {
+            background: white;
+            border-radius: 20px;
+            padding: 0.9rem 1rem;
+            cursor: pointer;
+            border: 1px solid #FFE9BD;
+            transition: 0.2s;
+        }
+        .topic-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--color-sunshine);
+            box-shadow: 0 12px 20px rgba(247, 157, 101, 0.12);
+        }
+        .topic-label { font-weight: 600; font-size: 0.85rem; }
+        .topic-hint { font-size: 0.7rem; color: var(--color-sky); margin-top: 6px; }
+
+        @media (max-width: 640px) {
+            body { padding: 1rem; }
+            .card { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+<h2 class="sr-only">Android UI Study Hub — Top App Bar, Snackbars, Dialogs, ListView | Lectures 5 & 6</h2>
+
+<div class="tab-bar">
+    <button class="tab active" onclick="showTab('flashcards')">📇 Flashcards</button>
+    <button class="tab" onclick="showTab('quiz')">⚡ Quiz</button>
+    <button class="tab" onclick="showTab('cheatsheet')">📘 Cheat sheet</button>
+    <button class="tab" onclick="showTab('topics')">🗺️ Topic map</button>
+</div>
+
+<div id="flashcards" class="section active">
+    <div style="font-size:13px; background: rgba(96,181,255,0.1); display:inline-block; padding:6px 16px; border-radius:30px; margin-bottom:14px;">🚀 Master Toolbar, Menus, Snackbar, Dialogs & ListView</div>
+</div>
+
+<div id="quiz" class="section">
+    <div class="progress" id="quiz-progress">Question 1 of 15</div>
+    <div class="card" id="quiz-card">
+        <div class="card-q" id="quiz-q"></div>
+        <div id="quiz-opts"></div>
+        <div class="quiz-feedback" id="quiz-fb"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQ()">Next →</button>
+    </div>
+    <div class="score-box" id="score-box">
+        <div class="score-num" id="score-num"></div>
+        <div style="margin:8px 0 16px;">correct answers</div>
+        <button class="quiz-opt" style="width:auto;display:inline-block;" onclick="resetQuiz()">⟳ Retake</button>
+        <button class="quiz-opt" style="width:auto;margin-left:8px;" onclick="sendPrompt('Create advanced quiz questions about Android Toolbar, Snackbar actions, AlertDialog patterns, and ListView optimizations')">✨ More questions</button>
+    </div>
+</div>
+
+<div id="cheatsheet" class="section"></div>
+<div id="topics" class="section">
+    <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:14px;">📌 Click a topic → Ask AI for deep explanation (Claude simulation)</div>
+</div>
+</div>
+
+<script>
+// ----------------------------- FLASHCARDS (based on Lectures 5 & 6) -------------------------
+const flashcards = [
+    { q: "What is the Top App Bar in Android? Other names?", a: "It's the bar at the top of the screen providing navigation and actions. Also known as Action Bar or Toolbar. It displays the current screen title and action icons.", tags: ["Toolbar"] },
+    { q: "How to reference system theme colors in toolbar XML?", a: "Use '?attr/...' references (e.g., `?attr/colorPrimary`). This automatically adapts to light/night mode.", tags: ["Toolbar"] },
+    { q: "Where can you download free Material icons as SVG?", a: "Google Fonts Icons: https://fonts.google.com/icons — download SVG, then import as drawable.", tags: ["Toolbar"] },
+    { q: "How to add action items (menu) to the Toolbar?", a: "1) Create 'menu' directory under res/. 2) Create XML file (e.g., toolbar_menu.xml). 3) Add `<item>` tags with id, icon, title, showAsAction. 4) Inflate in onCreateOptionsMenu().", tags: ["Menu"] },
+    { q: "What is Snackbar and how to show basic one?", a: "Snackbar is a lightweight feedback message at the bottom. Syntax: `Snackbar.make(view, \"Message\", Snackbar.LENGTH_SHORT).show()`", tags: ["Snackbar"] },
+    { q: "How to add an action button to a Snackbar (e.g., 'Close')?", a: "Use `.setAction(\"Close\", View.OnClickListener { })` before `.show()`. Example: `Snackbar.make(layout, \"Deleted\", LENGTH_LONG).setAction(\"Undo\") { /*undo*/ }.show()`", tags: ["Snackbar"] },
+    { q: "What is AlertDialog.Builder used for?", a: "It's a helper class to create a dialog with title, message, buttons (positive/negative/neutral), icon, and custom views. Call `create().show()` to display.", tags: ["Dialog"] },
+    { q: "What does setCancelable(false) do on an AlertDialog?", a: "Prevents the user from dismissing the dialog by tapping outside or pressing the back button. Forces user interaction with the dialog buttons.", tags: ["Dialog"] },
+    { q: "How to set positive & negative buttons in AlertDialog?", a: "`setPositiveButton(\"Yes\") { dialog, which -> }` and `setNegativeButton(\"No\") { dialog, which -> dialog.cancel() }`.", tags: ["Dialog"] },
+    { q: "What is ListView in Android?", a: "A ViewGroup that displays a vertically scrollable list of items. Items are populated via an Adapter (e.g., ArrayAdapter) from a data source like an array or database.", tags: ["ListView"] },
+    { q: "How to bind an ArrayAdapter to a ListView?", a: "`val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, dataList)` then `listView.adapter = adapter`.", tags: ["ListView"] },
+    { q: "How to handle item clicks in ListView?", a: "Call `listView.setOnItemClickListener { parent, view, position, id -> val selected = parent.getItemAtPosition(position) }`", tags: ["ListView"] },
+    { q: "What XML attribute declares menu items as always visible?", a: "`app:showAsAction=\"always\"` or `\"ifRoom\"`. Also can use `android:showAsAction` if using legacy.", tags: ["Menu"] },
+    { q: "What is the purpose of MenuInflater?", a: "In `onCreateOptionsMenu(menu: Menu)`, use `menuInflater.inflate(R.menu.toolbar_menu, menu)` to inflate the XML menu resource.", tags: ["Menu"] },
+    { q: "Difference between LENGTH_SHORT and LENGTH_LONG in Snackbar?", a: "LENGTH_SHORT = ~1500ms, LENGTH_LONG = ~2750ms. LENGTH_INDEFINITE stays until dismissed or another snackbar appears.", tags: ["Snackbar"] },
+    { q: "What is the role of setSupportActionBar(toolbar)?", a: "Sets the custom Toolbar as the ActionBar for the Activity, enabling standard features like menu callbacks and title management.", tags: ["Toolbar"] }
+];
+
+// ----------------------------- QUIZ (15 questions covering lectures) -------------------------
+const questions = [
+    { q: "Which Android component is known as Top App Bar / Action Bar?", opts: ["ListView", "Toolbar", "Snackbar", "AlertDialog"], ans: 1, exp: "Toolbar (Action Bar) is the top bar with title and actions." },
+    { q: "What attribute prefix references system theme colors for night mode support?", opts: ["@color/", "?attr/", "@style/", "@dimen/"], ans: 1, exp: "?attr/ allows dynamic theme attributes (e.g., ?attr/colorPrimary) and adapts to night mode." },
+    { q: "Which method adds an action button to a Snackbar?", opts: [".setButton()", ".setAction()", ".addAction()", ".withAction()"], ans: 1, exp: ".setAction(\"text\", listener) attaches a clickable action." },
+    { q: "What is the correct way to show a basic Snackbar?", opts: ["Toast.makeText().show()", "Snackbar.show(view, msg)", "Snackbar.make(view, msg, duration).show()", "Snackbar.display(msg)"], ans: 2, exp: "Snackbar.make(rootView, message, length).show() is the standard." },
+    { q: "Which class is used to build a dialog with title, message, and buttons?", opts: ["DialogBuilder", "AlertDialog.Builder", "PopupWindow", "Toast.Builder"], ans: 1, exp: "AlertDialog.Builder(context) provides fluent API for dialogs." },
+    { q: "To prevent dialog dismiss when tapping outside, use:", opts: [".setCanceledOnTouchOutside(true)", ".setCancelable(false)", ".setDismissable(false)", ".setOutsideTouchable(false)"], ans: 1, exp: ".setCancelable(false) disables back button / outside tap dismiss." },
+    { q: "What layout attribute makes a menu item always appear in the Toolbar?", opts: ["showAsAction=\"always\"", "appearance=\"always\"", "toolbarItem=\"true\"", "pinToBar=\"true\""], ans: 0, exp: "showAsAction=\"always\" forces the item to appear as an action button." },
+    { q: "Which adapter is commonly used with ListView for string arrays?", opts: ["BaseAdapter", "CursorAdapter", "ArrayAdapter", "RecyclerView.Adapter"], ans: 2, exp: "ArrayAdapter binds lists of strings or objects to ListView." },
+    { q: "How do you set an item click listener on a ListView?", opts: [".setOnClickListener", ".setOnItemClickListener", ".setListItemListener", ".setAdapterListener"], ans: 1, exp: "setOnItemClickListener triggers when a list item is clicked." },
+    { q: "Which resource folder holds menu XML files?", opts: ["res/layout", "res/menu", "res/xml", "res/values"], ans: 1, exp: "res/menu/ is the standard directory for menu resources." },
+    { q: "What does Snackbar.LENGTH_INDEFINITE do?", opts: ["Shows for 3 seconds", "Shows forever until user dismisses or another Snackbar appears", "Displays only once", "Same as LENGTH_LONG"], ans: 1, exp: "Indefinite stays visible until dismissed (e.g., by swiping or next Snackbar)." },
+    { q: "Which method inflates a menu XML in an Activity?", opts: ["inflateMenu()", "onCreateOptionsMenu() using menuInflater.inflate()", "setupMenu()", "bindMenu()"], ans: 1, exp: "In onCreateOptionsMenu, menuInflater.inflate(R.menu.menu_file, menu) inflates the menu." },
+    { q: "Which code creates a positive button in AlertDialog?", opts: [".setButton(\"OK\")", ".setPositiveButton(\"OK\") { _, _ -> }", ".addPositive()", ".confirmButton()"], ans: 1, exp: "setPositiveButton(\"text\") handles the confirm/yes action." },
+    { q: "What is the default behavior if no constraints are set in a ConstraintLayout (bonus from context)?", opts: ["App crashes", "Component at (0,0)", "Component invisible", "Centered"], ans: 1, exp: "Not directly from lecture, but default top-left. However toolbar is independent; this is general Android knowledge." },
+    { q: "Which method sets the custom Toolbar as the activity's ActionBar?", opts: ["setActionBar(toolbar)", "setSupportActionBar(toolbar)", "attachToolbar(toolbar)", "setupToolbar(toolbar)"], ans: 1, exp: "setSupportActionBar(toolbar) registers the Toolbar as the ActionBar." }
+];
+
+// ----------------------------- CHEATSHEET (essential code blocks) -------------------------
+const cheatsheetData = [
+    { title: "📌 TOOLBAR in activity_main.xml", items: [
+        "<androidx.appcompat.widget.Toolbar\n    android:id=\"@+id/toolbar\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"?attr/actionBarSize\"\n    android:background=\"?attr/colorPrimary\"\n    app:titleTextColor=\"@android:color/white\" />"
+    ]},
+    { title: "🧩 MENU XML (res/menu/toolbar_menu.xml)", items: [
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<menu xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\">\n    <item\n        android:id=\"@+id/action_share\"\n        android:icon=\"@drawable/ic_share\"\n        android:title=\"Share\"\n        app:showAsAction=\"ifRoom\" />\n    <item\n        android:id=\"@+id/action_settings\"\n        android:title=\"Settings\"\n        app:showAsAction=\"never\" />\n</menu>"
+    ]},
+    { title: "⚙️ Inflating menu in MainActivity.kt", items: [
+        "override fun onCreateOptionsMenu(menu: Menu?): Boolean {\n    menuInflater.inflate(R.menu.toolbar_menu, menu)\n    return true\n}\n\noverride fun onOptionsItemSelected(item: MenuItem): Boolean {\n    return when (item.itemId) {\n        R.id.action_share -> { toast(\"Share clicked\"); true }\n        else -> super.onOptionsItemSelected(item)\n    }\n}"
+    ]},
+    { title: "🍬 SNACKBAR with Action", items: [
+        "val rootLayout = findViewById<ViewGroup>(android.R.id.content)\nSnackbar.make(rootLayout, \"Item deleted\", Snackbar.LENGTH_LONG)\n    .setAction(\"UNDO\") {\n        // restore action\n    }\n    .show()"
+    ]},
+    { title: "🗨️ ALERT DIALOG (full example)", items: [
+        "AlertDialog.Builder(this)\n    .setTitle(\"Delete entry\")\n    .setMessage(\"Are you sure you want to delete?\")\n    .setPositiveButton(\"Yes\") { _, _ ->\n        // delete logic\n    }\n    .setNegativeButton(\"No\") { dialog, _ ->\n        dialog.cancel()\n    }\n    .setIcon(android.R.drawable.ic_dialog_alert)\n    .setCancelable(false)\n    .create()\n    .show()"
+    ]},
+    { title: "📋 LISTVIEW with ArrayAdapter & click listener", items: [
+        "val countries = listOf(\"USA\", \"Canada\", \"UK\")\nval adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, countries)\nlistView.adapter = adapter\n\nlistView.setOnItemClickListener { parent, _, position, _ ->\n    val selected = parent.getItemAtPosition(position).toString()\n    Toast.makeText(this, selected, Toast.LENGTH_SHORT).show()\n}"
+    ]},
+    { title: "🎨 Set Toolbar as ActionBar", items: [
+        "val toolbar = findViewById<Toolbar>(R.id.toolbar)\nsetSupportActionBar(toolbar)\nsupportActionBar?.title = \"My Dashboard\""
+    ]}
+];
+
+// ----------------------------- TOPICS (deep dive prompts) -------------------------
+const topics = [
+    { label: "Top App Bar / Toolbar deep dive", prompt: "Explain the evolution of Android Toolbar vs ActionBar, customizing elevation, title margins, and adding a navigation icon (hamburger). Provide exam-ready notes." },
+    { label: "Menu inflation & showAsAction flags", prompt: "Detailed explanation of showAsAction: always, ifRoom, never, withText. How to handle action view and collapseActionView. Real examples." },
+    { label: "Snackbar vs Toast vs Dialog", prompt: "Compare Snackbar, Toast, and AlertDialog: use cases, durations, interactivity, and styling differences. Provide code comparisons." },
+    { label: "AlertDialog lifecycle & custom views", prompt: "Explain AlertDialog.Builder in depth: setView for custom layout, handling button callbacks, avoiding memory leaks, and using setCancelable." },
+    { label: "ListView with custom adapters", prompt: "Explain ArrayAdapter limitations, creating a custom BaseAdapter for images and text, ViewHolder pattern for performance, and onClick handling within items." },
+    { label: "Handling clicks with Snackbar actions", prompt: "How to implement undo operation using Snackbar action, best practices for data deletion and restoration, and coordinating with ViewModel." },
+    { label: "Adding icons from Google Fonts", prompt: "Step-by-step: download SVG from fonts.google.com/icons, import into Android Studio drawable, tint with ?attr/colorControlNormal, and use in menu items." },
+    { label: "Theme overlays and night mode", prompt: "How ?attr/ references enable dark mode, defining custom attributes, using MaterialComponents themes with TopAppBar." },
+    { label: "Menu item click patterns", prompt: "Using onOptionsItemSelected, handling multiple menu IDs, dynamic menu updates (invalidateOptionsMenu), and conditional visibility." },
+    { label: "Snackbar length and callbacks", prompt: "Explain LENGTH_INDEFINITE, addCallback for dismiss events, and coordinating Snackbar with CoordinatorLayout behaviors." },
+    { label: "Dialog neutral button & icon", prompt: "Examples of setNeutralButton (e.g., 'Remind me later'), setIcon usage, and creating a fully styled custom dialog." },
+    { label: "ListView data binding and performance", prompt: "Tips on using ArrayAdapter with large datasets, converting to RecyclerView later, and optimizing list scrolling." }
+];
+
+// -------- Helper functions (preserving interactive logic) ----------
+function showTab(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+}
+
+function buildFlashcards() {
+    const cont = document.getElementById('flashcards');
+    flashcards.forEach((fc, idx) => {
+        let badgeClass = "badge-toolbar";
+        if (fc.tags[0] === "Snackbar") badgeClass = "badge-snackbar";
+        else if (fc.tags[0] === "Dialog") badgeClass = "badge-dialog";
+        else if (fc.tags[0] === "ListView") badgeClass = "badge-listview";
+        else if (fc.tags[0] === "Menu") badgeClass = "badge-listview";
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `<div class="card-q">${fc.q}</div>
+        <span class="badge ${badgeClass}">${fc.tags[0]}</span>
+        <div><button class="reveal-btn" onclick="toggleAns(${idx})">🔍 Reveal answer</button></div>
+        <div class="card-a" id="ans-${idx}">${fc.a}</div>`;
+        cont.appendChild(div);
+    });
+}
+
+function toggleAns(i) {
+    const el = document.getElementById('ans-' + i);
+    const btn = el.previousElementSibling.firstChild;
+    if (el.style.display === 'block') {
+        el.style.display = 'none';
+        btn.textContent = '🔍 Reveal answer';
+    } else {
+        el.style.display = 'block';
+        btn.textContent = '🙈 Hide answer';
+    }
+}
+
+// Quiz globals
+let qIdx = 0, score = 0, answered = false;
+function buildQuiz() { renderQ(); }
+function renderQ() {
+    const q = questions[qIdx];
+    document.getElementById('quiz-progress').textContent = `Question ${qIdx+1} of ${questions.length}`;
+    document.getElementById('quiz-q').textContent = q.q;
+    const optsEl = document.getElementById('quiz-opts');
+    optsEl.innerHTML = '';
+    q.opts.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt';
+        btn.textContent = opt;
+        btn.onclick = () => checkAns(idx);
+        optsEl.appendChild(btn);
+    });
+    document.getElementById('quiz-fb').className = 'quiz-feedback';
+    document.getElementById('quiz-fb').textContent = '';
+    document.getElementById('next-btn').style.display = 'none';
+    answered = false;
+}
+function checkAns(selected) {
+    if (answered) return;
+    answered = true;
+    const q = questions[qIdx];
+    const opts = document.querySelectorAll('.quiz-opt');
+    opts[q.ans].classList.add('correct');
+    if (selected !== q.ans) {
+        opts[selected].classList.add('wrong');
+    } else {
+        score++;
+    }
+    const fb = document.getElementById('quiz-fb');
+    fb.textContent = (selected === q.ans ? '✓ Correct! ' : '✗ ') + q.exp;
+    fb.className = `quiz-feedback show ${selected === q.ans ? 'ok' : 'bad'}`;
+    document.getElementById('next-btn').style.display = 'block';
+}
+function nextQ() {
+    qIdx++;
+    if (qIdx >= questions.length) {
+        document.getElementById('quiz-card').style.display = 'none';
+        document.getElementById('quiz-progress').style.display = 'none';
+        const sb = document.getElementById('score-box');
+        sb.style.display = 'block';
+        document.getElementById('score-num').textContent = `${score}/${questions.length}`;
+    } else {
+        renderQ();
+    }
+}
+function resetQuiz() {
+    qIdx = 0; score = 0; answered = false;
+    document.getElementById('quiz-card').style.display = 'block';
+    document.getElementById('quiz-progress').style.display = 'block';
+    document.getElementById('score-box').style.display = 'none';
+    renderQ();
+}
+function buildCheatsheet() {
+    const container = document.getElementById('cheatsheet');
+    cheatsheetData.forEach(group => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'cheatsheet-group';
+        groupDiv.innerHTML = `<div class="cheatsheet-title">📎 ${group.title}</div>`;
+        group.items.forEach(code => {
+            const pre = document.createElement('div');
+            pre.className = 'code-block';
+            pre.textContent = code;
+            groupDiv.appendChild(pre);
+        });
+        container.appendChild(groupDiv);
+    });
+}
+function buildTopics() {
+    const container = document.getElementById('topics');
+    const grid = document.createElement('div');
+    grid.className = 'topic-grid';
+    topics.forEach(topic => {
+        const card = document.createElement('div');
+        card.className = 'topic-card';
+        card.innerHTML = `<div class="topic-label">📘 ${topic.label}</div><div class="topic-hint">✨ ask AI</div>`;
+        card.onclick = () => sendPrompt(topic.prompt);
+        grid.appendChild(card);
+    });
+    container.appendChild(grid);
+}
+function sendPrompt(promptText) {
+    if (window.ai?.chat) window.ai.chat(promptText);
+    else alert("💡 Prompt for Claude (or any AI):\n\n" + promptText);
+}
+
+// Initialize
+buildFlashcards();
+buildQuiz();
+buildCheatsheet();
+buildTopics();
+</script>
+</body>
+</html>
